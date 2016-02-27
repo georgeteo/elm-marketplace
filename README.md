@@ -29,5 +29,6 @@ evancz/virtual-dom
 3. Masonary
 4. Clean up CSS for fullpage
 5. Http + infinite scroll
+6. Add pictures to go api
 6. POST forms
 7. Login and Auth
