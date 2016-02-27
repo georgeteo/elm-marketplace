@@ -2,7 +2,27 @@ module Search where
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 import Window
+import Signal
+import String
+import List
+import Json.Decode as Json
+
+-- Model
+type alias Query = String
+
+init : Query
+init = ""
+
+-- Update
+type Action =
+  Search Query
+
+update : Action -> Query -> Query
+update action query =
+  case action of
+    Search terms -> terms
 
 -- Util
 toPixel : number -> String
@@ -26,19 +46,32 @@ input_css =
     ]
 
 -- View
+type alias Context =
+  { input : Signal.Address Action
+  , enter : Signal.Address () }
 
-view : (Int, Int) -> Html
-view (w, h) =
+view : (Int, Int) -> Context -> Query -> Html
+view (w, h) context query =
   div [ style (search_div_css (w, h)) ]
       [ input [ placeholder "Search"
-              -- , value model.topic
-              -- , onEnter address Create
-              -- , on "input" targetValue (Signal.message address << Topic)
+              , value query
+              , onEnter context.enter ()
+              , Html.Events.on "input" targetValue (Signal.message context.input << Search)
               , style input_css
               ]
               []
       ]
-    
-main : Signal Html
-main = Signal.map view Window.dimensions 
 
+onEnter : Signal.Address a -> a -> Attribute
+onEnter address value =
+  on "keydown"
+       (Json.customDecoder keyCode is13)
+         (\_ -> Signal.message address value)
+
+
+is13 : Int -> Result String ()
+is13 code =
+  if code == 13 then
+    Ok ()
+  else
+    Err "not the right key code"

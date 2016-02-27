@@ -5,7 +5,26 @@ module Header where
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Window
-import Search
+import Search exposing (Query)
+import Signal
+
+-- Model
+type alias Meta =
+  { search : Query }
+
+init : Meta
+init =
+  { search = Search.init }
+
+
+-- Update
+type Action =
+  SearchAction Search.Action
+
+update : Action -> Meta -> Meta
+update action model =
+  case action of
+    SearchAction search_action -> { model | search = Search.update search_action model.search }
 
 -- Util
 toPixel : number -> String
@@ -78,17 +97,21 @@ div_name (w, h) =
           [ text "UChicago Marketplace" ]
       ]
 
-view : (Int, Int) -> Html
-view (w, h) =
+type alias Context =
+  { search : Signal.Address Action
+  , searchtrigger : Signal.Address () }
+
+view : (Int, Int) -> Context -> Meta -> Html
+view (w, h) context model =
   let
     logo_width = 77
     name_width = 200
     logo_and_name_width = logo_width + name_width 
+    search_context = Search.Context
+                     (Signal.forwardTo context.search SearchAction)
+                     context.searchtrigger
   in
     div [ style container_css ]
         [ div_logo_name (logo_width, name_width, h)
-        , Search.view (logo_and_name_width, h)
+        , Search.view (logo_and_name_width, h) search_context model.search
         ]
-
-main : Signal Html
-main = Signal.map view Window.dimensions 

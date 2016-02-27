@@ -11,6 +11,7 @@ import Signal exposing (..)
 import StartApp.Simple as SA
 import Html.Events exposing (..)
 import HttpGetter
+import String
 
 -- Model
 type alias UUID = String
@@ -30,7 +31,8 @@ type alias Model = { key : UUID
                    , sold : Bool
                    , lastUpdated : String
                    , photos : Photos
-                   , view : View }
+                   , view : View
+                   , query : List String }
 
 init : Photos -> HttpGetter.Listing -> Model
 init p listing =
@@ -43,7 +45,8 @@ init p listing =
   , sold = listing.sold
   , lastUpdated = listing.lastUpdated
   , photos = p
-  , view = Thumbnail }
+  , view = Thumbnail
+  , query = (String.words listing.body) ++ (String.words listing.title)}
 
 -- Update
 type Action =

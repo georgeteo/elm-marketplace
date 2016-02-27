@@ -24,7 +24,7 @@ evancz/virtual-dom
 
 ## Todo
 
-1. Search
+1. Search -- DONE
 2. Category
 3. Masonary
 4. Clean up CSS for fullpage

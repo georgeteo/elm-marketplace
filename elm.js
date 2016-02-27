@@ -11105,30 +11105,59 @@ Elm.Search.make = function (_elm) {
    $Debug = Elm.Debug.make(_elm),
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
+   $Json$Decode = Elm.Json.Decode.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
-   $Signal = Elm.Signal.make(_elm),
-   $Window = Elm.Window.make(_elm);
+   $Signal = Elm.Signal.make(_elm);
    var _op = {};
+   var is13 = function (code) {    return _U.eq(code,13) ? $Result.Ok({ctor: "_Tuple0"}) : $Result.Err("not the right key code");};
+   var onEnter = F2(function (address,value) {
+      return A3($Html$Events.on,
+      "keydown",
+      A2($Json$Decode.customDecoder,$Html$Events.keyCode,is13),
+      function (_p0) {
+         return A2($Signal.message,address,value);
+      });
+   });
+   var Context = F2(function (a,b) {    return {input: a,enter: b};});
    _op["=>"] = F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};});
    var input_css = _U.list([A2(_op["=>"],"width","calc(100% - 24px)")
                            ,A2(_op["=>"],"padding","10px")
                            ,A2(_op["=>"],"font-size","2em")
                            ,A2(_op["=>"],"text-align","center")]);
    var toPixel = function (x) {    return A2($Basics._op["++"],$Basics.toString(x),"px");};
-   var search_div_css = function (_p0) {
-      var _p1 = _p0;
-      return _U.list([A2(_op["=>"],"margin-left",toPixel(_p1._0)),A2(_op["=>"],"line-height",toPixel(_p1._1))]);
+   var search_div_css = function (_p1) {
+      var _p2 = _p1;
+      return _U.list([A2(_op["=>"],"margin-left",toPixel(_p2._0)),A2(_op["=>"],"line-height",toPixel(_p2._1))]);
    };
-   var view = function (_p2) {
-      var _p3 = _p2;
+   var update = F2(function (action,query) {    var _p3 = action;return _p3._0;});
+   var Search = function (a) {    return {ctor: "Search",_0: a};};
+   var view = F3(function (_p4,context,query) {
+      var _p5 = _p4;
       return A2($Html.div,
-      _U.list([$Html$Attributes.style(search_div_css({ctor: "_Tuple2",_0: _p3._0,_1: _p3._1}))]),
-      _U.list([A2($Html.input,_U.list([$Html$Attributes.placeholder("Search"),$Html$Attributes.style(input_css)]),_U.list([]))]));
-   };
-   var main = A2($Signal.map,view,$Window.dimensions);
-   return _elm.Search.values = {_op: _op,toPixel: toPixel,search_div_css: search_div_css,input_css: input_css,view: view,main: main};
+      _U.list([$Html$Attributes.style(search_div_css({ctor: "_Tuple2",_0: _p5._0,_1: _p5._1}))]),
+      _U.list([A2($Html.input,
+      _U.list([$Html$Attributes.placeholder("Search")
+              ,$Html$Attributes.value(query)
+              ,A2(onEnter,context.enter,{ctor: "_Tuple0"})
+              ,A3($Html$Events.on,"input",$Html$Events.targetValue,function (_p6) {    return A2($Signal.message,context.input,Search(_p6));})
+              ,$Html$Attributes.style(input_css)]),
+      _U.list([]))]));
+   });
+   var init = "";
+   return _elm.Search.values = {_op: _op
+                               ,init: init
+                               ,Search: Search
+                               ,update: update
+                               ,toPixel: toPixel
+                               ,search_div_css: search_div_css
+                               ,input_css: input_css
+                               ,Context: Context
+                               ,view: view
+                               ,onEnter: onEnter
+                               ,is13: is13};
 };
 Elm.Header = Elm.Header || {};
 Elm.Header.make = function (_elm) {
@@ -11144,9 +11173,9 @@ Elm.Header.make = function (_elm) {
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Search = Elm.Search.make(_elm),
-   $Signal = Elm.Signal.make(_elm),
-   $Window = Elm.Window.make(_elm);
+   $Signal = Elm.Signal.make(_elm);
    var _op = {};
+   var Context = F2(function (a,b) {    return {search: a,searchtrigger: b};});
    _op["=>"] = F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};});
    var container_css = _U.list([A2(_op["=>"],"margin-bottom","10px"),A2(_op["=>"],"background-color","#fff"),A2(_op["=>"],"border-radius","0px 0px 7px 7px")]);
    var name_text_css = _U.list([A2(_op["=>"],"font-size","2em"),A2(_op["=>"],"margin","0px")]);
@@ -11186,18 +11215,27 @@ Elm.Header.make = function (_elm) {
       _U.list([$Html$Attributes.style(logo_name_css({ctor: "_Tuple2",_0: _p9 + _p10,_1: _p8}))]),
       _U.list([div_logo(_p9),div_name({ctor: "_Tuple2",_0: _p10,_1: _p8})]));
    };
-   var view = function (_p11) {
-      var _p12 = _p11;
-      var _p13 = _p12._1;
+   var update = F2(function (action,model) {    var _p11 = action;return _U.update(model,{search: A2($Search.update,_p11._0,model.search)});});
+   var SearchAction = function (a) {    return {ctor: "SearchAction",_0: a};};
+   var view = F3(function (_p12,context,model) {
+      var _p13 = _p12;
+      var _p14 = _p13._1;
+      var search_context = A2($Search.Context,A2($Signal.forwardTo,context.search,SearchAction),context.searchtrigger);
       var name_width = 200;
       var logo_width = 77;
       var logo_and_name_width = logo_width + name_width;
       return A2($Html.div,
       _U.list([$Html$Attributes.style(container_css)]),
-      _U.list([div_logo_name({ctor: "_Tuple3",_0: logo_width,_1: name_width,_2: _p13}),$Search.view({ctor: "_Tuple2",_0: logo_and_name_width,_1: _p13})]));
-   };
-   var main = A2($Signal.map,view,$Window.dimensions);
+      _U.list([div_logo_name({ctor: "_Tuple3",_0: logo_width,_1: name_width,_2: _p14})
+              ,A3($Search.view,{ctor: "_Tuple2",_0: logo_and_name_width,_1: _p14},search_context,model.search)]));
+   });
+   var init = {search: $Search.init};
+   var Meta = function (a) {    return {search: a};};
    return _elm.Header.values = {_op: _op
+                               ,Meta: Meta
+                               ,init: init
+                               ,SearchAction: SearchAction
+                               ,update: update
                                ,toPixel: toPixel
                                ,container_css: container_css
                                ,logo_name_css: logo_name_css
@@ -11207,8 +11245,8 @@ Elm.Header.make = function (_elm) {
                                ,div_logo_name: div_logo_name
                                ,div_logo: div_logo
                                ,div_name: div_name
-                               ,view: view
-                               ,main: main};
+                               ,Context: Context
+                               ,view: view};
 };
 Elm.HttpGetter = Elm.HttpGetter || {};
 Elm.HttpGetter.make = function (_elm) {
@@ -12012,7 +12050,9 @@ Elm.Listing.make = function (_elm) {
                         return function (h) {
                            return function (i) {
                               return function (j) {
-                                 return {key: a,title: b,body: c,price: d,categories: e,approved: f,sold: g,lastUpdated: h,photos: i,view: j};
+                                 return function (k) {
+                                    return {key: a,title: b,body: c,price: d,categories: e,approved: f,sold: g,lastUpdated: h,photos: i,view: j,query: k};
+                                 };
                               };
                            };
                         };
@@ -12036,7 +12076,8 @@ Elm.Listing.make = function (_elm) {
              ,sold: listing.sold
              ,lastUpdated: listing.lastUpdated
              ,photos: p
-             ,view: Thumbnail};
+             ,view: Thumbnail
+             ,query: A2($Basics._op["++"],$String.words(listing.body),$String.words(listing.title))};
    });
    return _elm.Listing.values = {_op: _op
                                 ,Thumbnail: Thumbnail
@@ -12097,6 +12138,13 @@ Elm.Listings.make = function (_elm) {
                      ,A2(_op["=>"],"background-color","#f5f5f5")
                      ,A2(_op["=>"],"text-align","center")]);
    };
+   var listingMatchQuery = F2(function (filter_words,listing) {
+      return _U.eq(filter_words,_U.list([])) ? true : A3($List.foldl,
+      F2(function (word,tf) {    return A2($List.member,word,listing.query) && tf;}),
+      true,
+      filter_words) ? true : false;
+   });
+   var FilterAction = function (a) {    return {ctor: "FilterAction",_0: a};};
    var ListingAction = F2(function (a,b) {    return {ctor: "ListingAction",_0: a,_1: b};});
    var FullpageAction = function (a) {    return {ctor: "FullpageAction",_0: a};};
    var ThumbnailAction = {ctor: "ThumbnailAction"};
@@ -12119,30 +12167,47 @@ Elm.Listings.make = function (_elm) {
                return _p5;
             }
       }();
-      return A2($Html.div,_U.list([$Html$Attributes.style(listings_container_css(_p2._0))]),A2($List.map,A2(view_listing,content_w,address),_p3._1));
+      return A2($Html.div,_U.list([$Html$Attributes.style(listings_container_css(_p2._0))]),A2($List.map,A2(view_listing,content_w,address),_p3._2));
    });
    var FullpageView = {ctor: "FullpageView"};
    var ThumbnailView = {ctor: "ThumbnailView"};
-   var init = function (listingsList) {    return {ctor: "_Tuple2",_0: ThumbnailView,_1: listingsList};};
+   var init = function (listingsList) {    return {ctor: "_Tuple3",_0: ThumbnailView,_1: _U.list([]),_2: listingsList};};
    var update = F2(function (action,_p6) {
       var _p7 = _p6;
-      var _p9 = _p7._1;
+      var _p11 = _p7._2;
+      var _p10 = _p7._1;
       var _p8 = action;
       switch (_p8.ctor)
-      {case "ThumbnailAction": return {ctor: "_Tuple2"
+      {case "ThumbnailAction": return {ctor: "_Tuple3"
                                       ,_0: ThumbnailView
-                                      ,_1: A2($List.map,function (listing) {    return _U.update(listing,{view: $Listing.Thumbnail});},_p9)};
-         case "FullpageAction": return {ctor: "_Tuple2"
+                                      ,_1: _p10
+                                      ,_2: A2($List.map,function (listing) {    return _U.update(listing,{view: $Listing.Thumbnail});},_p11)};
+         case "FullpageAction": return {ctor: "_Tuple3"
                                        ,_0: FullpageView
-                                       ,_1: A2($List.map,
+                                       ,_1: _p10
+                                       ,_2: A2($List.map,
                                        function (listing) {
                                           return _U.eq(listing.key,_p8._0) ? _U.update(listing,{view: $Listing.Fullpage}) : _U.update(listing,
                                           {view: $Listing.Hidden});
                                        },
-                                       _p9)};
-         default: return {ctor: "_Tuple2"
-                         ,_0: _p7._0
-                         ,_1: A2($List.map,function (listing) {    return _U.eq(listing.key,_p8._0) ? A2($Listing.update,_p8._1,listing) : listing;},_p9)};}
+                                       _p11)};
+         case "ListingAction": return {ctor: "_Tuple3"
+                                      ,_0: _p7._0
+                                      ,_1: _p10
+                                      ,_2: A2($List.map,
+                                      function (listing) {
+                                         return _U.eq(listing.key,_p8._0) ? A2($Listing.update,_p8._1,listing) : listing;
+                                      },
+                                      _p11)};
+         default: var _p9 = _p8._0;
+           return {ctor: "_Tuple3"
+                  ,_0: ThumbnailView
+                  ,_1: _p9
+                  ,_2: A2($List.map,
+                  function (listing) {
+                     return A2(listingMatchQuery,_p9,listing) ? _U.update(listing,{view: $Listing.Thumbnail}) : _U.update(listing,{view: $Listing.Hidden});
+                  },
+                  _p11)};}
    });
    return _elm.Listings.values = {_op: _op
                                  ,ThumbnailView: ThumbnailView
@@ -12151,7 +12216,9 @@ Elm.Listings.make = function (_elm) {
                                  ,ThumbnailAction: ThumbnailAction
                                  ,FullpageAction: FullpageAction
                                  ,ListingAction: ListingAction
+                                 ,FilterAction: FilterAction
                                  ,update: update
+                                 ,listingMatchQuery: listingMatchQuery
                                  ,view: view
                                  ,view_listing: view_listing
                                  ,toPixel: toPixel
@@ -12178,6 +12245,7 @@ Elm.Index.make = function (_elm) {
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
+   $String = Elm.String.make(_elm),
    $Task = Elm.Task.make(_elm);
    var _op = {};
    var testUrl = "http://go-marketplace.appspot.com/listings";
@@ -12188,41 +12256,48 @@ Elm.Index.make = function (_elm) {
    _op["=>"] = F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};});
    var update = F2(function (action,model) {
       var _p0 = action;
-      if (_p0.ctor === "ListingsAction") {
-            return {ctor: "_Tuple2",_0: {listings: A2($Listings.update,_p0._0,model.listings)},_1: $Effects.none};
-         } else {
-            return {ctor: "_Tuple2"
-                   ,_0: function (a) {
-                      return {listings: a};
-                   }(A2(blobToListings,$Images.testImages,A2($Maybe.withDefault,$HttpGetter.init,_p0._0)))
-                   ,_1: $Effects.none};
-         }
+      switch (_p0.ctor)
+      {case "ListingsAction": return {ctor: "_Tuple2",_0: _U.update(model,{listings: A2($Listings.update,_p0._0,model.listings)}),_1: $Effects.none};
+         case "HttpAction": return {ctor: "_Tuple2"
+                                   ,_0: function (a) {
+                                      return _U.update(model,{listings: a});
+                                   }(A2(blobToListings,$Images.testImages,A2($Maybe.withDefault,$HttpGetter.init,_p0._0)))
+                                   ,_1: $Effects.none};
+         case "HeaderAction": return {ctor: "_Tuple2",_0: _U.update(model,{meta: A2($Header.update,_p0._0,model.meta)}),_1: $Effects.none};
+         default: var filter_words = $String.words(model.meta.search);
+           return {ctor: "_Tuple2"
+                  ,_0: _U.update(model,{listings: A2($Listings.update,$Listings.FilterAction(filter_words),model.listings)})
+                  ,_1: $Effects.none};}
    });
+   var SearchEnter = function (a) {    return {ctor: "SearchEnter",_0: a};};
+   var HeaderAction = function (a) {    return {ctor: "HeaderAction",_0: a};};
    var HttpAction = function (a) {    return {ctor: "HttpAction",_0: a};};
    var getListings = function (url) {    return $Effects.task(A2($Task.map,HttpAction,$HttpGetter.getListings(url)));};
    var ListingsAction = function (a) {    return {ctor: "ListingsAction",_0: a};};
    var view = F3(function (_p1,address,model) {
       var _p2 = _p1;
       var _p3 = _p2._0;
+      var header_context = A2($Header.Context,A2($Signal.forwardTo,address,HeaderAction),A2($Signal.forwardTo,address,SearchEnter));
       var sidebars = 5.0e-2 * $Basics.toFloat(_p3);
       var sidebar = sidebars / 2;
       var content = $Basics.toFloat(_p3) - sidebars;
-      var listings = model.listings;
       return A2($Html.div,
       _U.list([$Html$Attributes.style(_U.list([A2(_op["=>"],"background-color","#f5f5f5"),A2(_op["=>"],"font-family","sans-serif")]))]),
-      _U.list([$Header.view({ctor: "_Tuple2",_0: _p3,_1: 100})
+      _U.list([A3($Header.view,{ctor: "_Tuple2",_0: _p3,_1: 100},header_context,model.meta)
               ,A3($Listings.view,
               {ctor: "_Tuple2",_0: $Basics.floor(sidebar),_1: $Basics.floor(content)},
               A2($Signal.forwardTo,address,ListingsAction),
-              listings)]));
+              model.listings)]));
    });
-   var init = {ctor: "_Tuple2",_0: {listings: $Listings.init(_U.list([]))},_1: getListings(testUrl)};
-   var Model = function (a) {    return {listings: a};};
+   var init = {ctor: "_Tuple2",_0: {listings: $Listings.init(_U.list([])),meta: $Header.init},_1: getListings(testUrl)};
+   var Model = F2(function (a,b) {    return {listings: a,meta: b};});
    return _elm.Index.values = {_op: _op
                               ,Model: Model
                               ,init: init
                               ,ListingsAction: ListingsAction
                               ,HttpAction: HttpAction
+                              ,HeaderAction: HeaderAction
+                              ,SearchEnter: SearchEnter
                               ,update: update
                               ,view: view
                               ,getListings: getListings

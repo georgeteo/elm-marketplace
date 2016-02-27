@@ -15,37 +15,53 @@ type View =
   ThumbnailView
     | FullpageView
 
-type alias Model = (View, List Listing.Model)
+type alias FilterWords = List String
+
+type alias Model = (View, FilterWords, List Listing.Model)
 
 -- For the purposes for testing, init has been initalized with a sample listings.
 -- Currently, HTTP.get is not working so I am unable to get the json from the server.
--- This is a temporary measure in order to continue work.
+-- This is a temporary measure in o"rder to continue work.
+
 init : List Listing.Model -> Model
-init listingsList = (ThumbnailView, listingsList)
+init listingsList = (ThumbnailView, [], listingsList)
 
 -- Update
 type Action =
   ThumbnailAction
     | FullpageAction Listing.UUID
     | ListingAction Listing.UUID Listing.Action
+    | FilterAction FilterWords
 
 update : Action -> Model -> Model
-update action (view, listings) =
+update action (view, filter, listings) =
   case action of
-    ThumbnailAction -> (ThumbnailView, List.map (\listing -> {listing | view = Listing.Thumbnail }) listings)
-    FullpageAction uuid -> (FullpageView, List.map (\listing ->
+    ThumbnailAction -> (ThumbnailView, filter, List.map (\listing -> {listing | view = Listing.Thumbnail }) listings)
+    FullpageAction uuid -> (FullpageView, filter, List.map (\listing ->
                                                      if listing.key == uuid
                                                      then {listing | view = Listing.Fullpage}
                                                      else {listing | view = Listing.Hidden})
                                           listings)
-    ListingAction uuid listing_action -> (view, List.map (\listing -> if listing.key == uuid
+    ListingAction uuid listing_action -> (view, filter, List.map (\listing -> if listing.key == uuid
                                                                       then Listing.update listing_action listing
                                                                       else listing)
                                                          listings)
+    FilterAction filter_words -> (ThumbnailView, filter_words,
+                                    List.map (\listing -> if listingMatchQuery filter_words listing
+                                                          then {listing | view = Listing.Thumbnail}
+                                                          else {listing | view = Listing.Hidden}) 
+                                    listings)
+
+listingMatchQuery : FilterWords -> Listing.Model -> Bool
+listingMatchQuery filter_words listing =
+  if filter_words == [] then True
+  else if List.foldl (\word tf -> (List.member word listing.query) && tf) True filter_words
+       then True
+       else False
 
 -- View
 view : (Int, Int) -> Address Action -> Model -> Html
-view (sidebar, content) address (view, listings) =
+view (sidebar, content) address (view, filter_words, listings) =
   let
     content_w = case view of
                 ThumbnailView -> floor ((toFloat(content) - (8*6)) / 4)
