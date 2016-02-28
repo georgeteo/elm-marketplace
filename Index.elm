@@ -38,7 +38,7 @@ type Action =
   | HttpAction (Maybe HttpGetter.Blob)
   | HeaderAction Header.Action
   | SearchEnter ()
--- TODO: Add other action types for Search and Category filters here. 
+  | CategoryAction Header.Action
 
 update : Action -> Model -> (Model, Effects Action)
 update action model =
@@ -56,6 +56,12 @@ update action model =
                      in
                        ({ model | listings = Listings.update (Listings.FilterAction filter_words) model.listings }
                         , Effects.none)
+    CategoryAction header_action -> let
+                                      meta' = Header.update header_action model.meta
+                                      listings' = (Listings.update (Listings.CategoryFilter meta'.category) model.listings)
+                                    in
+                                      ( {model | meta = meta', listings = listings' }, Effects.none)
+
 
 -- View
 (=>) = (,)
@@ -68,6 +74,7 @@ view (w,h) address model =
     content = toFloat w - sidebars
     header_context = Header.Context (forwardTo address HeaderAction)
                                     (forwardTo address SearchEnter)
+                                    (forwardTo address CategoryAction)
   in
   div [ style [ "background-color" => "#f5f5f5"
               , "font-family" => "sans-serif"]]
@@ -80,6 +87,7 @@ view (w,h) address model =
       ]
 
 -- Effects
+
 getListings : String -> Effects Action
 getListings url =
   HttpGetter.getListings url

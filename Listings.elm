@@ -8,6 +8,8 @@ import List exposing (map, map2)
 import Basics exposing (floor)
 import Signal exposing (..)
 import Listing
+import CategoryBar
+import String exposing (toLower)
 
 
 -- Model 
@@ -17,14 +19,18 @@ type View =
 
 type alias FilterWords = List String
 
-type alias Model = (View, FilterWords, List Listing.Model)
+type alias Model =
+  { view : View
+  , searchfilter : FilterWords
+  , listings : List Listing.Model
+  }
 
 -- For the purposes for testing, init has been initalized with a sample listings.
 -- Currently, HTTP.get is not working so I am unable to get the json from the server.
 -- This is a temporary measure in o"rder to continue work.
 
 init : List Listing.Model -> Model
-init listingsList = (ThumbnailView, [], listingsList)
+init listingsList = {view = ThumbnailView, searchfilter = [], listings = listingsList }
 
 -- Update
 type Action =
@@ -32,25 +38,38 @@ type Action =
     | FullpageAction Listing.UUID
     | ListingAction Listing.UUID Listing.Action
     | FilterAction FilterWords
+    | CategoryFilter  CategoryBar.Model
 
 update : Action -> Model -> Model
-update action (view, filter, listings) =
+update action model =
   case action of
-    ThumbnailAction -> (ThumbnailView, filter, List.map (\listing -> {listing | view = Listing.Thumbnail }) listings)
-    FullpageAction uuid -> (FullpageView, filter, List.map (\listing ->
-                                                     if listing.key == uuid
-                                                     then {listing | view = Listing.Fullpage}
-                                                     else {listing | view = Listing.Hidden})
-                                          listings)
-    ListingAction uuid listing_action -> (view, filter, List.map (\listing -> if listing.key == uuid
-                                                                      then Listing.update listing_action listing
-                                                                      else listing)
-                                                         listings)
-    FilterAction filter_words -> (ThumbnailView, filter_words,
-                                    List.map (\listing -> if listingMatchQuery filter_words listing
-                                                          then {listing | view = Listing.Thumbnail}
-                                                          else {listing | view = Listing.Hidden}) 
-                                    listings)
+    ThumbnailAction -> { model | view = ThumbnailView
+                       , listings = List.map (\listing -> {listing | view = Listing.Thumbnail }) model.listings
+                       }
+    FullpageAction uuid -> { model | view = FullpageView
+                                   , listings = List.map (\listing -> if listing.key == uuid
+                                                                      then {listing | view = Listing.Fullpage}
+                                                                      else {listing | view = Listing.Hidden}
+                                                         ) model.listings
+                           }
+    ListingAction uuid listing_action -> { model | listings = List.map
+                                                              (\listing -> if listing.key == uuid
+                                                                           then Listing.update listing_action listing
+                                                                           else listing
+                                                              ) model.listings
+                                         }
+    FilterAction filter_words -> { model | view = ThumbnailView
+                                         , listings = List.map (\listing -> if listingMatchQuery filter_words listing
+                                                                            then {listing | view = Listing.Thumbnail}
+                                                                            else {listing | view = Listing.Hidden}
+                                                               ) model.listings
+                                 }
+    CategoryFilter category -> {model | view = ThumbnailView
+                                      , listings = List.map (\listing -> if listingMatchCategories category listing
+                                                                        then {listing | view = Listing.Thumbnail}
+                                                                        else {listing | view = Listing.Hidden}
+                                                               ) model.listings
+                                   }
 
 listingMatchQuery : FilterWords -> Listing.Model -> Bool
 listingMatchQuery filter_words listing =
@@ -59,16 +78,23 @@ listingMatchQuery filter_words listing =
        then True
        else False
 
+listingMatchCategories : CategoryBar.Model -> Listing.Model -> Bool
+listingMatchCategories category listing =
+  if category == CategoryBar.None then True
+  else if List.member (toString category |> toLower) listing.categories then True
+       else False 
+
+
 -- View
 view : (Int, Int) -> Address Action -> Model -> Html
-view (sidebar, content) address (view, filter_words, listings) =
+view (sidebar, content) address model =
   let
-    content_w = case view of
-                ThumbnailView -> floor ((toFloat(content) - (8*6)) / 4)
-                FullpageView -> content
+    content_w = case model.view of
+                  ThumbnailView -> floor ((toFloat(content) - (8*6)) / 4)
+                  FullpageView -> content
   in
     div [ style (listings_container_css sidebar) ]
-        (List.map (view_listing content_w address) listings)
+        (List.map (view_listing content_w address) model.listings)
 
 view_listing : Int -> Address Action -> Listing.Model -> Html
 view_listing content_w address listing =

@@ -7,24 +7,28 @@ import Html.Attributes exposing (..)
 import Window
 import Search exposing (Query)
 import Signal
+import CategoryBar
 
 -- Model
 type alias Meta =
-  { search : Query }
+  { search : Query
+  , category : CategoryBar.Model }
 
 init : Meta
 init =
-  { search = Search.init }
-
+  { search = Search.init
+  , category = CategoryBar.init }
 
 -- Update
 type Action =
   SearchAction Search.Action
+  | CategoryAction CategoryBar.Action
 
 update : Action -> Meta -> Meta
 update action model =
   case action of
     SearchAction search_action -> { model | search = Search.update search_action model.search }
+    CategoryAction category_action -> { model | category = CategoryBar.update category_action model.category }
 
 -- Util
 toPixel : number -> String
@@ -38,6 +42,7 @@ container_css =
   [ "margin-bottom" => "10px"
   , "background-color" => "#fff"
   , "border-radius" => "0px 0px 7px 7px"
+  , "padding" => "0px 20px"
   ]
 
 logo_name_css : (Int, Int) -> List (String, String)
@@ -99,7 +104,8 @@ div_name (w, h) =
 
 type alias Context =
   { search : Signal.Address Action
-  , searchtrigger : Signal.Address () }
+  , searchtrigger : Signal.Address ()
+  , category : Signal.Address Action }
 
 view : (Int, Int) -> Context -> Meta -> Html
 view (w, h) context model =
@@ -112,6 +118,7 @@ view (w, h) context model =
                      context.searchtrigger
   in
     div [ style container_css ]
-        [ div_logo_name (logo_width, name_width, h)
+        [ CategoryBar.view (Signal.forwardTo context.category CategoryAction) model.category
+        , div_logo_name (logo_width, name_width, h)
         , Search.view (logo_and_name_width, h) search_context model.search
         ]
