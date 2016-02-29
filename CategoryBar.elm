@@ -21,10 +21,10 @@ type Category =
     | Free
     | None
 
-type alias Model = Category
+type alias Model = (Category, Category)
 
 init : Model
-init = None
+init = (None, None)
 
 allCategories : List Category
 allCategories =
@@ -34,12 +34,16 @@ allCategories =
 -- Update
 type Action =
     ToggleCategory Category
+      | MouseEnter Category
+      | MouseLeave Category
 
 update : Action -> Model -> Model
-update action model =
+update action (on, hover) =
   case action of
-    ToggleCategory category -> if category == model then None
-                               else category
+    ToggleCategory category -> if category == on then (None, hover)
+                               else (category, hover)
+    MouseEnter category -> (on, category)
+    MouseLeave category -> (on, None)
 
 --view
 view : Signal.Address Action -> Model -> Html
@@ -48,15 +52,17 @@ view address model =
       (List.map (categoryView address model ) allCategories)
 
 categoryView : Signal.Address Action -> Model -> Category -> Html
-categoryView address model category =
+categoryView address (on, hover) category =
   let
-    css = if model == category then on_css else off_css
+    css = if (on == category) || (hover == category)  then on_css else off_css
     special_modifier_css = if category == Apartments then left_tab_css
                            else if category == Free then right_tab_css
                            else []
   in
     div [ style (css ++ individual_category_css ++ special_modifier_css)
-      , onClick address (ToggleCategory category)]
+      , onClick address (ToggleCategory category)
+      , onMouseEnter address (MouseEnter category) 
+      , onMouseLeave address (MouseLeave category) ]
       [text <| toString category]
 
 
@@ -77,7 +83,8 @@ individual_category_css : List (String, String)
 individual_category_css =
   [ "display" => "inline-block"
   , "padding" => "5px"
-  , "min-width" => "7%"]
+  , "min-width" => "calc(7.5% - 10px)"
+  ]
 
 left_tab_css : List (String, String)
 left_tab_css = ["border-top-left-radius" => "5px"]

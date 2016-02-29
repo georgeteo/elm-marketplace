@@ -79,7 +79,7 @@ listingMatchQuery filter_words listing =
        else False
 
 listingMatchCategories : CategoryBar.Model -> Listing.Model -> Bool
-listingMatchCategories category listing =
+listingMatchCategories (category, _) listing =
   if category == CategoryBar.None then True
   else if List.member (toString category |> toLower) listing.categories then True
        else False 

@@ -11114,14 +11114,26 @@ Elm.CategoryBar.make = function (_elm) {
    _op["=>"] = F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};});
    var on_css = _U.list([A2(_op["=>"],"background-color","#800000"),A2(_op["=>"],"color","#fff")]);
    var off_css = _U.list([A2(_op["=>"],"background-color","#fff")]);
-   var individual_category_css = _U.list([A2(_op["=>"],"display","inline-block"),A2(_op["=>"],"padding","5px"),A2(_op["=>"],"min-width","7%")]);
+   var individual_category_css = _U.list([A2(_op["=>"],"display","inline-block"),A2(_op["=>"],"padding","5px"),A2(_op["=>"],"min-width","calc(7.5% - 10px)")]);
    var left_tab_css = _U.list([A2(_op["=>"],"border-top-left-radius","5px")]);
    var right_tab_css = _U.list([A2(_op["=>"],"border-top-right-radius","5px")]);
    var border_bar_css = _U.list([A2(_op["=>"],"text-align","center")]);
+   var MouseLeave = function (a) {    return {ctor: "MouseLeave",_0: a};};
+   var MouseEnter = function (a) {    return {ctor: "MouseEnter",_0: a};};
    var ToggleCategory = function (a) {    return {ctor: "ToggleCategory",_0: a};};
    var None = {ctor: "None"};
-   var init = None;
-   var update = F2(function (action,model) {    var _p0 = action;var _p1 = _p0._0;return _U.eq(_p1,model) ? None : _p1;});
+   var init = {ctor: "_Tuple2",_0: None,_1: None};
+   var update = F2(function (action,_p0) {
+      var _p1 = _p0;
+      var _p5 = _p1._0;
+      var _p4 = _p1._1;
+      var _p2 = action;
+      switch (_p2.ctor)
+      {case "ToggleCategory": var _p3 = _p2._0;
+           return _U.eq(_p3,_p5) ? {ctor: "_Tuple2",_0: None,_1: _p4} : {ctor: "_Tuple2",_0: _p3,_1: _p4};
+         case "MouseEnter": return {ctor: "_Tuple2",_0: _p5,_1: _p2._0};
+         default: return {ctor: "_Tuple2",_0: _p5,_1: None};}
+   });
    var Free = {ctor: "Free"};
    var Wanted = {ctor: "Wanted"};
    var Services = {ctor: "Services"};
@@ -11136,12 +11148,15 @@ Elm.CategoryBar.make = function (_elm) {
    var Subleases = {ctor: "Subleases"};
    var Apartments = {ctor: "Apartments"};
    var allCategories = _U.list([Apartments,Subleases,Appliances,Bikes,Books,Cars,Electronics,Employment,Furniture,Miscellaneous,Services,Wanted,Free]);
-   var categoryView = F3(function (address,model,category) {
+   var categoryView = F3(function (address,_p6,category) {
+      var _p7 = _p6;
       var special_modifier_css = _U.eq(category,Apartments) ? left_tab_css : _U.eq(category,Free) ? right_tab_css : _U.list([]);
-      var css = _U.eq(model,category) ? on_css : off_css;
+      var css = _U.eq(_p7._0,category) || _U.eq(_p7._1,category) ? on_css : off_css;
       return A2($Html.div,
       _U.list([$Html$Attributes.style(A2($Basics._op["++"],css,A2($Basics._op["++"],individual_category_css,special_modifier_css)))
-              ,A2($Html$Events.onClick,address,ToggleCategory(category))]),
+              ,A2($Html$Events.onClick,address,ToggleCategory(category))
+              ,A2($Html$Events.onMouseEnter,address,MouseEnter(category))
+              ,A2($Html$Events.onMouseLeave,address,MouseLeave(category))]),
       _U.list([$Html.text($Basics.toString(category))]));
    });
    var view = F2(function (address,model) {
@@ -11165,6 +11180,8 @@ Elm.CategoryBar.make = function (_elm) {
                                     ,init: init
                                     ,allCategories: allCategories
                                     ,ToggleCategory: ToggleCategory
+                                    ,MouseEnter: MouseEnter
+                                    ,MouseLeave: MouseLeave
                                     ,update: update
                                     ,view: view
                                     ,categoryView: categoryView
@@ -12234,8 +12251,10 @@ Elm.Listings.make = function (_elm) {
                      ,A2(_op["=>"],"background-color","#f5f5f5")
                      ,A2(_op["=>"],"text-align","center")]);
    };
-   var listingMatchCategories = F2(function (category,listing) {
-      return _U.eq(category,$CategoryBar.None) ? true : A2($List.member,$String.toLower($Basics.toString(category)),listing.categories) ? true : false;
+   var listingMatchCategories = F2(function (_p0,listing) {
+      var _p1 = _p0;
+      var _p2 = _p1._0;
+      return _U.eq(_p2,$CategoryBar.None) ? true : A2($List.member,$String.toLower($Basics.toString(_p2)),listing.categories) ? true : false;
    });
    var listingMatchQuery = F2(function (filter_words,listing) {
       return _U.eq(filter_words,_U.list([])) ? true : A3($List.foldl,
@@ -12255,49 +12274,49 @@ Elm.Listings.make = function (_elm) {
       A2($Signal.forwardTo,address,$Basics.always(FullpageAction(listing.key))));
       return A3($Listing.view,content_w,context,listing);
    });
-   var view = F3(function (_p0,address,model) {
-      var _p1 = _p0;
-      var _p3 = _p1._1;
+   var view = F3(function (_p3,address,model) {
+      var _p4 = _p3;
+      var _p6 = _p4._1;
       var content_w = function () {
-         var _p2 = model.view;
-         if (_p2.ctor === "ThumbnailView") {
-               return $Basics.floor(($Basics.toFloat(_p3) - 8 * 6) / 4);
+         var _p5 = model.view;
+         if (_p5.ctor === "ThumbnailView") {
+               return $Basics.floor(($Basics.toFloat(_p6) - 8 * 6) / 4);
             } else {
-               return _p3;
+               return _p6;
             }
       }();
-      return A2($Html.div,_U.list([$Html$Attributes.style(listings_container_css(_p1._0))]),A2($List.map,A2(view_listing,content_w,address),model.listings));
+      return A2($Html.div,_U.list([$Html$Attributes.style(listings_container_css(_p4._0))]),A2($List.map,A2(view_listing,content_w,address),model.listings));
    });
    var Model = F3(function (a,b,c) {    return {view: a,searchfilter: b,listings: c};});
    var FullpageView = {ctor: "FullpageView"};
    var ThumbnailView = {ctor: "ThumbnailView"};
    var init = function (listingsList) {    return {view: ThumbnailView,searchfilter: _U.list([]),listings: listingsList};};
    var update = F2(function (action,model) {
-      var _p4 = action;
-      switch (_p4.ctor)
+      var _p7 = action;
+      switch (_p7.ctor)
       {case "ThumbnailAction": return _U.update(model,
            {view: ThumbnailView,listings: A2($List.map,function (listing) {    return _U.update(listing,{view: $Listing.Thumbnail});},model.listings)});
          case "FullpageAction": return _U.update(model,
            {view: FullpageView
            ,listings: A2($List.map,
            function (listing) {
-              return _U.eq(listing.key,_p4._0) ? _U.update(listing,{view: $Listing.Fullpage}) : _U.update(listing,{view: $Listing.Hidden});
+              return _U.eq(listing.key,_p7._0) ? _U.update(listing,{view: $Listing.Fullpage}) : _U.update(listing,{view: $Listing.Hidden});
            },
            model.listings)});
          case "ListingAction": return _U.update(model,
-           {listings: A2($List.map,function (listing) {    return _U.eq(listing.key,_p4._0) ? A2($Listing.update,_p4._1,listing) : listing;},model.listings)});
+           {listings: A2($List.map,function (listing) {    return _U.eq(listing.key,_p7._0) ? A2($Listing.update,_p7._1,listing) : listing;},model.listings)});
          case "FilterAction": return _U.update(model,
            {view: ThumbnailView
            ,listings: A2($List.map,
            function (listing) {
-              return A2(listingMatchQuery,_p4._0,listing) ? _U.update(listing,{view: $Listing.Thumbnail}) : _U.update(listing,{view: $Listing.Hidden});
+              return A2(listingMatchQuery,_p7._0,listing) ? _U.update(listing,{view: $Listing.Thumbnail}) : _U.update(listing,{view: $Listing.Hidden});
            },
            model.listings)});
          default: return _U.update(model,
            {view: ThumbnailView
            ,listings: A2($List.map,
            function (listing) {
-              return A2(listingMatchCategories,_p4._0,listing) ? _U.update(listing,{view: $Listing.Thumbnail}) : _U.update(listing,{view: $Listing.Hidden});
+              return A2(listingMatchCategories,_p7._0,listing) ? _U.update(listing,{view: $Listing.Thumbnail}) : _U.update(listing,{view: $Listing.Hidden});
            },
            model.listings)});}
    });
