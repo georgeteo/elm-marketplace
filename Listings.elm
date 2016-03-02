@@ -94,7 +94,8 @@ view (sidebar, content) address model =
                   FullpageView -> content
   in
     div [ style (listings_container_css sidebar) 
-        , id "content"]
+        , id "content"
+        , class "grid"]
         (List.map (view_listing content_w address) model.listings)
 
 view_listing : Int -> Address Action -> Listing.Model -> Html

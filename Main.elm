@@ -1,7 +1,7 @@
 module Main where
 
 import StartApp exposing (start)
-import Index
+import Index exposing (masonryMailbox)
 import Task exposing (Task)
 import Effects exposing (Never)
 import Signal
@@ -24,3 +24,5 @@ port lastItemVisible : Signal Bool
 infiniteScroll : Signal Index.Action
 infiniteScroll = Signal.map Index.Scroll lastItemVisible    
 
+port masonry : Signal Bool
+port masonry = masonryMailbox.signal

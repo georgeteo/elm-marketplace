@@ -71,9 +71,13 @@ view w context listing =
                   Thumbnail -> thumbnail_css w listing
                   Fullpage -> fullpage_css w listing
                   Hidden -> hidden_css
+      container_attributes = 
+        case listing.view of
+          Thumbnail -> [ div_css.container, class "grid-item" ]
+          _ -> [div_css.container]
   in
     div 
-      [ div_css.container ]
+    container_attributes
       [ div [ onClick context.fullpage ()
             , div_css.container_clicker 
             ]

@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>UChicago M2arketplace</title>
+		<title>Marketplace</title>
 		<script src="main.js" type="text/javascript"></script>
+		<script src="masonry.pkgd.min.js"></script>
+		<style>
+			.grid-item { width: 200px }
+		</style>
 	</head>
 	<body>
 		<div id="root"></div>
@@ -34,8 +38,19 @@
       		app.ports.lastItemVisible.send(false);
       	}
       };
-	
-			// Masonry
+
+			app.ports.masonry.subscribe(redrawMasonry);
+
+			function redrawMasonry(b) {
+				console.log("Masonry TRIGGER");
+				var elm = document.querySelector('.grid');
+				var msnry = new Masonry( elm, {
+					itemSelector: '.grid-item',
+					columnWidth: 200
+				});
+				var msnry = new Masonry( '.grid', {
+				});
+			}
 		</script>
 	</body>
 </html>	

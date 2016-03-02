@@ -12139,8 +12139,16 @@ Elm.Listing.make = function (_elm) {
             case "Fullpage": return A2(fullpage_css,w,listing);
             default: return hidden_css;}
       }();
+      var container_attributes = function () {
+         var _p3 = listing.view;
+         if (_p3.ctor === "Thumbnail") {
+               return _U.list([div_css.container,$Html$Attributes.$class("grid-item")]);
+            } else {
+               return _U.list([div_css.container]);
+            }
+      }();
       return A2($Html.div,
-      _U.list([div_css.container]),
+      container_attributes,
       _U.list([A2($Html.div,_U.list([A2($Html$Events.onClick,context.fullpage,{ctor: "_Tuple0"}),div_css.container_clicker]),_U.list([]))
               ,A2($Html.div,_U.list([A2($Html$Events.onClick,context.thumbnail,{ctor: "_Tuple0"}),div_css.back]),_U.list([$Html.text("Back")]))
               ,A2($Html.div,
@@ -12286,7 +12294,7 @@ Elm.Listings.make = function (_elm) {
             }
       }();
       return A2($Html.div,
-      _U.list([$Html$Attributes.style(listings_container_css(_p4._0)),$Html$Attributes.id("content")]),
+      _U.list([$Html$Attributes.style(listings_container_css(_p4._0)),$Html$Attributes.id("content"),$Html$Attributes.$class("grid")]),
       A2($List.map,A2(view_listing,content_w,address),model.listings));
    });
    var Model = F3(function (a,b,c) {    return {view: a,searchfilter: b,listings: c};});
@@ -12366,10 +12374,17 @@ Elm.Index.make = function (_elm) {
    var _op = {};
    var testUrl = "http://go-marketplace.appspot.com/listings";
    var blobToListings = F2(function (photosList,blob) {    var blobListings = blob.listings;return A3($List.map2,$Listing.init,photosList,blobListings);});
+   var masonryMailbox = $Signal.mailbox(true);
    _op["=>"] = F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};});
    var appendListings = F2(function (old_listings,new_listings) {
       return _U.update(old_listings,{listings: A2($List.append,old_listings.listings,new_listings)});
    });
+   var Noop = {ctor: "Noop"};
+   var sendMasonrySignal = A2($Effects.map,
+   function (_p0) {
+      return Noop;
+   },
+   $Effects.task(A2($Debug.log,"Sending Masonry Signal in Elm",A2($Signal.send,masonryMailbox.address,true))));
    var Scroll = function (a) {    return {ctor: "Scroll",_0: a};};
    var CategoryAction = function (a) {    return {ctor: "CategoryAction",_0: a};};
    var SearchEnter = function (a) {    return {ctor: "SearchEnter",_0: a};};
@@ -12377,36 +12392,37 @@ Elm.Index.make = function (_elm) {
    var HttpAction = function (a) {    return {ctor: "HttpAction",_0: a};};
    var getListings = function (url) {    return $Effects.task(A2($Task.map,HttpAction,$HttpGetter.getListings(url)));};
    var update = F2(function (action,model) {
-      var _p0 = action;
-      switch (_p0.ctor)
-      {case "ListingsAction": return {ctor: "_Tuple2",_0: _U.update(model,{listings: A2($Listings.update,_p0._0,model.listings)}),_1: $Effects.none};
+      var _p1 = action;
+      switch (_p1.ctor)
+      {case "ListingsAction": return {ctor: "_Tuple2",_0: _U.update(model,{listings: A2($Listings.update,_p1._0,model.listings)}),_1: $Effects.none};
          case "HttpAction": return {ctor: "_Tuple2"
                                    ,_0: function (new_listings) {
                                       return _U.update(model,{listings: A2(appendListings,model.listings,new_listings)});
-                                   }(A2(blobToListings,$Images.testImages,A2($Maybe.withDefault,$HttpGetter.init,_p0._0)))
-                                   ,_1: $Effects.none};
-         case "HeaderAction": return {ctor: "_Tuple2",_0: _U.update(model,{meta: A2($Header.update,_p0._0,model.meta)}),_1: $Effects.none};
+                                   }(A2(blobToListings,$Images.testImages,A2($Maybe.withDefault,$HttpGetter.init,_p1._0)))
+                                   ,_1: sendMasonrySignal};
+         case "HeaderAction": return {ctor: "_Tuple2",_0: _U.update(model,{meta: A2($Header.update,_p1._0,model.meta)}),_1: $Effects.none};
          case "SearchEnter": var filter_words = $String.words(model.meta.search);
            return {ctor: "_Tuple2",_0: _U.update(model,{listings: A2($Listings.update,$Listings.FilterAction(filter_words),model.listings)}),_1: $Effects.none};
-         case "CategoryAction": var meta$ = A2($Header.update,_p0._0,model.meta);
+         case "CategoryAction": var meta$ = A2($Header.update,_p1._0,model.meta);
            var listings$ = A2($Listings.update,$Listings.CategoryFilter(meta$.category),model.listings);
            return {ctor: "_Tuple2",_0: _U.update(model,{meta: meta$,listings: listings$}),_1: $Effects.none};
-         default: return _U.eq(_p0._0,true) ? {ctor: "_Tuple2",_0: model,_1: getListings(testUrl)} : {ctor: "_Tuple2",_0: model,_1: $Effects.none};}
+         case "Scroll": return _U.eq(_p1._0,true) ? {ctor: "_Tuple2",_0: model,_1: getListings(testUrl)} : {ctor: "_Tuple2",_0: model,_1: $Effects.none};
+         default: return {ctor: "_Tuple2",_0: model,_1: $Effects.none};}
    });
    var ListingsAction = function (a) {    return {ctor: "ListingsAction",_0: a};};
-   var view = F3(function (_p1,address,model) {
-      var _p2 = _p1;
-      var _p3 = _p2._0;
+   var view = F3(function (_p2,address,model) {
+      var _p3 = _p2;
+      var _p4 = _p3._0;
       var header_context = A3($Header.Context,
       A2($Signal.forwardTo,address,HeaderAction),
       A2($Signal.forwardTo,address,SearchEnter),
       A2($Signal.forwardTo,address,CategoryAction));
-      var sidebars = 5.0e-2 * $Basics.toFloat(_p3);
+      var sidebars = 5.0e-2 * $Basics.toFloat(_p4);
       var sidebar = sidebars / 2;
-      var content = $Basics.toFloat(_p3) - sidebars;
+      var content = $Basics.toFloat(_p4) - sidebars;
       return A2($Html.div,
       _U.list([$Html$Attributes.style(_U.list([A2(_op["=>"],"background-color","#f5f5f5"),A2(_op["=>"],"font-family","sans-serif")]))]),
-      _U.list([A3($Header.view,{ctor: "_Tuple2",_0: _p3,_1: 100},header_context,model.meta)
+      _U.list([A3($Header.view,{ctor: "_Tuple2",_0: _p4,_1: 100},header_context,model.meta)
               ,A3($Listings.view,
               {ctor: "_Tuple2",_0: $Basics.floor(sidebar),_1: $Basics.floor(content)},
               A2($Signal.forwardTo,address,ListingsAction),
@@ -12423,10 +12439,13 @@ Elm.Index.make = function (_elm) {
                               ,SearchEnter: SearchEnter
                               ,CategoryAction: CategoryAction
                               ,Scroll: Scroll
+                              ,Noop: Noop
                               ,update: update
                               ,appendListings: appendListings
                               ,view: view
                               ,getListings: getListings
+                              ,masonryMailbox: masonryMailbox
+                              ,sendMasonrySignal: sendMasonrySignal
                               ,blobToListings: blobToListings
                               ,testUrl: testUrl};
 };
@@ -12447,6 +12466,7 @@ Elm.Main.make = function (_elm) {
    $StartApp = Elm.StartApp.make(_elm),
    $Task = Elm.Task.make(_elm);
    var _op = {};
+   var masonry = Elm.Native.Port.make(_elm).outboundSignal("masonry",function (v) {    return v;},$Index.masonryMailbox.signal);
    var lastItemVisible = Elm.Native.Port.make(_elm).inboundSignal("lastItemVisible",
    "Bool",
    function (v) {

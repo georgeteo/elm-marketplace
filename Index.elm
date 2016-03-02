@@ -40,6 +40,7 @@ type Action =
   | SearchEnter ()
   | CategoryAction Header.Action
   | Scroll Bool
+  | Noop
 
 update : Action -> Model -> (Model, Effects Action)
 update action model =
@@ -49,9 +50,9 @@ update action model =
     HttpAction maybeBlob -> (Maybe.withDefault HttpGetter.init maybeBlob
                               |> blobToListings Images.testImages
                               |> (\new_listings -> { model | listings = appendListings model.listings new_listings })
-                            , Effects.none)
+                            , sendMasonrySignal)
     HeaderAction header_action -> ( { model | meta = Header.update header_action model.meta }
-                                  , Effects.none ) 
+                                  , Effects.none)
     SearchEnter _ -> let
                        filter_words = String.words model.meta.search
                      in
@@ -64,6 +65,7 @@ update action model =
                                       ( {model | meta = meta', listings = listings' }, Effects.none)
     Scroll b -> if b == True then (model, getListings testUrl)
                 else (model, Effects.none)
+    Noop -> (model, Effects.none)
 
 appendListings : Listings.Model -> List Listing.Model -> Listings.Model
 appendListings old_listings new_listings =
@@ -99,6 +101,15 @@ getListings url =
   HttpGetter.getListings url
    |> Task.map HttpAction
    |> Effects.task
+
+masonryMailbox : Mailbox Bool
+masonryMailbox = mailbox True
+
+sendMasonrySignal : Effects Action
+sendMasonrySignal =
+  Debug.log "Sending Masonry Signal in Elm" (Signal.send masonryMailbox.address True)
+    |> Effects.task
+    |> Effects.map (\_ -> Noop)
 
 -- Test
 blobToListings : List (ImageViewer.Photos) -> HttpGetter.Blob -> List Listing.Model
