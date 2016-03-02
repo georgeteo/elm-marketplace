@@ -12062,7 +12062,9 @@ Elm.Listing.make = function (_elm) {
                                           ,A2(_op["=>"],"margin-bottom","10px")
                                           ,A2(_op["=>"],"word-break","break-word")
                                           ,A2(_op["=>"],"text-align","left")]);
-   var thumbnail_div_css = function (w) {    return _U.list([A2(_op["=>"],"display","table-cell"),A2(_op["=>"],"width","25%")]);};
+   var thumbnail_div_css = function (w) {
+      return _U.list([A2(_op["=>"],"float","left"),A2(_op["=>"],"width","25%"),A2(_op["=>"],"position","relative"),A2(_op["=>"],"left","75%")]);
+   };
    var thumbnail_img_css = F2(function (w,photos) {    return _U.list([A2(_op["=>"],"width","100%"),A2(_op["=>"],"border-radius","5px 5px 0px 0px")]);});
    var thumbnail_title_css = _U.list([A2(_op["=>"],"text-align","center"),A2(_op["=>"],"margin","10px"),A2(_op["=>"],"font-weight","400")]);
    var thumbnail_price_css = _U.list([A2(_op["=>"],"display","inline")
@@ -12129,10 +12131,6 @@ Elm.Listing.make = function (_elm) {
       }();
       return A2($Html.div,
       _U.list([div_css.container]),
-      _U.list([A2($Html.div,
-      _U.list([$Html$Attributes.style(_U.list([A2(_op["=>"],"padding-left","5px"),A2(_op["=>"],"padding-right","5px")]))]),
-      _U.list([A2($Html.div,
-      _U.list([$Html$Attributes.style(_U.list([A2(_op["=>"],"border","solid"),A2(_op["=>"],"height","100%")]))]),
       _U.list([A2($Html.div,_U.list([A2($Html$Events.onClick,context.fullpage,{ctor: "_Tuple0"}),div_css.container_clicker]),_U.list([]))
               ,A2($Html.div,_U.list([A2($Html$Events.onClick,context.thumbnail,{ctor: "_Tuple0"}),div_css.back]),_U.list([$Html.text("Back")]))
               ,A2($Html.div,
@@ -12141,7 +12139,7 @@ Elm.Listing.make = function (_elm) {
               ,A2($Html.h2,_U.list([div_css.title]),_U.list([$Html.text(listing.title)]))
               ,A2($Html.div,_U.list([div_css.price]),_U.list([$Html.text(A2($String.cons,_U.chr("$"),$Basics.toString(listing.price)))]))
               ,A2($Html.div,_U.list([div_css.categories]),categoryList(listing.categories))
-              ,A2($Html.div,_U.list([div_css.body]),_U.list([$Html.text(listing.body)]))]))]))]));
+              ,A2($Html.div,_U.list([div_css.body]),_U.list([$Html.text(listing.body)]))]));
    });
    var Model = function (a) {
       return function (b) {
@@ -12238,8 +12236,18 @@ Elm.Listings.make = function (_elm) {
    var listings_container_css = function (sidebar_w) {
       return _U.list([A2(_op["=>"],"display","table"),A2(_op["=>"],"border-collapse","separate"),A2(_op["=>"],"border-spacing","0 0")]);
    };
-   var listings_row_css = _U.list([A2(_op["=>"],"display","table-row"),A2(_op["=>"],"margin-bottom","10px")]);
-   var row_div = function (cols) {    return A2($Html.div,_U.list([$Html$Attributes.style(listings_row_css)]),cols);};
+   var listings_row_css = _U.list([A2(_op["=>"],"float","left"),A2(_op["=>"],"width","100%")]);
+   var inner_container_right = _U.list([A2(_op["=>"],"position","relative"),A2(_op["=>"],"right","25%")]);
+   var outer_container = _U.list([A2(_op["=>"],"position","relative")]);
+   var row_div = function (cols) {
+      return A2($Html.div,
+      _U.list([$Html$Attributes.style(A2($List.append,listings_row_css,outer_container))]),
+      _U.list([A2($Html.div,
+      _U.list([$Html$Attributes.style(A2($List.append,listings_row_css,inner_container_right))]),
+      _U.list([A2($Html.div,
+      _U.list([$Html$Attributes.style(A2($List.append,listings_row_css,inner_container_right))]),
+      _U.list([A2($Html.div,_U.list([$Html$Attributes.style(A2($List.append,listings_row_css,inner_container_right))]),cols)]))]))]));
+   };
    var toPixel = function (x) {    return A2($Basics._op["++"],$Basics.toString(x),"px");};
    var listingMatchCategories = F2(function (_p0,listing) {
       var _p1 = _p0;
@@ -12269,7 +12277,7 @@ Elm.Listings.make = function (_elm) {
          var _p4 = acc;
          if (_p4.ctor === "[]") {
                return _U.crashCase("Listings",
-               {start: {line: 145,column: 24},end: {line: 147,column: 41}},
+               {start: {line: 162,column: 24},end: {line: 164,column: 41}},
                _p4)("Oh no! Acc was not initialized correctly in foldr");
             } else {
                return {ctor: "_Tuple2",_0: _p4._0,_1: _p4._1};
@@ -12353,6 +12361,8 @@ Elm.Listings.make = function (_elm) {
                                  ,toPixel: toPixel
                                  ,listings_container_css: listings_container_css
                                  ,listings_row_css: listings_row_css
+                                 ,inner_container_right: inner_container_right
+                                 ,outer_container: outer_container
                                  ,row_div: row_div
                                  ,makeTableRows: makeTableRows};
 };

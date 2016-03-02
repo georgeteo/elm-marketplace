@@ -4,7 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Listing
 import Window
-import List exposing (map, map2)
+import List exposing (map, map2, append)
 import Basics exposing (floor)
 import Signal exposing (..)
 import Listing
@@ -130,13 +130,30 @@ listings_container_css sidebar_w =
 
 listings_row_css : List (String, String)
 listings_row_css =
-  [ "display" => "table-row" 
-  , "margin-bottom" => "10px"]
+  [ "float" => "left"
+  , "width" => "100%"
+  ]
 
+inner_container_right : List (String, String)
+inner_container_right =
+  [ "position" => "relative"
+  , "right" => "25%"
+  ]
+
+outer_container : List (String, String)
+outer_container =
+  ["position" => "relative"
+  ]
 row_div : List Html -> Html
 row_div cols =
-  div [ style listings_row_css ]
-      cols
+  div [ style (append listings_row_css outer_container) ]
+      [ div [ style (append listings_row_css inner_container_right) ]
+            [ div [ style (append listings_row_css inner_container_right) ]
+                  [ div [ style (append listings_row_css inner_container_right) ]
+                        cols
+                  ]
+            ]
+      ]
 
 makeTableRows : Int -> Address Action -> Listing.Model -> List (List Html) -> List (List Html)
 makeTableRows content_w address listing acc =
