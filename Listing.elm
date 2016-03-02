@@ -63,6 +63,7 @@ type alias Context =
   , thumbnail : Address ()
   , fullpage : Address () 
   }
+(=>) = (,)
 
 view : Int -> Context -> Model -> Html
 view w context listing =
@@ -72,30 +73,32 @@ view w context listing =
                   Fullpage -> fullpage_css w listing
                   Hidden -> hidden_css
   in
-    div 
-      [ div_css.container ]
-      [ div [ onClick context.fullpage ()
-            , div_css.container_clicker 
-            ]
-            []
-      , div [ onClick context.thumbnail () 
-            , div_css.back
-            ] 
-            [text "Back"]
-      , div [ div_css.photos ]
-            [ ImageViewer.view (w//2) (Signal.forwardTo context.actions ImageActions) listing.photos ]
-      , h2 [ div_css.title ] 
-           [ text listing.title ]
-      , div [ div_css.price ] 
-            [ toString listing.price |> cons '$' |> text ]
-      , div [ div_css.categories ]
-            (categoryList listing.categories)
-      , div [ div_css.body ]
-            [ text listing.body ]
-      ]
+    div [  div_css.container ]
+        [ div [ style ["padding-left" => "5px", "padding-right" => "5px"] ]
+              [ div [ style [ "border" => "solid" , "height" => "100%"] ]
+                    [ div [ onClick context.fullpage ()
+                          , div_css.container_clicker 
+                          ]
+                          []
+                    , div [ onClick context.thumbnail () 
+                          , div_css.back
+                          ] 
+                          [text "Back"]
+                    , div [ div_css.photos ]
+                          [ ImageViewer.view (w//2) (Signal.forwardTo context.actions ImageActions) listing.photos ]
+                    , h2 [ div_css.title ] 
+                         [ text listing.title ]
+                    , div [ div_css.price ] 
+                          [ toString listing.price |> cons '$' |> text ]
+                    , div [ div_css.categories ]
+                          (categoryList listing.categories)
+                    , div [ div_css.body ]
+                          [ text listing.body ]
+                    ]
+              ]
+        ]
 
 -- CSS
-(=>) = (,)
 
 toPixel : number -> String
 toPixel x = (toString x) ++ "px"
@@ -127,20 +130,26 @@ thumbnail_categories_css =
   , "text-align" => "left"
   ]
 
+-- thumbnail_div_css : Int -> List (String, String)
+-- thumbnail_div_css w =
+--     [ "display" => "inline-block"
+--     , "height" => "100%"
+--     , "width" => toPixel w
+--     , "border" => "1px solid #ddd"
+--     , "border-radius" => "5px"
+--     , "margin-bottom" => "10px"
+--     , "margin-left" => "5px"
+--     , "margin-right" => "5px"
+--     , "vertical-align" => "top"
+--     , "background-color" => "#fff"
+--     , "position" => "relative"
+--     ]
+
 thumbnail_div_css : Int -> List (String, String)
 thumbnail_div_css w =
-    [ "display" => "inline-block"
-    , "height" => "100%"
-    , "width" => toPixel w
-    , "border" => "1px solid #ddd"
-    , "border-radius" => "5px"
-    , "margin-bottom" => "10px"
-    , "margin-left" => "5px"
-    , "margin-right" => "5px"
-    , "vertical-align" => "top"
-    , "background-color" => "#fff"
-    , "position" => "relative"
-    ]
+  [ "display" => "table-cell"
+  , "width" => "25%"
+  ]
 
 thumbnail_img_css : Int -> Photos -> List (String, String) 
 thumbnail_img_css w photos =

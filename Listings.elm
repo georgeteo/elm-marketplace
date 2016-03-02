@@ -94,7 +94,8 @@ view (sidebar, content) address model =
                   FullpageView -> content
   in
     div [ style (listings_container_css sidebar) ]
-        (List.map (view_listing content_w address) model.listings)
+        (List.foldr (makeTableRows content_w address) [[]] model.listings
+          |>  List.map row_div)
 
 view_listing : Int -> Address Action -> Listing.Model -> Html
 view_listing content_w address listing =
@@ -111,11 +112,40 @@ toPixel : number -> String
 toPixel x = (toString x) ++ "px"
 
 (=>) = (,)
+-- listings_container_css : Int -> List (String, String)
+-- listings_container_css sidebar_w =
+--   [ "margin-left" => toPixel sidebar_w
+--   , "margin-right" => toPixel sidebar_w
+--   , "font" => "400 Roboto, sans-serif"
+--   , "background-color" => "#f5f5f5"
+--   , "text-align" => "center"
+--   ]
+
 listings_container_css : Int -> List (String, String)
 listings_container_css sidebar_w =
-  [ "margin-left" => toPixel sidebar_w
-  , "margin-right" => toPixel sidebar_w
-  , "font" => "400 Roboto, sans-serif"
-  , "background-color" => "#f5f5f5"
-  , "text-align" => "center"
+  [ "display" => "table"
+  , "border-collapse" => "separate"
+  , "border-spacing" => "0 0"
   ]
+
+listings_row_css : List (String, String)
+listings_row_css =
+  [ "display" => "table-row" 
+  , "margin-bottom" => "10px"]
+
+row_div : List Html -> Html
+row_div cols =
+  div [ style listings_row_css ]
+      cols
+
+makeTableRows : Int -> Address Action -> Listing.Model -> List (List Html) -> List (List Html)
+makeTableRows content_w address listing acc =
+  let
+    new_listing_html = view_listing content_w address listing
+    (acc_head, accs) = case acc of
+                        [] -> Debug.crash "Oh no! Acc was not initialized correctly in foldr"
+                        x::xs -> (x, xs)
+    new_head = if List.length acc_head == 4 then [[new_listing_html], acc_head]
+                else [new_listing_html :: acc_head]
+  in
+    List.append new_head accs

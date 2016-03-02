@@ -12062,19 +12062,7 @@ Elm.Listing.make = function (_elm) {
                                           ,A2(_op["=>"],"margin-bottom","10px")
                                           ,A2(_op["=>"],"word-break","break-word")
                                           ,A2(_op["=>"],"text-align","left")]);
-   var thumbnail_div_css = function (w) {
-      return _U.list([A2(_op["=>"],"display","inline-block")
-                     ,A2(_op["=>"],"height","100%")
-                     ,A2(_op["=>"],"width",toPixel(w))
-                     ,A2(_op["=>"],"border","1px solid #ddd")
-                     ,A2(_op["=>"],"border-radius","5px")
-                     ,A2(_op["=>"],"margin-bottom","10px")
-                     ,A2(_op["=>"],"margin-left","5px")
-                     ,A2(_op["=>"],"margin-right","5px")
-                     ,A2(_op["=>"],"vertical-align","top")
-                     ,A2(_op["=>"],"background-color","#fff")
-                     ,A2(_op["=>"],"position","relative")]);
-   };
+   var thumbnail_div_css = function (w) {    return _U.list([A2(_op["=>"],"display","table-cell"),A2(_op["=>"],"width","25%")]);};
    var thumbnail_img_css = F2(function (w,photos) {    return _U.list([A2(_op["=>"],"width","100%"),A2(_op["=>"],"border-radius","5px 5px 0px 0px")]);});
    var thumbnail_title_css = _U.list([A2(_op["=>"],"text-align","center"),A2(_op["=>"],"margin","10px"),A2(_op["=>"],"font-weight","400")]);
    var thumbnail_price_css = _U.list([A2(_op["=>"],"display","inline")
@@ -12141,6 +12129,10 @@ Elm.Listing.make = function (_elm) {
       }();
       return A2($Html.div,
       _U.list([div_css.container]),
+      _U.list([A2($Html.div,
+      _U.list([$Html$Attributes.style(_U.list([A2(_op["=>"],"padding-left","5px"),A2(_op["=>"],"padding-right","5px")]))]),
+      _U.list([A2($Html.div,
+      _U.list([$Html$Attributes.style(_U.list([A2(_op["=>"],"border","solid"),A2(_op["=>"],"height","100%")]))]),
       _U.list([A2($Html.div,_U.list([A2($Html$Events.onClick,context.fullpage,{ctor: "_Tuple0"}),div_css.container_clicker]),_U.list([]))
               ,A2($Html.div,_U.list([A2($Html$Events.onClick,context.thumbnail,{ctor: "_Tuple0"}),div_css.back]),_U.list([$Html.text("Back")]))
               ,A2($Html.div,
@@ -12149,7 +12141,7 @@ Elm.Listing.make = function (_elm) {
               ,A2($Html.h2,_U.list([div_css.title]),_U.list([$Html.text(listing.title)]))
               ,A2($Html.div,_U.list([div_css.price]),_U.list([$Html.text(A2($String.cons,_U.chr("$"),$Basics.toString(listing.price)))]))
               ,A2($Html.div,_U.list([div_css.categories]),categoryList(listing.categories))
-              ,A2($Html.div,_U.list([div_css.body]),_U.list([$Html.text(listing.body)]))]));
+              ,A2($Html.div,_U.list([div_css.body]),_U.list([$Html.text(listing.body)]))]))]))]));
    });
    var Model = function (a) {
       return function (b) {
@@ -12243,14 +12235,12 @@ Elm.Listings.make = function (_elm) {
    $String = Elm.String.make(_elm);
    var _op = {};
    _op["=>"] = F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};});
-   var toPixel = function (x) {    return A2($Basics._op["++"],$Basics.toString(x),"px");};
    var listings_container_css = function (sidebar_w) {
-      return _U.list([A2(_op["=>"],"margin-left",toPixel(sidebar_w))
-                     ,A2(_op["=>"],"margin-right",toPixel(sidebar_w))
-                     ,A2(_op["=>"],"font","400 Roboto, sans-serif")
-                     ,A2(_op["=>"],"background-color","#f5f5f5")
-                     ,A2(_op["=>"],"text-align","center")]);
+      return _U.list([A2(_op["=>"],"display","table"),A2(_op["=>"],"border-collapse","separate"),A2(_op["=>"],"border-spacing","0 0")]);
    };
+   var listings_row_css = _U.list([A2(_op["=>"],"display","table-row"),A2(_op["=>"],"margin-bottom","10px")]);
+   var row_div = function (cols) {    return A2($Html.div,_U.list([$Html$Attributes.style(listings_row_css)]),cols);};
+   var toPixel = function (x) {    return A2($Basics._op["++"],$Basics.toString(x),"px");};
    var listingMatchCategories = F2(function (_p0,listing) {
       var _p1 = _p0;
       var _p2 = _p1._0;
@@ -12274,49 +12264,74 @@ Elm.Listings.make = function (_elm) {
       A2($Signal.forwardTo,address,$Basics.always(FullpageAction(listing.key))));
       return A3($Listing.view,content_w,context,listing);
    });
-   var view = F3(function (_p3,address,model) {
-      var _p4 = _p3;
-      var _p6 = _p4._1;
-      var content_w = function () {
-         var _p5 = model.view;
-         if (_p5.ctor === "ThumbnailView") {
-               return $Basics.floor(($Basics.toFloat(_p6) - 8 * 6) / 4);
+   var makeTableRows = F4(function (content_w,address,listing,acc) {
+      var _p3 = function () {
+         var _p4 = acc;
+         if (_p4.ctor === "[]") {
+               return _U.crashCase("Listings",
+               {start: {line: 145,column: 24},end: {line: 147,column: 41}},
+               _p4)("Oh no! Acc was not initialized correctly in foldr");
             } else {
-               return _p6;
+               return {ctor: "_Tuple2",_0: _p4._0,_1: _p4._1};
             }
       }();
-      return A2($Html.div,_U.list([$Html$Attributes.style(listings_container_css(_p4._0))]),A2($List.map,A2(view_listing,content_w,address),model.listings));
+      var acc_head = _p3._0;
+      var accs = _p3._1;
+      var new_listing_html = A3(view_listing,content_w,address,listing);
+      var new_head = _U.eq($List.length(acc_head),4) ? _U.list([_U.list([new_listing_html]),acc_head]) : _U.list([A2($List._op["::"],
+      new_listing_html,
+      acc_head)]);
+      return A2($List.append,new_head,accs);
+   });
+   var view = F3(function (_p6,address,model) {
+      var _p7 = _p6;
+      var _p9 = _p7._1;
+      var content_w = function () {
+         var _p8 = model.view;
+         if (_p8.ctor === "ThumbnailView") {
+               return $Basics.floor(($Basics.toFloat(_p9) - 8 * 6) / 4);
+            } else {
+               return _p9;
+            }
+      }();
+      return A2($Html.div,
+      _U.list([$Html$Attributes.style(listings_container_css(_p7._0))]),
+      A2($List.map,row_div,A3($List.foldr,A2(makeTableRows,content_w,address),_U.list([_U.list([])]),model.listings)));
    });
    var Model = F3(function (a,b,c) {    return {view: a,searchfilter: b,listings: c};});
    var FullpageView = {ctor: "FullpageView"};
    var ThumbnailView = {ctor: "ThumbnailView"};
    var init = function (listingsList) {    return {view: ThumbnailView,searchfilter: _U.list([]),listings: listingsList};};
    var update = F2(function (action,model) {
-      var _p7 = action;
-      switch (_p7.ctor)
+      var _p10 = action;
+      switch (_p10.ctor)
       {case "ThumbnailAction": return _U.update(model,
            {view: ThumbnailView,listings: A2($List.map,function (listing) {    return _U.update(listing,{view: $Listing.Thumbnail});},model.listings)});
          case "FullpageAction": return _U.update(model,
            {view: FullpageView
            ,listings: A2($List.map,
            function (listing) {
-              return _U.eq(listing.key,_p7._0) ? _U.update(listing,{view: $Listing.Fullpage}) : _U.update(listing,{view: $Listing.Hidden});
+              return _U.eq(listing.key,_p10._0) ? _U.update(listing,{view: $Listing.Fullpage}) : _U.update(listing,{view: $Listing.Hidden});
            },
            model.listings)});
          case "ListingAction": return _U.update(model,
-           {listings: A2($List.map,function (listing) {    return _U.eq(listing.key,_p7._0) ? A2($Listing.update,_p7._1,listing) : listing;},model.listings)});
+           {listings: A2($List.map,
+           function (listing) {
+              return _U.eq(listing.key,_p10._0) ? A2($Listing.update,_p10._1,listing) : listing;
+           },
+           model.listings)});
          case "FilterAction": return _U.update(model,
            {view: ThumbnailView
            ,listings: A2($List.map,
            function (listing) {
-              return A2(listingMatchQuery,_p7._0,listing) ? _U.update(listing,{view: $Listing.Thumbnail}) : _U.update(listing,{view: $Listing.Hidden});
+              return A2(listingMatchQuery,_p10._0,listing) ? _U.update(listing,{view: $Listing.Thumbnail}) : _U.update(listing,{view: $Listing.Hidden});
            },
            model.listings)});
          default: return _U.update(model,
            {view: ThumbnailView
            ,listings: A2($List.map,
            function (listing) {
-              return A2(listingMatchCategories,_p7._0,listing) ? _U.update(listing,{view: $Listing.Thumbnail}) : _U.update(listing,{view: $Listing.Hidden});
+              return A2(listingMatchCategories,_p10._0,listing) ? _U.update(listing,{view: $Listing.Thumbnail}) : _U.update(listing,{view: $Listing.Hidden});
            },
            model.listings)});}
    });
@@ -12336,7 +12351,10 @@ Elm.Listings.make = function (_elm) {
                                  ,view: view
                                  ,view_listing: view_listing
                                  ,toPixel: toPixel
-                                 ,listings_container_css: listings_container_css};
+                                 ,listings_container_css: listings_container_css
+                                 ,listings_row_css: listings_row_css
+                                 ,row_div: row_div
+                                 ,makeTableRows: makeTableRows};
 };
 Elm.Index = Elm.Index || {};
 Elm.Index.make = function (_elm) {
