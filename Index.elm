@@ -39,6 +39,7 @@ type Action =
   | HeaderAction Header.Action
   | SearchEnter ()
   | CategoryAction Header.Action
+  | Scroll Bool
 
 update : Action -> Model -> (Model, Effects Action)
 update action model =
@@ -47,7 +48,7 @@ update action model =
                                       , Effects.none)
     HttpAction maybeBlob -> (Maybe.withDefault HttpGetter.init maybeBlob
                               |> blobToListings Images.testImages
-                              |> (\a -> { model | listings = a })
+                              |> (\new_listings -> { model | listings = appendListings model.listings new_listings })
                             , Effects.none)
     HeaderAction header_action -> ( { model | meta = Header.update header_action model.meta }
                                   , Effects.none ) 
@@ -61,7 +62,12 @@ update action model =
                                       listings' = (Listings.update (Listings.CategoryFilter meta'.category) model.listings)
                                     in
                                       ( {model | meta = meta', listings = listings' }, Effects.none)
+    Scroll b -> if b == True then (model, getListings testUrl)
+                else (model, Effects.none)
 
+appendListings : Listings.Model -> List Listing.Model -> Listings.Model
+appendListings old_listings new_listings =
+  {old_listings | listings = List.append old_listings.listings new_listings }
 
 -- View
 (=>) = (,)
@@ -95,9 +101,9 @@ getListings url =
    |> Effects.task
 
 -- Test
-blobToListings : List (ImageViewer.Photos) -> HttpGetter.Blob -> Listings.Model
+blobToListings : List (ImageViewer.Photos) -> HttpGetter.Blob -> List Listing.Model
 blobToListings photosList blob =
   let blobListings = blob.listings in
-  List.map2 Listing.init photosList blobListings |> Listings.init
+  List.map2 Listing.init photosList blobListings 
 
 testUrl = "http://go-marketplace.appspot.com/listings"
