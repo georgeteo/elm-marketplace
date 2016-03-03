@@ -62,7 +62,8 @@ update action model =
                                       listings' = (Listings.update (Listings.CategoryFilter meta'.category) model.listings)
                                     in
                                       ( {model | meta = meta', listings = listings' }, Effects.none)
-    Scroll b -> if b == True then (model, getListings testUrl)
+    Scroll b -> if (b == True) && (model.listings.view == Listings.ThumbnailView) 
+                then (model, getListings testUrl)
                 else (model, Effects.none)
 
 appendListings : Listings.Model -> List Listing.Model -> Listings.Model

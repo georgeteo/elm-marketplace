@@ -94,10 +94,17 @@ view (sidebar, content) address model =
     content_w = case model.view of
                   ThumbnailView -> floor ((toFloat(content) - (8*6)) / 4)
                   FullpageView -> content
+    (container_css, listings_content) =
+      case model.view of
+        ThumbnailView -> ( [style (listings_container_css sidebar)]
+                         , List.foldr (makeTableRows content_w address) [[]] model.listings
+                            |> List.map row_div
+                         )
+        FullpageView -> ( [ style(fullpage_container_css sidebar)]
+                        , List.map (view_listing content address) model.listings
+                        )
   in
-    div [ style (listings_container_css sidebar) ]
-        (List.foldr (makeTableRows content_w address) [[]] model.listings
-          |>  List.map row_div)
+    div container_css listings_content
 
 view_listing : Int -> Address Action -> Listing.Model -> Html
 view_listing content_w address listing =
@@ -152,3 +159,8 @@ makeTableRows content_w address listing acc =
                 else [new_listing_html :: acc_head]
   in
     List.append new_head accs
+
+fullpage_container_css : Int -> List (String, String)
+fullpage_container_css sidear = 
+  [
+  ]

@@ -27,12 +27,14 @@ evancz/virtual-dom
 #### Critical
 
 1. Index page wonky when search happens
+2. Category bar highlight will return to thumbnail view
 
 #### Non-critical
 
 1. Search -- DONE
 2. Category -- DONE
 4. Clean up CSS for fullpage
+4. Add scroll loading animation
 5. Http + infinite scroll -- DONE
 
 #### Stretch Goals

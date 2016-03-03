@@ -12253,6 +12253,7 @@ Elm.Listings.make = function (_elm) {
    $Signal = Elm.Signal.make(_elm),
    $String = Elm.String.make(_elm);
    var _op = {};
+   var fullpage_container_css = function (sidear) {    return _U.list([]);};
    _op["=>"] = F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};});
    var listings_container_css = function (sidebar_w) {
       return _U.list([A2(_op["=>"],"display","table")
@@ -12291,7 +12292,7 @@ Elm.Listings.make = function (_elm) {
          var _p4 = acc;
          if (_p4.ctor === "[]") {
                return _U.crashCase("Listings",
-               {start: {line: 148,column: 24},end: {line: 150,column: 41}},
+               {start: {line: 155,column: 24},end: {line: 157,column: 41}},
                _p4)("Oh no! Acc was not initialized correctly in foldr");
             } else {
                return {ctor: "_Tuple2",_0: _p4._0,_1: _p4._1};
@@ -12307,19 +12308,32 @@ Elm.Listings.make = function (_elm) {
    });
    var view = F3(function (_p6,address,model) {
       var _p7 = _p6;
-      var _p9 = _p7._1;
+      var _p12 = _p7._0;
+      var _p11 = _p7._1;
       var content_w = function () {
          var _p8 = model.view;
          if (_p8.ctor === "ThumbnailView") {
-               return $Basics.floor(($Basics.toFloat(_p9) - 8 * 6) / 4);
+               return $Basics.floor(($Basics.toFloat(_p11) - 8 * 6) / 4);
             } else {
-               return _p9;
+               return _p11;
             }
       }();
+      var _p9 = function () {
+         var _p10 = model.view;
+         if (_p10.ctor === "ThumbnailView") {
+               return {ctor: "_Tuple2"
+                      ,_0: _U.list([$Html$Attributes.style(listings_container_css(_p12))])
+                      ,_1: A2($List.map,row_div,A3($List.foldr,A2(makeTableRows,content_w,address),_U.list([_U.list([])]),model.listings))};
+            } else {
+               return {ctor: "_Tuple2"
+                      ,_0: _U.list([$Html$Attributes.style(fullpage_container_css(_p12))])
+                      ,_1: A2($List.map,A2(view_listing,_p11,address),model.listings)};
+            }
+      }();
+      var container_css = _p9._0;
+      var listings_content = _p9._1;
       var debug = A2($Debug.log,"View type",model.view);
-      return A2($Html.div,
-      _U.list([$Html$Attributes.style(listings_container_css(_p7._0))]),
-      A2($List.map,row_div,A3($List.foldr,A2(makeTableRows,content_w,address),_U.list([_U.list([])]),model.listings)));
+      return A2($Html.div,container_css,listings_content);
    });
    var Model = F3(function (a,b,c) {    return {view: a,searchfilter: b,listings: c};});
    var FullpageView = {ctor: "FullpageView"};
@@ -12327,35 +12341,35 @@ Elm.Listings.make = function (_elm) {
    var init = function (listingsList) {    return {view: ThumbnailView,searchfilter: _U.list([]),listings: listingsList};};
    var update = F2(function (action,model) {
       var a = A2($Debug.log,"Action: ",action);
-      var _p10 = action;
-      switch (_p10.ctor)
+      var _p13 = action;
+      switch (_p13.ctor)
       {case "ThumbnailAction": return _U.update(model,
            {view: ThumbnailView,listings: A2($List.map,function (listing) {    return _U.update(listing,{view: $Listing.Thumbnail});},model.listings)});
          case "FullpageAction": return _U.update(model,
            {view: FullpageView
            ,listings: A2($List.map,
            function (listing) {
-              return _U.eq(listing.key,_p10._0) ? _U.update(listing,{view: $Listing.Fullpage}) : _U.update(listing,{view: $Listing.Hidden});
+              return _U.eq(listing.key,_p13._0) ? _U.update(listing,{view: $Listing.Fullpage}) : _U.update(listing,{view: $Listing.Hidden});
            },
            model.listings)});
          case "ListingAction": return _U.update(model,
            {listings: A2($List.map,
            function (listing) {
-              return _U.eq(listing.key,_p10._0) ? A2($Listing.update,_p10._1,listing) : listing;
+              return _U.eq(listing.key,_p13._0) ? A2($Listing.update,_p13._1,listing) : listing;
            },
            model.listings)});
          case "FilterAction": return _U.update(model,
            {view: ThumbnailView
            ,listings: A2($List.map,
            function (listing) {
-              return A2(listingMatchQuery,_p10._0,listing) ? _U.update(listing,{view: $Listing.Thumbnail}) : _U.update(listing,{view: $Listing.Hidden});
+              return A2(listingMatchQuery,_p13._0,listing) ? _U.update(listing,{view: $Listing.Thumbnail}) : _U.update(listing,{view: $Listing.Hidden});
            },
            model.listings)});
          default: return _U.update(model,
            {view: ThumbnailView
            ,listings: A2($List.map,
            function (listing) {
-              return A2(listingMatchCategories,_p10._0,listing) ? _U.update(listing,{view: $Listing.Thumbnail}) : _U.update(listing,{view: $Listing.Hidden});
+              return A2(listingMatchCategories,_p13._0,listing) ? _U.update(listing,{view: $Listing.Thumbnail}) : _U.update(listing,{view: $Listing.Hidden});
            },
            model.listings)});}
    });
@@ -12378,7 +12392,8 @@ Elm.Listings.make = function (_elm) {
                                  ,listings_container_css: listings_container_css
                                  ,listings_row_css: listings_row_css
                                  ,row_div: row_div
-                                 ,makeTableRows: makeTableRows};
+                                 ,makeTableRows: makeTableRows
+                                 ,fullpage_container_css: fullpage_container_css};
 };
 Elm.Index = Elm.Index || {};
 Elm.Index.make = function (_elm) {
@@ -12431,7 +12446,11 @@ Elm.Index.make = function (_elm) {
          case "CategoryAction": var meta$ = A2($Header.update,_p0._0,model.meta);
            var listings$ = A2($Listings.update,$Listings.CategoryFilter(meta$.category),model.listings);
            return {ctor: "_Tuple2",_0: _U.update(model,{meta: meta$,listings: listings$}),_1: $Effects.none};
-         default: return _U.eq(_p0._0,true) ? {ctor: "_Tuple2",_0: model,_1: getListings(testUrl)} : {ctor: "_Tuple2",_0: model,_1: $Effects.none};}
+         default: return _U.eq(_p0._0,true) && _U.eq(model.listings.view,$Listings.ThumbnailView) ? {ctor: "_Tuple2"
+                                                                                                    ,_0: model
+                                                                                                    ,_1: getListings(testUrl)} : {ctor: "_Tuple2"
+                                                                                                                                 ,_0: model
+                                                                                                                                 ,_1: $Effects.none};}
    });
    var ListingsAction = function (a) {    return {ctor: "ListingsAction",_0: a};};
    var view = F3(function (_p1,address,model) {
