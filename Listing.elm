@@ -65,13 +65,13 @@ type alias Context =
   }
 (=>) = (,)
 
-view : Int -> Context -> Model -> Html
-view w context listing =
+view : Context -> Model -> Html
+view context listing =
   let 
       (div_css, button) = 
         case listing.view of
-          Thumbnail -> (thumbnail_css w listing, thumbnail_button_view context)
-          Fullpage -> (fullpage_css w listing, fullpage_button_view context)
+          Thumbnail -> (thumbnail_css listing, thumbnail_button_view context)
+          Fullpage -> (fullpage_css listing, fullpage_button_view context)
           Hidden -> (hidden_css, thumbnail_button_view context)
   in
     div [  div_css.container ]
@@ -79,7 +79,7 @@ view w context listing =
               ]
               [ button
               , div [ div_css.photos ]
-                    [ ImageViewer.view (w//2) (Signal.forwardTo context.actions ImageActions) listing.photos ]
+                    [ ImageViewer.view (Signal.forwardTo context.actions ImageActions) listing.photos ]
               , h2 [ div_css.title ] 
                    [ text listing.title ]
               , div [ div_css.price ] 
@@ -139,20 +139,20 @@ hidden_div =
   ["display" => "none" ]
 
 -- Thumbnail CSS
-thumbnail_css : Int -> Model -> Listing_CSS
-thumbnail_css w listing =
-  { container = style (thumbnail_container w)
+thumbnail_css : Model -> Listing_CSS
+thumbnail_css listing =
+  { container = style thumbnail_container
   , inner_container = style thumbnail_inner_container
   , button = style thumbnail_button
   , title = style thumbnail_title_css
   , price = style thumbnail_price_css
-  , photos = style (thumbnail_img_css w listing.photos)
+  , photos = style (thumbnail_img_css listing.photos)
   , categories = style thumbnail_categories_css
   , body = style hidden_div
   }
 
-thumbnail_container : Int -> List (String, String)
-thumbnail_container w =
+thumbnail_container : List (String, String)
+thumbnail_container =
   [ "display" => "table-cell"
   , "width" => "25%"
   , "padding" => "5px"
@@ -199,8 +199,8 @@ thumbnail_categories_css =
 --     , "position" => "relative"
 --     ]
 
-thumbnail_img_css : Int -> Photos -> List (String, String) 
-thumbnail_img_css w photos =
+thumbnail_img_css : Photos -> List (String, String) 
+thumbnail_img_css photos =
   [ 
    "width" => "100%"
   , "border-radius" => "5px 5px 0px 0px"
@@ -240,23 +240,24 @@ thumbnailImg photos =
 --   ]
 
 -- Fullpage CSS
-fullpage_css : Int -> Model -> Listing_CSS
-fullpage_css w listing =
-  { container = style (fullpage_container w)
+fullpage_css : Model -> Listing_CSS
+fullpage_css listing =
+  { container = style fullpage_container
   , inner_container = style fullpage_inner_container
   , title = style fullpage_title_css
   , price = style fullpage_price_css
-  , photos = style (fullpage_img_css w listing.photos)
+  , photos = style (fullpage_img_css listing.photos)
   , categories = style fullpage_categories_css
   , body = style fullpage_body_css 
   , button = style fullpage_button
   }
 
-fullpage_container : Int -> List (String, String)
-fullpage_container w =
-  [ "width" => toPixel w 
+fullpage_container : List (String, String)
+fullpage_container =
+  [ "width" => "100%" -- LOOK HERE 
   , "padding" => "20px"
   , "border" => "1px solid"
+  , "margin" => "0 auto"
   ]
 
 fullpage_inner_container : List (String, String)
@@ -281,11 +282,11 @@ fullpage_price_css =
   , "font-weight" => "700"
   ]
 
-fullpage_img_css : Int -> Photos -> List (String, String)
-fullpage_img_css w photos =
+fullpage_img_css : Photos -> List (String, String)
+fullpage_img_css photos =
   [ "border" => "2px solid"
-  , "width" => toPixel (w//2)
-  , "height" => toPixel (w//2)
+  , "width" => "300px" -- LOOK HERE
+  , "height" => "300px" -- LOOK HERE
   , "margin" => "auto"
   ]
 

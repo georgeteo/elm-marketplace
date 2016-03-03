@@ -107,11 +107,12 @@ type alias Context =
   , searchtrigger : Signal.Address ()
   , category : Signal.Address Action }
 
-view : (Int, Int) -> Context -> Meta -> Html
-view (w, h) context model =
+view : Context -> Meta -> Html
+view context model =
   let
     logo_width = 77
     name_width = 200
+    height = 100
     logo_and_name_width = logo_width + name_width 
     search_context = Search.Context
                      (Signal.forwardTo context.search SearchAction)
@@ -119,6 +120,6 @@ view (w, h) context model =
   in
     div [ style container_css ]
         [ CategoryBar.view (Signal.forwardTo context.category CategoryAction) model.category
-        , div_logo_name (logo_width, name_width, h)
-        , Search.view (logo_and_name_width, h) search_context model.search
+        , div_logo_name (logo_width, name_width, height)
+        , Search.view (logo_and_name_width, height) search_context model.search
         ]

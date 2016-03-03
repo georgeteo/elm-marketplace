@@ -87,34 +87,31 @@ listingMatchCategories (category, _) listing =
 
 
 -- View
-view : (Int, Int) -> Address Action -> Model -> Html
-view (sidebar, content) address model =
+view : Address Action -> Model -> Html
+view address model =
   let
     debug = Debug.log "View type" model.view 
-    content_w = case model.view of
-                  ThumbnailView -> floor ((toFloat(content) - (8*6)) / 4)
-                  FullpageView -> content
     (container_css, listings_content) =
       case model.view of
-        ThumbnailView -> ( [style (listings_container_css sidebar)]
-                         , List.foldr (makeTableRows content_w address) [[]] model.listings
+        ThumbnailView -> ( [style listings_container_css ]
+                         , List.foldr (makeTableRows address) [[]] model.listings
                             |> List.map row_div
                          )
-        FullpageView -> ( [ style(fullpage_container_css sidebar)]
-                        , List.map (view_listing content address) model.listings
+        FullpageView -> ( [ style fullpage_container_css]
+                        , List.map (view_listing address) model.listings
                         )
   in
     div container_css listings_content
 
-view_listing : Int -> Address Action -> Listing.Model -> Html
-view_listing content_w address listing =
+view_listing : Address Action -> Listing.Model -> Html
+view_listing address listing =
   let 
     context = Listing.Context 
              (forwardTo address (ListingAction listing.key))
              (forwardTo address (always (ThumbnailAction)))
              (forwardTo address (always (FullpageAction listing.key)))
   in
-    Listing.view content_w context listing
+    Listing.view context listing
 
   -- CSS
 toPixel : number -> String
@@ -130,8 +127,8 @@ toPixel x = (toString x) ++ "px"
 --   , "text-align" => "center"
 --   ]
 
-listings_container_css : Int -> List (String, String)
-listings_container_css sidebar_w =
+listings_container_css : List (String, String)
+listings_container_css =
   [ "display" => "table"
   , "border-collapse" => "separate"
   , "border-spacing" => "5px 5px"
@@ -148,10 +145,10 @@ row_div cols =
   div [ style listings_row_css ]
       cols
 
-makeTableRows : Int -> Address Action -> Listing.Model -> List (List Html) -> List (List Html)
-makeTableRows content_w address listing acc =
+makeTableRows : Address Action -> Listing.Model -> List (List Html) -> List (List Html)
+makeTableRows address listing acc =
   let
-    new_listing_html = view_listing content_w address listing
+    new_listing_html = view_listing address listing
     (acc_head, accs) = case acc of
                         [] -> Debug.crash "Oh no! Acc was not initialized correctly in foldr"
                         x::xs -> (x, xs)
@@ -160,7 +157,7 @@ makeTableRows content_w address listing acc =
   in
     List.append new_head accs
 
-fullpage_container_css : Int -> List (String, String)
-fullpage_container_css sidear = 
-  [
+fullpage_container_css : List (String, String)
+fullpage_container_css = 
+  [ 
   ]

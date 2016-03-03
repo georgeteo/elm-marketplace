@@ -33,9 +33,9 @@ update action photos =
               p'::ps' -> List.reverse (ps' ++ [p']) 
 
 -- View
-image_view : (Int, Int) -> String -> Address Action -> Html
-image_view (w, h) p address =
-  div [ style (image_CSS (w, h) p) ]
+image_view : String -> Address Action -> Html
+image_view p address =
+  div [ style (image_CSS p) ]
       [ clicker_view Left address 
       , clicker_view Right address
       ]
@@ -52,12 +52,11 @@ clicker_view action address =
                  ]
                  []
 
-view : Int -> Address Action -> Photos -> Html
-view w address photos =
-  let debug = Debug.log "Image Size" w in
+view : Address Action -> Photos -> Html
+view address photos =
   case photos of
-    [] -> image_view (w, w) "http://www.oceanofweb.com/wp-content/themes/OOW/images/default-thumb.gif" address
-    p::ps -> image_view (w, w) p.large address
+    [] -> image_view "http://www.oceanofweb.com/wp-content/themes/OOW/images/default-thumb.gif" address
+    p::ps -> image_view p.large address
 
 
 -- CSS
@@ -66,8 +65,8 @@ view w address photos =
 toPixel : number -> String
 toPixel x = (toString x) ++ "px"
 
-image_CSS : (Int, Int) -> String -> List (String, String)
-image_CSS (w, h) p =
+image_CSS : String -> List (String, String)
+image_CSS p =
   [ "background-image" => ("url(" ++ p ++ ")")
   , "width" => "100%"
   , "height" => "0"

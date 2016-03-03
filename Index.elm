@@ -73,23 +73,18 @@ appendListings old_listings new_listings =
 -- View
 (=>) = (,)
 
-view : (Int, Int) -> Address Action -> Model -> Html
-view (w,h) address model =
+view : Address Action -> Model -> Html
+view address model =
   let
-    sidebars = 0.05 * toFloat w
-    sidebar = sidebars / 2
-    content = toFloat w - sidebars
     header_context = Header.Context (forwardTo address HeaderAction)
                                     (forwardTo address SearchEnter)
                                     (forwardTo address CategoryAction)
   in
   div [ style [ "background-color" => "#f5f5f5"
               , "font-family" => "sans-serif"]]
-      [ Header.view (w,100)
-                    header_context
+      [ Header.view header_context
                     model.meta
-      , Listings.view (floor sidebar, floor content)
-                      (forwardTo address ListingsAction)
+      , Listings.view (forwardTo address ListingsAction)
                       model.listings
       ]
 

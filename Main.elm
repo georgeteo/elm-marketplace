@@ -10,8 +10,7 @@ app =
   start 
     { init = Index.init
     , update = Index.update
-    , view = Index.view (1260, 780)
-  --  , inputs = []
+    , view = Index.view
     , inputs = [infiniteScroll]
     }
 

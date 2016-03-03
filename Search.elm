@@ -51,8 +51,8 @@ type alias Context =
   , enter : Signal.Address () }
 
 view : (Int, Int) -> Context -> Query -> Html
-view (w, h) context query =
-  div [ style (search_div_css (w, h)) ]
+view (logo_w, h) context query =
+  div [ style (search_div_css (logo_w, h)) ]
       [ input [ placeholder "Search"
               , value query
               , onEnter context.enter ()
