@@ -95,9 +95,15 @@ view (sidebar, content) address model =
                   ThumbnailView -> floor ((toFloat(content) - (8*6)) / 4)
                   FullpageView -> content
   in
+<<<<<<< HEAD
     div [ style (listings_container_css sidebar) ]
         (List.foldr (makeTableRows content_w address) [[]] model.listings
           |>  List.map row_div)
+=======
+    div [ style (listings_container_css sidebar) 
+        , id "content"]
+        (List.map (view_listing content_w address) model.listings)
+>>>>>>> master
 
 view_listing : Int -> Address Action -> Listing.Model -> Html
 view_listing content_w address listing =
