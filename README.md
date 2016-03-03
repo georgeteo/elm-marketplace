@@ -36,6 +36,7 @@ evancz/virtual-dom
 4. Clean up CSS for fullpage
 4. Add scroll loading animation
 5. Http + infinite scroll -- DONE
+6. "Back" from fullpage to thumbnail remembers place on the screen
 
 #### Stretch Goals
 
