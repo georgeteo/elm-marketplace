@@ -68,37 +68,55 @@ type alias Context =
 view : Int -> Context -> Model -> Html
 view w context listing =
   let 
-      div_css = case listing.view of
-                  Thumbnail -> thumbnail_css w listing
-                  Fullpage -> fullpage_css w listing
-                  Hidden -> hidden_css
+      (div_css, button) = 
+        case listing.view of
+          Thumbnail -> (thumbnail_css w listing, thumbnail_button_view context)
+          Fullpage -> (fullpage_css w listing, fullpage_button_view context)
+          Hidden -> (hidden_css, thumbnail_button_view context)
   in
     div [  div_css.container ]
-        [ div [ style ["padding-left" => "5px", "padding-right" => "5px"] ]
-              [ div [ style [ "border" => "solid" , "height" => "100%"] ]
-                    [ div [ onClick context.fullpage ()
-                          , div_css.container_clicker 
-                          ]
-                          []
-                    , div [ onClick context.thumbnail () 
-                          , div_css.back
-                          ] 
-                          [text "Back"]
-                    , div [ div_css.photos ]
-                          [ ImageViewer.view (w//2) (Signal.forwardTo context.actions ImageActions) listing.photos ]
-                    , h2 [ div_css.title ] 
-                         [ text listing.title ]
-                    , div [ div_css.price ] 
-                          [ toString listing.price |> cons '$' |> text ]
-                    , div [ div_css.categories ]
-                          (categoryList listing.categories)
-                    , div [ div_css.body ]
-                          [ text listing.body ]
-                    ]
+        [ div [ div_css.inner_container
+              ]
+              [ button
+              , div [ div_css.photos ]
+                    [ ImageViewer.view (w//2) (Signal.forwardTo context.actions ImageActions) listing.photos ]
+              , h2 [ div_css.title ] 
+                   [ text listing.title ]
+              , div [ div_css.price ] 
+                    [ toString listing.price |> cons '$' |> text ]
+              , div [ div_css.categories ]
+                    (categoryList listing.categories)
+              , div [ div_css.body ]
+                    [ text listing.body ]
               ]
         ]
 
+thumbnail_button_view : Context -> Html
+thumbnail_button_view context =
+  div [ style thumbnail_button 
+      , onClick context.fullpage () ]
+      []
+
+fullpage_button_view : Context -> Html
+fullpage_button_view context =
+  div [ style fullpage_button 
+      , onClick context.thumbnail () ]
+      [ text "Back" ]
+
 -- CSS
+
+-- Records for CSS for each view type
+type alias Listing_CSS = 
+  { container : Attribute
+  , title : Attribute
+  , price : Attribute
+  , photos : Attribute
+  , categories : Attribute
+  , body : Attribute
+  , button : Attribute
+  , inner_container : Attribute
+  }
+
 
 toPixel : number -> String
 toPixel x = (toString x) ++ "px"
@@ -121,6 +139,42 @@ hidden_div =
   ["display" => "none" ]
 
 -- Thumbnail CSS
+thumbnail_css : Int -> Model -> Listing_CSS
+thumbnail_css w listing =
+  { container = style (thumbnail_container w)
+  , inner_container = style thumbnail_inner_container
+  , button = style thumbnail_button
+  , title = style thumbnail_title_css
+  , price = style thumbnail_price_css
+  , photos = style (thumbnail_img_css w listing.photos)
+  , categories = style thumbnail_categories_css
+  , body = style hidden_div
+  }
+
+thumbnail_container : Int -> List (String, String)
+thumbnail_container w =
+  [ "display" => "table-cell"
+  , "width" => "25%"
+  , "padding" => "5px"
+  ]
+
+thumbnail_inner_container : List (String, String)
+thumbnail_inner_container =
+  ["position" => "relative"
+  , "border" => "1px solid #ddd"
+  , "overflow" => "auto"
+  , "height" => "100%"
+  , "background-color" => "#fff"
+  , "border-radius" => "5px 5px 0px 0px"
+  ]
+
+thumbnail_button : List (String, String)
+thumbnail_button =
+  [ "position" => "absolute"
+  , "height" => "100%"
+  , "width" => "100%"
+  ]
+
 thumbnail_categories_css : List (String, String)
 thumbnail_categories_css =
   [ "overflow" => "auto"
@@ -144,12 +198,6 @@ thumbnail_categories_css =
 --     , "background-color" => "#fff"
 --     , "position" => "relative"
 --     ]
-
-thumbnail_div_css : Int -> List (String, String)
-thumbnail_div_css w =
-  [ "display" => "table-cell"
-  , "width" => "25%"
-  ]
 
 thumbnail_img_css : Int -> Photos -> List (String, String) 
 thumbnail_img_css w photos =
@@ -183,20 +231,38 @@ thumbnailImg photos =
     [] -> "url(http://www.oceanofweb.com/wp-content/themes/OOW/images/default-thumb.gif)"
     p::photoss -> "url(" ++ (p.small) ++ ")"
 
-thumbnail_clicker_css : Int -> List (String, String)
-thumbnail_clicker_css w =
-  [ "position" => "absolute"
-  ,  "width" => "100%"
-  , "height" => "100%"
-  , "opacity" => "0"
-  ]
+-- thumbnail_clicker_css : Int -> List (String, String)
+-- thumbnail_clicker_css w =
+--   ["position" => "relative"
+--   , "border" => "solid"
+--   , "overflow" => "auto"
+--   , "height" => "100%"
+--   ]
 
 -- Fullpage CSS
-fullpage_div_css : Int -> List (String, String)
-fullpage_div_css w =
+fullpage_css : Int -> Model -> Listing_CSS
+fullpage_css w listing =
+  { container = style (fullpage_container w)
+  , inner_container = style fullpage_inner_container
+  , title = style fullpage_title_css
+  , price = style fullpage_price_css
+  , photos = style (fullpage_img_css w listing.photos)
+  , categories = style fullpage_categories_css
+  , body = style fullpage_body_css 
+  , button = style fullpage_button
+  }
+
+fullpage_container : Int -> List (String, String)
+fullpage_container w =
   [ "width" => toPixel w 
   , "padding" => "20px"
   , "border" => "1px solid"
+  ]
+
+fullpage_inner_container : List (String, String)
+fullpage_inner_container =
+  [ "width" => "100%"
+  , "height" => "100%"
   ]
 
 fullpage_title_css : List (String, String)
@@ -234,60 +300,24 @@ fullpage_body_css =
 
   ]
 
-fullpage_back_css : List (String, String)
-fullpage_back_css =
+fullpage_button : List (String, String)
+fullpage_button =
   [ "height" => "10px"
   , "width" => "100%"
   , "border" => "1px dotted"
   ]
 
-
--- Records for CSS for each view type
-type alias Listing_CSS = 
-  { container : Attribute
-  , title : Attribute
-  , price : Attribute
-  , photos : Attribute
-  , categories : Attribute
-  , body : Attribute
-  , back : Attribute
-  , container_clicker : Attribute
-  }
-
-thumbnail_css : Int -> Model -> Listing_CSS
-thumbnail_css w listing =
-  { container = style (thumbnail_div_css w)
-  , title = style thumbnail_title_css
-  , price = style thumbnail_price_css
-  , photos = style (thumbnail_img_css w listing.photos)
-  , categories = style thumbnail_categories_css
-  , body = style hidden_div 
-  , back = style hidden_div
-  , container_clicker = style (thumbnail_clicker_css w)
-  }
-
-fullpage_css : Int -> Model -> Listing_CSS
-fullpage_css w listing =
-  { container = style (fullpage_div_css w)
-  , title = style fullpage_title_css
-  , price = style fullpage_price_css
-  , photos = style (fullpage_img_css w listing.photos)
-  , categories = style fullpage_categories_css
-  , body = style fullpage_body_css 
-  , back = style fullpage_back_css
-  , container_clicker = style hidden_div
-  }
-
+-- Hidden CSS
 hidden_css : Listing_CSS
 hidden_css =
   { container = style hidden_div
+  , inner_container = style hidden_div
+  , button = style hidden_div
   , title = style hidden_div
   , price = style hidden_div
   , photos = style hidden_div
   , categories = style hidden_div
   , body = style hidden_div
-  , back = style hidden_div
-  , container_clicker = style hidden_div
   }
 
 

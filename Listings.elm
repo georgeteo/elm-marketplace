@@ -42,6 +42,7 @@ type Action =
 
 update : Action -> Model -> Model
 update action model =
+  let a = Debug.log "Action: " action in
   case action of
     ThumbnailAction -> { model | view = ThumbnailView
                        , listings = List.map (\listing -> {listing | view = Listing.Thumbnail }) model.listings
@@ -51,7 +52,7 @@ update action model =
                                                                       then {listing | view = Listing.Fullpage}
                                                                       else {listing | view = Listing.Hidden}
                                                          ) model.listings
-                           }
+                           } 
     ListingAction uuid listing_action -> { model | listings = List.map
                                                               (\listing -> if listing.key == uuid
                                                                            then Listing.update listing_action listing
@@ -89,6 +90,7 @@ listingMatchCategories (category, _) listing =
 view : (Int, Int) -> Address Action -> Model -> Html
 view (sidebar, content) address model =
   let
+    debug = Debug.log "View type" model.view 
     content_w = case model.view of
                   ThumbnailView -> floor ((toFloat(content) - (8*6)) / 4)
                   FullpageView -> content
@@ -125,13 +127,14 @@ listings_container_css : Int -> List (String, String)
 listings_container_css sidebar_w =
   [ "display" => "table"
   , "border-collapse" => "separate"
-  , "border-spacing" => "0 0"
+  , "border-spacing" => "5px 5px"
+  , "margin" => "0 5%"
   ]
 
 listings_row_css : List (String, String)
 listings_row_css =
   [ "display" => "table-row" 
-  , "margin-bottom" => "10px"]
+  ]
 
 row_div : List Html -> Html
 row_div cols =

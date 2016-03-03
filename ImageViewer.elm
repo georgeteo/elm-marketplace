@@ -54,8 +54,9 @@ clicker_view action address =
 
 view : Int -> Address Action -> Photos -> Html
 view w address photos =
+  let debug = Debug.log "Image Size" w in
   case photos of
-    [] -> div [] [text "Nothing to display" ]
+    [] -> image_view (w, w) "http://www.oceanofweb.com/wp-content/themes/OOW/images/default-thumb.gif" address
     p::ps -> image_view (w, w) p.large address
 
 
