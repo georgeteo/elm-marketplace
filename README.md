@@ -28,6 +28,7 @@ evancz/virtual-dom
 
 1. Index page wonky when search happens
 2. Category bar highlight will return to thumbnail view
+3. Add icons for left and right images if necessary
 
 #### Non-critical
 
