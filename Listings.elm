@@ -93,11 +93,13 @@ view address model =
     debug = Debug.log "View type" model.view 
     (container_css, listings_content) =
       case model.view of
-        ThumbnailView -> ( [style listings_container_css ]
+        ThumbnailView -> ( [ style listings_container_css 
+                           , id "thumbnail-container"]
                          , List.foldr (makeTableRows address) [[]] model.listings
                             |> List.map row_div
                          )
-        FullpageView -> ( [ style fullpage_container_css]
+        FullpageView -> ( [ style fullpage_container_css
+                          , id "fullpage-container"]
                         , List.map (view_listing address) model.listings
                         )
   in
@@ -133,6 +135,8 @@ listings_container_css =
   , "border-collapse" => "separate"
   , "border-spacing" => "5px 5px"
   , "margin" => "0 5%"
+  , "background-color" => "#f5f5f5"
+  , "text-align" => "center"
   ]
 
 listings_row_css : List (String, String)
@@ -159,5 +163,5 @@ makeTableRows address listing acc =
 
 fullpage_container_css : List (String, String)
 fullpage_container_css = 
-  [ 
+  [ "margin" => "0 10%"
   ]

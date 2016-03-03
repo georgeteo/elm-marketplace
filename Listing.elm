@@ -99,7 +99,7 @@ thumbnail_button_view context =
 
 fullpage_button_view : Context -> Html
 fullpage_button_view context =
-  div [ style fullpage_button 
+  button [ style fullpage_button 
       , onClick context.thumbnail () ]
       [ text "Back" ]
 
@@ -146,7 +146,7 @@ thumbnail_css listing =
   , button = style thumbnail_button
   , title = style thumbnail_title_css
   , price = style thumbnail_price_css
-  , photos = style (thumbnail_img_css listing.photos)
+  , photos = style thumbnail_img_css
   , categories = style thumbnail_categories_css
   , body = style hidden_div
   }
@@ -184,23 +184,8 @@ thumbnail_categories_css =
   , "text-align" => "left"
   ]
 
--- thumbnail_div_css : Int -> List (String, String)
--- thumbnail_div_css w =
---     [ "display" => "inline-block"
---     , "height" => "100%"
---     , "width" => toPixel w
---     , "border" => "1px solid #ddd"
---     , "border-radius" => "5px"
---     , "margin-bottom" => "10px"
---     , "margin-left" => "5px"
---     , "margin-right" => "5px"
---     , "vertical-align" => "top"
---     , "background-color" => "#fff"
---     , "position" => "relative"
---     ]
-
-thumbnail_img_css : Photos -> List (String, String) 
-thumbnail_img_css photos =
+thumbnail_img_css : List (String, String) 
+thumbnail_img_css =
   [ 
    "width" => "100%"
   , "border-radius" => "5px 5px 0px 0px"
@@ -225,20 +210,6 @@ thumbnail_price_css =
   , "font-weight" => "400"
   ]
 
-thumbnailImg : Photos -> String
-thumbnailImg photos =
-  case photos of
-    [] -> "url(http://www.oceanofweb.com/wp-content/themes/OOW/images/default-thumb.gif)"
-    p::photoss -> "url(" ++ (p.small) ++ ")"
-
--- thumbnail_clicker_css : Int -> List (String, String)
--- thumbnail_clicker_css w =
---   ["position" => "relative"
---   , "border" => "solid"
---   , "overflow" => "auto"
---   , "height" => "100%"
---   ]
-
 -- Fullpage CSS
 fullpage_css : Model -> Listing_CSS
 fullpage_css listing =
@@ -246,7 +217,7 @@ fullpage_css listing =
   , inner_container = style fullpage_inner_container
   , title = style fullpage_title_css
   , price = style fullpage_price_css
-  , photos = style (fullpage_img_css listing.photos)
+  , photos = style fullpage_img_css
   , categories = style fullpage_categories_css
   , body = style fullpage_body_css 
   , button = style fullpage_button
@@ -254,9 +225,7 @@ fullpage_css listing =
 
 fullpage_container : List (String, String)
 fullpage_container =
-  [ "width" => "100%" -- LOOK HERE 
-  , "padding" => "20px"
-  , "border" => "1px solid"
+  [ "padding" => "20px 40px"
   , "margin" => "0 auto"
   ]
 
@@ -269,6 +238,7 @@ fullpage_inner_container =
 fullpage_title_css : List (String, String)
 fullpage_title_css =
   [ "text-align" => "center"
+  , "font-size" => "30px"
   ]
 
 fullpage_price_css : List (String, String)
@@ -280,32 +250,38 @@ fullpage_price_css =
   , "margin-right" => "20px"
   , "margin-left" => "10px"
   , "font-weight" => "700"
+  , "font-size" => "20px"
   ]
 
-fullpage_img_css : Photos -> List (String, String)
-fullpage_img_css photos =
-  [ "border" => "2px solid"
-  , "width" => "300px" -- LOOK HERE
-  , "height" => "300px" -- LOOK HERE
+fullpage_img_css : List (String, String)
+fullpage_img_css =
+  [ "width" => "500px" -- LOOK HERE
+  , "height" => "500px" -- LOOK HERE
   , "margin" => "auto"
+  , "border" => "1px solid #ddd"
   ]
 
 fullpage_categories_css : List (String, String)
 fullpage_categories_css =
   [ "margin-left" => "20px"
+  , "font-size" => "20px"
   ]
 
 fullpage_body_css : List (String, String)
 fullpage_body_css =
   [ "margin" => "20px 20px"
-
   ]
 
 fullpage_button : List (String, String)
 fullpage_button =
-  [ "height" => "10px"
-  , "width" => "100%"
-  , "border" => "1px dotted"
+  [ "height" => "100%"
+  , "border" => "none"
+  , "color" => "white"
+  , "padding" => "10px 20px"
+  , "text-align" => "center"
+  , "font-size" => "16px"
+  , "background-color" => "#800000"
+  , "border-radius" => "5px"
   ]
 
 -- Hidden CSS

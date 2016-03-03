@@ -81,7 +81,8 @@ view address model =
                                     (forwardTo address CategoryAction)
   in
   div [ style [ "background-color" => "#f5f5f5"
-              , "font-family" => "sans-serif"]]
+              , "font-family" => "sans-serif"]
+      , id "index-root"]
       [ Header.view header_context
                     model.meta
       , Listings.view (forwardTo address ListingsAction)
