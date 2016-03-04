@@ -11423,30 +11423,41 @@ Elm.ImageViewer.make = function (_elm) {
                      ,A2(_op["=>"],"background-repeat","no-repeat")
                      ,A2(_op["=>"],"background-size","cover")]);
    };
-   var clicker_CSS = function (action) {
+   var clicker_CSS = F2(function (img,action) {
       var _p0 = action;
       if (_p0.ctor === "Left") {
             return _U.list([A2(_op["=>"],"position","relative")
                            ,A2(_op["=>"],"width","50px")
                            ,A2(_op["=>"],"opacity","100")
                            ,A2(_op["=>"],"float","left")
-                           ,A2(_op["=>"],"padding-bottom","100%")]);
+                           ,A2(_op["=>"],"padding-bottom","100%")
+                           ,A2(_op["=>"],"background-image",A2($Basics._op["++"],"url(",A2($Basics._op["++"],img,")")))
+                           ,A2(_op["=>"],"background-position","center")
+                           ,A2(_op["=>"],"background-repeat","no-repeat")]);
          } else {
             return _U.list([A2(_op["=>"],"position","relative")
                            ,A2(_op["=>"],"width","50px")
                            ,A2(_op["=>"],"padding-bottom","100%")
                            ,A2(_op["=>"],"opacity","100")
-                           ,A2(_op["=>"],"float","right")]);
+                           ,A2(_op["=>"],"float","right")
+                           ,A2(_op["=>"],"background-image",A2($Basics._op["++"],"url(",A2($Basics._op["++"],img,")")))
+                           ,A2(_op["=>"],"background-position","center")
+                           ,A2(_op["=>"],"background-repeat","no-repeat")]);
          }
-   };
+   });
    var clicker_view = F2(function (action,address) {
       var _p1 = action;
       if (_p1.ctor === "Left") {
-            return A2($Html.div,_U.list([$Html$Attributes.style(clicker_CSS(action)),A2($Html$Events.onClick,address,action)]),_U.list([]));
+            return A2($Html.div,
+            _U.list([$Html$Attributes.style(A2(clicker_CSS,"assets/left.png",action)),A2($Html$Events.onClick,address,action)]),
+            _U.list([]));
          } else {
-            return A2($Html.div,_U.list([$Html$Attributes.style(clicker_CSS(action)),A2($Html$Events.onClick,address,action)]),_U.list([]));
+            return A2($Html.div,
+            _U.list([$Html$Attributes.style(A2(clicker_CSS,"assets/right.png",action)),A2($Html$Events.onClick,address,action)]),
+            _U.list([]));
          }
    });
+   var image_view = F2(function (p,buttons) {    return A2($Html.div,_U.list([$Html$Attributes.style(image_CSS(p))]),buttons);});
    var update = F2(function (action,photos) {
       var _p2 = photos;
       if (_p2.ctor === "[]") {
@@ -11468,15 +11479,17 @@ Elm.ImageViewer.make = function (_elm) {
    });
    var Right = {ctor: "Right"};
    var Left = {ctor: "Left"};
-   var image_view = F2(function (p,address) {
-      return A2($Html.div,_U.list([$Html$Attributes.style(image_CSS(p))]),_U.list([A2(clicker_view,Left,address),A2(clicker_view,Right,address)]));
-   });
    var view = F2(function (address,photos) {
+      var clickers = _U.list([A2(clicker_view,Left,address),A2(clicker_view,Right,address)]);
       var _p5 = photos;
       if (_p5.ctor === "[]") {
-            return A2(image_view,"http://www.oceanofweb.com/wp-content/themes/OOW/images/default-thumb.gif",address);
+            return A2(image_view,"http://www.oceanofweb.com/wp-content/themes/OOW/images/default-thumb.gif",_U.list([]));
          } else {
-            return A2(image_view,_p5._0.large,address);
+            if (_p5._1.ctor === "[]") {
+                  return A2(image_view,_p5._0.small,_U.list([]));
+               } else {
+                  return A2(image_view,_p5._0.small,clickers);
+               }
          }
    });
    var Photo = F2(function (a,b) {    return {large: a,small: b};});

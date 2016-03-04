@@ -33,30 +33,32 @@ update action photos =
               p'::ps' -> List.reverse (ps' ++ [p']) 
 
 -- View
-image_view : String -> Address Action -> Html
-image_view p address =
+image_view : String -> List Html -> Html
+image_view p buttons =
   div [ style (image_CSS p) ]
-      [ clicker_view Left address 
-      , clicker_view Right address
-      ]
+      buttons
 
 clicker_view : Action -> Address Action -> Html
 clicker_view action address =
   case action of
-    Left -> div [ style (clicker_CSS action)
+    Left -> div [ style (clicker_CSS "assets/left.png" action)
                 , onClick address action
                 ]
                 []
-    Right -> div [ style (clicker_CSS action)
+    Right -> div [ style (clicker_CSS "assets/right.png" action)
                  , onClick address action
                  ]
                  []
 
 view : Address Action -> Photos -> Html
 view address photos =
+  let
+    clickers = [clicker_view Left address, clicker_view Right address]
+  in
   case photos of
-    [] -> image_view "http://www.oceanofweb.com/wp-content/themes/OOW/images/default-thumb.gif" address
-    p::ps -> image_view p.large address
+    [] -> image_view "http://www.oceanofweb.com/wp-content/themes/OOW/images/default-thumb.gif" []
+    [p] -> image_view p.small []
+    p::ps -> image_view p.small clickers
 
 
 -- CSS
@@ -75,19 +77,25 @@ image_CSS p =
   , "background-size" => "cover"
   ]
 
-clicker_CSS : Action -> List (String, String)
-clicker_CSS action =
+clicker_CSS : String -> Action -> List (String, String)
+clicker_CSS img action =
   case action of
     Left -> [ "position" => "relative"
             , "width" => "50px"
-            , "opacity" => "100"
+             , "opacity" => "100"
             , "float" => "left"
             , "padding-bottom" => "100%"
+            , "background-image" => ("url(" ++ img ++ ")")
+            , "background-position" => "center"
+            , "background-repeat" => "no-repeat"
             ]
     Right -> [ "position" => "relative"
              , "width" => "50px"
              , "padding-bottom" => "100%"
              , "opacity" => "100"
              , "float" => "right"
+             , "background-image" => ("url(" ++ img ++ ")")
+             , "background-position" => "center"
+             , "background-repeat" => "no-repeat"
              ]
 
