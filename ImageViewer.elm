@@ -88,6 +88,7 @@ clicker_CSS img action =
             , "background-image" => ("url(" ++ img ++ ")")
             , "background-position" => "center"
             , "background-repeat" => "no-repeat"
+            , "cursor" => "pointer"
             ]
     Right -> [ "position" => "relative"
              , "width" => "50px"
@@ -97,5 +98,6 @@ clicker_CSS img action =
              , "background-image" => ("url(" ++ img ++ ")")
              , "background-position" => "center"
              , "background-repeat" => "no-repeat"
+             , "cursor" => "pointer"
              ]
 

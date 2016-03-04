@@ -26,18 +26,18 @@ evancz/virtual-dom
 
 #### Critical
 
-1. Index page wonky when search happens -- HALF (css issues, but filter is correct)
+1. Index page wonky when search happens -- DONE
 2. Category bar highlight will return to thumbnail view
 3. Add icons for left and right images if necessary -- DONE
 4. Search empty returns to homepage -- DONE
 5. Click logo returns to homepage -- DONE
-6. Mouse pointer icon from I to < on logo
+6. Mouse pointer icon from I to < on logo -- DONE
 
 #### Non-critical
 
 1. Search -- DONE
 2. Category -- DONE
-4. Clean up CSS for fullpage
+4. Clean up CSS for fullpage -- DONE
 4. Add scroll loading animation
 5. Http + infinite scroll -- DONE
 6. "Back" from fullpage to thumbnail remembers place on the screen

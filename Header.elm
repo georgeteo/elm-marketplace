@@ -51,6 +51,7 @@ logo_name_css (w, h) =
   [ "height" => toPixel h
   , "width" => toPixel w
   , "float" => "left"
+  , "cursor" => "pointer"
   ]
 
 logo_css : Int -> List (String, String)

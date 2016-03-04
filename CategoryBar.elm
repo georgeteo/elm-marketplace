@@ -84,6 +84,7 @@ individual_category_css =
   [ "display" => "inline-block"
   , "padding" => "5px"
   , "min-width" => "calc(7.5% - 10px)"
+  , "cursor" => "pointer"
   ]
 
 left_tab_css : List (String, String)

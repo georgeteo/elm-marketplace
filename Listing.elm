@@ -173,6 +173,7 @@ thumbnail_button =
   [ "position" => "absolute"
   , "height" => "100%"
   , "width" => "100%"
+  , "cursor" => "pointer"
   ]
 
 thumbnail_categories_css : List (String, String)
@@ -282,6 +283,7 @@ fullpage_button =
   , "font-size" => "16px"
   , "background-color" => "#800000"
   , "border-radius" => "5px"
+  , "cursor" => "pointer"
   ]
 
 -- Hidden CSS

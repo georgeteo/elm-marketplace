@@ -98,12 +98,19 @@ view address model =
     debug = Debug.log "View type" model.view 
     (container_css, listings_content) =
       case model.view of
-        ThumbnailView -> ( [ style listings_container_css 
-                           , id "thumbnail-container"]
-                         , List.filter (\l -> l.view == Listing.Thumbnail) model.listings
-                            |> List.foldr (makeTableRows address) [[]]
-                            |> List.map row_div
-                         )
+        ThumbnailView -> 
+          let 
+            filtered_listings = List.filter(\l -> l.view == Listing.Thumbnail) model.listings 
+            number_of_listings = List.length filtered_listings
+            one_listing_hack = if number_of_listings < 4
+                                then [("width", (toString (number_of_listings * 25)) ++ "%")]
+                                else []
+          in
+            ([ style (List.append listings_container_css one_listing_hack )
+              , id "thumbnail-container"]
+              , List.foldr (makeTableRows address) [[]] filtered_listings
+                 |> List.map row_div
+            )
         FullpageView -> ( [ style fullpage_container_css
                           , id "fullpage-container"]
                         , List.map (view_listing address) model.listings

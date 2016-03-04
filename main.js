@@ -11114,7 +11114,10 @@ Elm.CategoryBar.make = function (_elm) {
    _op["=>"] = F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};});
    var on_css = _U.list([A2(_op["=>"],"background-color","#800000"),A2(_op["=>"],"color","#fff")]);
    var off_css = _U.list([A2(_op["=>"],"background-color","#fff")]);
-   var individual_category_css = _U.list([A2(_op["=>"],"display","inline-block"),A2(_op["=>"],"padding","5px"),A2(_op["=>"],"min-width","calc(7.5% - 10px)")]);
+   var individual_category_css = _U.list([A2(_op["=>"],"display","inline-block")
+                                         ,A2(_op["=>"],"padding","5px")
+                                         ,A2(_op["=>"],"min-width","calc(7.5% - 10px)")
+                                         ,A2(_op["=>"],"cursor","pointer")]);
    var left_tab_css = _U.list([A2(_op["=>"],"border-top-left-radius","5px")]);
    var right_tab_css = _U.list([A2(_op["=>"],"border-top-right-radius","5px")]);
    var border_bar_css = _U.list([A2(_op["=>"],"text-align","center")]);
@@ -11284,7 +11287,10 @@ Elm.Header.make = function (_elm) {
    var toPixel = function (x) {    return A2($Basics._op["++"],$Basics.toString(x),"px");};
    var logo_name_css = function (_p0) {
       var _p1 = _p0;
-      return _U.list([A2(_op["=>"],"height",toPixel(_p1._1)),A2(_op["=>"],"width",toPixel(_p1._0)),A2(_op["=>"],"float","left")]);
+      return _U.list([A2(_op["=>"],"height",toPixel(_p1._1))
+                     ,A2(_op["=>"],"width",toPixel(_p1._0))
+                     ,A2(_op["=>"],"float","left")
+                     ,A2(_op["=>"],"cursor","pointer")]);
    };
    var logo_css = function (w) {
       return _U.list([A2(_op["=>"],"height","100%")
@@ -11434,7 +11440,8 @@ Elm.ImageViewer.make = function (_elm) {
                            ,A2(_op["=>"],"padding-bottom","100%")
                            ,A2(_op["=>"],"background-image",A2($Basics._op["++"],"url(",A2($Basics._op["++"],img,")")))
                            ,A2(_op["=>"],"background-position","center")
-                           ,A2(_op["=>"],"background-repeat","no-repeat")]);
+                           ,A2(_op["=>"],"background-repeat","no-repeat")
+                           ,A2(_op["=>"],"cursor","pointer")]);
          } else {
             return _U.list([A2(_op["=>"],"position","relative")
                            ,A2(_op["=>"],"width","50px")
@@ -11443,7 +11450,8 @@ Elm.ImageViewer.make = function (_elm) {
                            ,A2(_op["=>"],"float","right")
                            ,A2(_op["=>"],"background-image",A2($Basics._op["++"],"url(",A2($Basics._op["++"],img,")")))
                            ,A2(_op["=>"],"background-position","center")
-                           ,A2(_op["=>"],"background-repeat","no-repeat")]);
+                           ,A2(_op["=>"],"background-repeat","no-repeat")
+                           ,A2(_op["=>"],"cursor","pointer")]);
          }
    });
    var clicker_view = F2(function (action,address) {
@@ -12065,7 +12073,10 @@ Elm.Listing.make = function (_elm) {
                                            ,A2(_op["=>"],"height","100%")
                                            ,A2(_op["=>"],"background-color","#fff")
                                            ,A2(_op["=>"],"border-radius","5px 5px 0px 0px")]);
-   var thumbnail_button = _U.list([A2(_op["=>"],"position","absolute"),A2(_op["=>"],"height","100%"),A2(_op["=>"],"width","100%")]);
+   var thumbnail_button = _U.list([A2(_op["=>"],"position","absolute")
+                                  ,A2(_op["=>"],"height","100%")
+                                  ,A2(_op["=>"],"width","100%")
+                                  ,A2(_op["=>"],"cursor","pointer")]);
    var thumbnail_button_view = function (context) {
       return A2($Html.div,_U.list([$Html$Attributes.style(thumbnail_button),A2($Html$Events.onClick,context.fullpage,{ctor: "_Tuple0"})]),_U.list([]));
    };
@@ -12118,7 +12129,8 @@ Elm.Listing.make = function (_elm) {
                                  ,A2(_op["=>"],"text-align","center")
                                  ,A2(_op["=>"],"font-size","16px")
                                  ,A2(_op["=>"],"background-color","#800000")
-                                 ,A2(_op["=>"],"border-radius","5px")]);
+                                 ,A2(_op["=>"],"border-radius","5px")
+                                 ,A2(_op["=>"],"cursor","button")]);
    var fullpage_button_view = function (context) {
       return A2($Html.button,
       _U.list([$Html$Attributes.style(fullpage_button),A2($Html$Events.onClick,context.thumbnail,{ctor: "_Tuple0"})]),
@@ -12292,7 +12304,7 @@ Elm.Listings.make = function (_elm) {
          var _p4 = acc;
          if (_p4.ctor === "[]") {
                return _U.crashCase("Listings",
-               {start: {line: 153,column: 24},end: {line: 155,column: 41}},
+               {start: {line: 160,column: 24},end: {line: 162,column: 41}},
                _p4)("Oh no! Acc was not initialized correctly in foldr");
             } else {
                return {ctor: "_Tuple2",_0: _p4._0,_1: _p4._1};
@@ -12310,14 +12322,17 @@ Elm.Listings.make = function (_elm) {
       var _p6 = function () {
          var _p7 = model.view;
          if (_p7.ctor === "ThumbnailView") {
+               var filtered_listings = A2($List.filter,function (l) {    return _U.eq(l.view,$Listing.Thumbnail);},model.listings);
+               var number_of_listings = $List.length(filtered_listings);
+               var one_listing_hack = _U.cmp(number_of_listings,4) < 0 ? _U.list([{ctor: "_Tuple2"
+                                                                                  ,_0: "width"
+                                                                                  ,_1: A2($Basics._op["++"],
+                                                                                  $Basics.toString(number_of_listings * 25),
+                                                                                  "%")}]) : _U.list([]);
                return {ctor: "_Tuple2"
-                      ,_0: _U.list([$Html$Attributes.style(listings_container_css),$Html$Attributes.id("thumbnail-container")])
-                      ,_1: A2($List.map,
-                      row_div,
-                      A3($List.foldr,
-                      makeTableRows(address),
-                      _U.list([_U.list([])]),
-                      A2($List.filter,function (l) {    return _U.eq(l.view,$Listing.Thumbnail);},model.listings)))};
+                      ,_0: _U.list([$Html$Attributes.style(A2($List.append,listings_container_css,one_listing_hack))
+                                   ,$Html$Attributes.id("thumbnail-container")])
+                      ,_1: A2($List.map,row_div,A3($List.foldr,makeTableRows(address),_U.list([_U.list([])]),filtered_listings))};
             } else {
                return {ctor: "_Tuple2"
                       ,_0: _U.list([$Html$Attributes.style(fullpage_container_css),$Html$Attributes.id("fullpage-container")])
