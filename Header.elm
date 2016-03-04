@@ -11,11 +11,11 @@ import Signal
 import CategoryBar
 
 -- Model
-type alias Meta =
+type alias Model =
   { search : Query
   , category : CategoryBar.Model }
 
-init : Meta
+init : Model
 init =
   { search = Search.init
   , category = CategoryBar.init }
@@ -25,8 +25,9 @@ type Action =
   SearchAction Search.Action
     | CategoryInput CategoryBar.Action
     | CategoryEnter CategoryBar.Category
+    | Reset
 
-update : Action -> Meta -> Meta
+update : Action -> Model -> Model
 update action model =
   case action of
     SearchAction search_action -> 
@@ -35,6 +36,9 @@ update action model =
       { model | category = CategoryBar.update category_action model.category }
     CategoryEnter c ->
       { model | category = CategoryBar.update (CategoryBar.ToggleCategory c) model.category }
+    Reset -> 
+      { category = CategoryBar.update (CategoryBar.Reset) model.category
+      , search = Search.update Search.Reset model.search }
 
 
 -- Util
@@ -118,7 +122,7 @@ type alias Context =
   , reset : Signal.Address ()
   }
 
-view : Context -> Meta -> Html
+view : Context -> Model -> Html
 view context model =
   let
     logo_width = 77

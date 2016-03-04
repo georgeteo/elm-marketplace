@@ -36,6 +36,7 @@ type Action =
     ToggleCategory Category
       | MouseEnter Category
       | MouseLeave Category
+      | Reset
 
 update : Action -> Model -> Model
 update action (on, hover) =
@@ -44,6 +45,7 @@ update action (on, hover) =
                                else (category, hover)
     MouseEnter category -> (on, category)
     MouseLeave category -> (on, None)
+    Reset -> (None, hover)
 
 --view
 type alias Context =

@@ -11350,9 +11350,9 @@ Elm.Header.make = function (_elm) {
               ,A3($Search.view,{ctor: "_Tuple2",_0: logo_and_name_width,_1: height},search_context,model.search)]));
    });
    var init = {search: $Search.init,category: $CategoryBar.init};
-   var Meta = F2(function (a,b) {    return {search: a,category: b};});
+   var Model = F2(function (a,b) {    return {search: a,category: b};});
    return _elm.Header.values = {_op: _op
-                               ,Meta: Meta
+                               ,Model: Model
                                ,init: init
                                ,SearchAction: SearchAction
                                ,CategoryInput: CategoryInput
@@ -12452,7 +12452,7 @@ Elm.Index.make = function (_elm) {
       return A2($Html.div,
       _U.list([$Html$Attributes.style(_U.list([A2(_op["=>"],"background-color","#f5f5f5"),A2(_op["=>"],"font-family","sans-serif")]))
               ,$Html$Attributes.id("index-root")]),
-      _U.list([A2($Header.view,header_context,model.meta),A2($Listings.view,listings_context,model.listings)]));
+      _U.list([A2($Header.view,header_context,model.header),A2($Listings.view,listings_context,model.listings)]));
    });
    var Scroll = function (a) {    return {ctor: "Scroll",_0: a};};
    var HttpAction = function (a) {    return {ctor: "HttpAction",_0: a};};
@@ -12471,17 +12471,17 @@ Elm.Index.make = function (_elm) {
                                                                                                                                        ,_0: model
                                                                                                                                        ,_1: $Effects.none};
          case "ListingsAction": return {ctor: "_Tuple2",_0: _U.update(model,{listings: A2($Listings.update,_p0._0,model.listings)}),_1: $Effects.none};
-         case "HeaderAction": return {ctor: "_Tuple2",_0: _U.update(model,{meta: A2($Header.update,_p0._0,model.meta)}),_1: $Effects.none};
+         case "HeaderAction": return {ctor: "_Tuple2",_0: _U.update(model,{header: A2($Header.update,_p0._0,model.header)}),_1: $Effects.none};
          case "SearchEnter": return {ctor: "_Tuple2"
                                     ,_0: _U.update(model,{listings: A2($Listings.update,$Listings.SearchEnter(_p0._0),model.listings)})
                                     ,_1: $Effects.none};
-         case "CategoryEnter": var meta$ = A2($Header.update,$Header.CategoryEnter(_p0._0),model.meta);
-           var listings$ = A2($Listings.update,$Listings.CategoryEnter($Basics.fst(meta$.category)),model.listings);
-           return {ctor: "_Tuple2",_0: _U.update(model,{meta: meta$,listings: listings$}),_1: $Effects.none};
+         case "CategoryEnter": var header$ = A2($Header.update,$Header.CategoryEnter(_p0._0),model.header);
+           var listings$ = A2($Listings.update,$Listings.CategoryEnter($Basics.fst(header$.category)),model.listings);
+           return {ctor: "_Tuple2",_0: _U.update(model,{header: header$,listings: listings$}),_1: $Effects.none};
          default: return {ctor: "_Tuple2",_0: _U.update(model,{listings: A2($Listings.update,$Listings.ThumbnailAction,model.listings)}),_1: $Effects.none};}
    });
-   var init = {ctor: "_Tuple2",_0: {listings: $Listings.init(_U.list([])),meta: $Header.init},_1: getListings(testUrl)};
-   var Model = F2(function (a,b) {    return {listings: a,meta: b};});
+   var init = {ctor: "_Tuple2",_0: {listings: $Listings.init(_U.list([])),header: $Header.init},_1: getListings(testUrl)};
+   var Model = F2(function (a,b) {    return {listings: a,header: b};});
    return _elm.Index.values = {_op: _op
                               ,Model: Model
                               ,init: init

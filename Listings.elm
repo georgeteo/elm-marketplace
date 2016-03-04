@@ -30,26 +30,27 @@ init listingsList = {view = ThumbnailView, searchfilter = [], listings = listing
 
 -- Update
 type Action =
-  ThumbnailAction
+  ThumbnailAction (List String) CategoryBar.Category
     | FullpageAction Listing.UUID
     | ListingAction Listing.UUID Listing.Action
     | SearchEnter FilterWords
     | CategoryEnter  CategoryBar.Category
 
+
 update : Action -> Model -> Model
 update action model =
   let a = Debug.log "Action: " action in
   case action of
-    ThumbnailAction -> 
+    ThumbnailAction searchFilter categoryFilter -> 
       { model | view = ThumbnailView
-      , listings = List.map (\listing -> {listing | view = Listing.Thumbnail }) model.listings
+              , listings = List.map (filterListings searchFilter categoryFilter) model.listings
       }
     FullpageAction uuid -> 
       { model | view = FullpageView
               , listings = List.map (\listing -> if listing.key == uuid
                            then {listing | view = Listing.Fullpage}
                            else {listing | view = Listing.Hidden}
-              ) model.listings
+                          ) model.listings
       } 
     ListingAction uuid listing_action -> 
       { model | listings = List.map (\listing -> if listing.key == uuid
@@ -88,10 +89,16 @@ listingMatchCategories category listing =
   else if List.member (toString category |> toLower) listing.categories then True
        else False 
 
+filterListings : FilterWords -> CategoryBar.Category -> Listing.Model -> Listing.Model
+filterListings filter_words category listing =
+  if (listingMatchQuery filter_words listing) && (listingMatchCategories category listing)
+  then {listing | view = Listing.Thumbnail}
+  else {listing | view = Listing.Hidden}
 
 -- View
 type alias Context =
   { listingsAction : Address Action 
+  , thumbnailAction : Address ()
   }
 
 view : Context -> Model -> Html
@@ -125,7 +132,7 @@ view_listing context listing =
   let 
     listing_context = Listing.Context 
              (forwardTo context.listingsAction (ListingAction listing.key))
-             (forwardTo context.listingsAction (always (ThumbnailAction)))
+             context.thumbnailAction
              (forwardTo context.listingsAction (always (FullpageAction listing.key)))
   in
     Listing.view listing_context listing

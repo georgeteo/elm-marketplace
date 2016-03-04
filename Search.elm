@@ -18,11 +18,13 @@ init = ""
 -- Update
 type Action =
   Search Query
+    | Reset
 
 update : Action -> Query -> Query
 update action query =
   case action of
     Search terms -> terms
+    Reset -> ""
 
 -- Util
 toPixel : number -> String
