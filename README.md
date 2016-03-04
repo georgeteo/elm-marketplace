@@ -29,7 +29,7 @@ evancz/virtual-dom
 1. Index page wonky when search happens -- HALF (css issues, but filter is correct)
 2. Category bar highlight will return to thumbnail view
 3. Add icons for left and right images if necessary -- DONE
-4. Search empty returns to homepage
+4. Search empty returns to homepage -- DONE
 5. Click logo returns to homepage
 
 #### Non-critical

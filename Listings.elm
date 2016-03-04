@@ -60,10 +60,11 @@ update action model =
                                                               ) model.listings
                                          }
     FilterAction filter_words -> { model | view = ThumbnailView
-                                         , listings = List.map (\listing -> if listingMatchQuery filter_words listing
-                                                                            then {listing | view = Listing.Thumbnail}
-                                                                            else {listing | view = Listing.Hidden}
-                                                               ) model.listings
+                                         , listings = if filter_words == [""] then List.map (\l -> {l | view = Listing.Thumbnail}) model.listings
+                                                      else List.map (\listing -> if listingMatchQuery filter_words listing
+                                                                                 then {listing | view = Listing.Thumbnail}
+                                                                                 else {listing | view = Listing.Hidden}
+                                                                    ) model.listings
                                  }
     CategoryFilter category -> {model | view = ThumbnailView
                                       , listings = List.map (\listing -> if listingMatchCategories category listing

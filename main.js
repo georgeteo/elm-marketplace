@@ -12290,7 +12290,7 @@ Elm.Listings.make = function (_elm) {
          var _p4 = acc;
          if (_p4.ctor === "[]") {
                return _U.crashCase("Listings",
-               {start: {line: 148,column: 24},end: {line: 150,column: 41}},
+               {start: {line: 149,column: 24},end: {line: 151,column: 41}},
                _p4)("Oh no! Acc was not initialized correctly in foldr");
             } else {
                return {ctor: "_Tuple2",_0: _p4._0,_1: _p4._1};
@@ -12346,11 +12346,12 @@ Elm.Listings.make = function (_elm) {
            model.listings)});
          case "ListingAction": return _U.update(model,
            {listings: A2($List.map,function (listing) {    return _U.eq(listing.key,_p8._0) ? A2($Listing.update,_p8._1,listing) : listing;},model.listings)});
-         case "FilterAction": return _U.update(model,
+         case "FilterAction": var _p9 = _p8._0;
+           return _U.update(model,
            {view: ThumbnailView
-           ,listings: A2($List.map,
+           ,listings: _U.eq(_p9,_U.list([""])) ? A2($List.map,function (l) {    return _U.update(l,{view: $Listing.Thumbnail});},model.listings) : A2($List.map,
            function (listing) {
-              return A2(listingMatchQuery,_p8._0,listing) ? _U.update(listing,{view: $Listing.Thumbnail}) : _U.update(listing,{view: $Listing.Hidden});
+              return A2(listingMatchQuery,_p9,listing) ? _U.update(listing,{view: $Listing.Thumbnail}) : _U.update(listing,{view: $Listing.Hidden});
            },
            model.listings)});
          default: return _U.update(model,
