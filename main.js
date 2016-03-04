@@ -12290,7 +12290,7 @@ Elm.Listings.make = function (_elm) {
          var _p4 = acc;
          if (_p4.ctor === "[]") {
                return _U.crashCase("Listings",
-               {start: {line: 156,column: 24},end: {line: 158,column: 41}},
+               {start: {line: 148,column: 24},end: {line: 150,column: 41}},
                _p4)("Oh no! Acc was not initialized correctly in foldr");
             } else {
                return {ctor: "_Tuple2",_0: _p4._0,_1: _p4._1};
@@ -12310,7 +12310,12 @@ Elm.Listings.make = function (_elm) {
          if (_p7.ctor === "ThumbnailView") {
                return {ctor: "_Tuple2"
                       ,_0: _U.list([$Html$Attributes.style(listings_container_css),$Html$Attributes.id("thumbnail-container")])
-                      ,_1: A2($List.map,row_div,A3($List.foldr,makeTableRows(address),_U.list([_U.list([])]),model.listings))};
+                      ,_1: A2($List.map,
+                      row_div,
+                      A3($List.foldr,
+                      makeTableRows(address),
+                      _U.list([_U.list([])]),
+                      A2($List.filter,function (l) {    return _U.eq(l.view,$Listing.Thumbnail);},model.listings)))};
             } else {
                return {ctor: "_Tuple2"
                       ,_0: _U.list([$Html$Attributes.style(fullpage_container_css),$Html$Attributes.id("fullpage-container")])

@@ -95,7 +95,8 @@ view address model =
       case model.view of
         ThumbnailView -> ( [ style listings_container_css 
                            , id "thumbnail-container"]
-                         , List.foldr (makeTableRows address) [[]] model.listings
+                         , List.filter (\l -> l.view == Listing.Thumbnail) model.listings
+                            |> List.foldr (makeTableRows address) [[]]
                             |> List.map row_div
                          )
         FullpageView -> ( [ style fullpage_container_css
@@ -120,15 +121,6 @@ toPixel : number -> String
 toPixel x = (toString x) ++ "px"
 
 (=>) = (,)
--- listings_container_css : Int -> List (String, String)
--- listings_container_css sidebar_w =
---   [ "margin-left" => toPixel sidebar_w
---   , "margin-right" => toPixel sidebar_w
---   , "font" => "400 Roboto, sans-serif"
---   , "background-color" => "#f5f5f5"
---   , "text-align" => "center"
---   ]
-
 listings_container_css : List (String, String)
 listings_container_css =
   [ "display" => "table"
