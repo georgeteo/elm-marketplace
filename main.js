@@ -11192,212 +11192,6 @@ Elm.CategoryBar.make = function (_elm) {
                                     ,right_tab_css: right_tab_css
                                     ,border_bar_css: border_bar_css};
 };
-Elm.Search = Elm.Search || {};
-Elm.Search.make = function (_elm) {
-   "use strict";
-   _elm.Search = _elm.Search || {};
-   if (_elm.Search.values) return _elm.Search.values;
-   var _U = Elm.Native.Utils.make(_elm),
-   $Basics = Elm.Basics.make(_elm),
-   $Debug = Elm.Debug.make(_elm),
-   $Html = Elm.Html.make(_elm),
-   $Html$Attributes = Elm.Html.Attributes.make(_elm),
-   $Html$Events = Elm.Html.Events.make(_elm),
-   $Json$Decode = Elm.Json.Decode.make(_elm),
-   $List = Elm.List.make(_elm),
-   $Maybe = Elm.Maybe.make(_elm),
-   $Result = Elm.Result.make(_elm),
-   $Signal = Elm.Signal.make(_elm);
-   var _op = {};
-   var is13 = function (code) {    return _U.eq(code,13) ? $Result.Ok({ctor: "_Tuple0"}) : $Result.Err("not the right key code");};
-   var onEnter = F2(function (address,value) {
-      return A3($Html$Events.on,
-      "keydown",
-      A2($Json$Decode.customDecoder,$Html$Events.keyCode,is13),
-      function (_p0) {
-         return A2($Signal.message,address,value);
-      });
-   });
-   var Context = F2(function (a,b) {    return {input: a,enter: b};});
-   _op["=>"] = F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};});
-   var input_css = _U.list([A2(_op["=>"],"width","calc(100% - 24px)")
-                           ,A2(_op["=>"],"padding","10px")
-                           ,A2(_op["=>"],"font-size","2em")
-                           ,A2(_op["=>"],"text-align","center")]);
-   var toPixel = function (x) {    return A2($Basics._op["++"],$Basics.toString(x),"px");};
-   var search_div_css = function (_p1) {
-      var _p2 = _p1;
-      return _U.list([A2(_op["=>"],"margin-left",toPixel(_p2._0)),A2(_op["=>"],"line-height",toPixel(_p2._1))]);
-   };
-   var update = F2(function (action,query) {    var _p3 = action;return _p3._0;});
-   var Search = function (a) {    return {ctor: "Search",_0: a};};
-   var view = F3(function (_p4,context,query) {
-      var _p5 = _p4;
-      return A2($Html.div,
-      _U.list([$Html$Attributes.style(search_div_css({ctor: "_Tuple2",_0: _p5._0,_1: _p5._1}))]),
-      _U.list([A2($Html.input,
-      _U.list([$Html$Attributes.placeholder("Search")
-              ,$Html$Attributes.value(query)
-              ,A2(onEnter,context.enter,{ctor: "_Tuple0"})
-              ,A3($Html$Events.on,"input",$Html$Events.targetValue,function (_p6) {    return A2($Signal.message,context.input,Search(_p6));})
-              ,$Html$Attributes.style(input_css)]),
-      _U.list([]))]));
-   });
-   var init = "";
-   return _elm.Search.values = {_op: _op
-                               ,init: init
-                               ,Search: Search
-                               ,update: update
-                               ,toPixel: toPixel
-                               ,search_div_css: search_div_css
-                               ,input_css: input_css
-                               ,Context: Context
-                               ,view: view
-                               ,onEnter: onEnter
-                               ,is13: is13};
-};
-Elm.Header = Elm.Header || {};
-Elm.Header.make = function (_elm) {
-   "use strict";
-   _elm.Header = _elm.Header || {};
-   if (_elm.Header.values) return _elm.Header.values;
-   var _U = Elm.Native.Utils.make(_elm),
-   $Basics = Elm.Basics.make(_elm),
-   $CategoryBar = Elm.CategoryBar.make(_elm),
-   $Debug = Elm.Debug.make(_elm),
-   $Html = Elm.Html.make(_elm),
-   $Html$Attributes = Elm.Html.Attributes.make(_elm),
-   $Html$Events = Elm.Html.Events.make(_elm),
-   $List = Elm.List.make(_elm),
-   $Maybe = Elm.Maybe.make(_elm),
-   $Result = Elm.Result.make(_elm),
-   $Search = Elm.Search.make(_elm),
-   $Signal = Elm.Signal.make(_elm);
-   var _op = {};
-   var Context = F4(function (a,b,c,d) {    return {search: a,searchtrigger: b,category: c,home: d};});
-   _op["=>"] = F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};});
-   var container_css = _U.list([A2(_op["=>"],"margin-bottom","10px")
-                               ,A2(_op["=>"],"background-color","#fff")
-                               ,A2(_op["=>"],"border-radius","0px 0px 7px 7px")
-                               ,A2(_op["=>"],"padding","0px 20px")]);
-   var name_text_css = _U.list([A2(_op["=>"],"font-size","2em"),A2(_op["=>"],"margin","0px")]);
-   var toPixel = function (x) {    return A2($Basics._op["++"],$Basics.toString(x),"px");};
-   var logo_name_css = function (_p0) {
-      var _p1 = _p0;
-      return _U.list([A2(_op["=>"],"height",toPixel(_p1._1)),A2(_op["=>"],"width",toPixel(_p1._0)),A2(_op["=>"],"float","left")]);
-   };
-   var logo_css = function (w) {
-      return _U.list([A2(_op["=>"],"height","100%")
-                     ,A2(_op["=>"],"background-image","url(assets/logo.jpg)")
-                     ,A2(_op["=>"],"width",toPixel(w))
-                     ,A2(_op["=>"],"background-size","contain")
-                     ,A2(_op["=>"],"float","left")]);
-   };
-   var div_logo = function (w) {    return A2($Html.div,_U.list([$Html$Attributes.style(logo_css(w))]),_U.list([]));};
-   var name_css = function (_p2) {
-      var _p3 = _p2;
-      return _U.list([A2(_op["=>"],"width",toPixel(_p3._0))
-                     ,A2(_op["=>"],"margin","0px")
-                     ,A2(_op["=>"],"display","table-cell")
-                     ,A2(_op["=>"],"vertical-align","middle")
-                     ,A2(_op["=>"],"height",toPixel(_p3._1))]);
-   };
-   var div_name = function (_p4) {
-      var _p5 = _p4;
-      return A2($Html.div,
-      _U.list([$Html$Attributes.style(name_css({ctor: "_Tuple2",_0: _p5._0,_1: _p5._1}))]),
-      _U.list([A2($Html.h1,_U.list([$Html$Attributes.style(name_text_css)]),_U.list([$Html.text("UChicago Marketplace")]))]));
-   };
-   var div_logo_name = F2(function (_p6,address) {
-      var _p7 = _p6;
-      var _p10 = _p7._1;
-      var _p9 = _p7._0;
-      var _p8 = _p7._2;
-      return A2($Html.div,
-      _U.list([$Html$Attributes.style(logo_name_css({ctor: "_Tuple2",_0: _p9 + _p10,_1: _p8})),A2($Html$Events.onClick,address,{ctor: "_Tuple0"})]),
-      _U.list([div_logo(_p9),div_name({ctor: "_Tuple2",_0: _p10,_1: _p8})]));
-   });
-   var update = F2(function (action,model) {
-      var _p11 = action;
-      if (_p11.ctor === "SearchAction") {
-            return _U.update(model,{search: A2($Search.update,_p11._0,model.search)});
-         } else {
-            return _U.update(model,{category: A2($CategoryBar.update,_p11._0,model.category)});
-         }
-   });
-   var CategoryAction = function (a) {    return {ctor: "CategoryAction",_0: a};};
-   var SearchAction = function (a) {    return {ctor: "SearchAction",_0: a};};
-   var view = F2(function (context,model) {
-      var search_context = A2($Search.Context,A2($Signal.forwardTo,context.search,SearchAction),context.searchtrigger);
-      var height = 100;
-      var name_width = 200;
-      var logo_width = 77;
-      var logo_and_name_width = logo_width + name_width;
-      return A2($Html.div,
-      _U.list([$Html$Attributes.style(container_css)]),
-      _U.list([A2($CategoryBar.view,A2($Signal.forwardTo,context.category,CategoryAction),model.category)
-              ,A2(div_logo_name,{ctor: "_Tuple3",_0: logo_width,_1: name_width,_2: height},context.home)
-              ,A3($Search.view,{ctor: "_Tuple2",_0: logo_and_name_width,_1: height},search_context,model.search)]));
-   });
-   var init = {search: $Search.init,category: $CategoryBar.init};
-   var Meta = F2(function (a,b) {    return {search: a,category: b};});
-   return _elm.Header.values = {_op: _op
-                               ,Meta: Meta
-                               ,init: init
-                               ,SearchAction: SearchAction
-                               ,CategoryAction: CategoryAction
-                               ,update: update
-                               ,toPixel: toPixel
-                               ,container_css: container_css
-                               ,logo_name_css: logo_name_css
-                               ,logo_css: logo_css
-                               ,name_css: name_css
-                               ,name_text_css: name_text_css
-                               ,div_logo_name: div_logo_name
-                               ,div_logo: div_logo
-                               ,div_name: div_name
-                               ,Context: Context
-                               ,view: view};
-};
-Elm.HttpGetter = Elm.HttpGetter || {};
-Elm.HttpGetter.make = function (_elm) {
-   "use strict";
-   _elm.HttpGetter = _elm.HttpGetter || {};
-   if (_elm.HttpGetter.values) return _elm.HttpGetter.values;
-   var _U = Elm.Native.Utils.make(_elm),
-   $Basics = Elm.Basics.make(_elm),
-   $Debug = Elm.Debug.make(_elm),
-   $Http = Elm.Http.make(_elm),
-   $Json$Decode = Elm.Json.Decode.make(_elm),
-   $List = Elm.List.make(_elm),
-   $Maybe = Elm.Maybe.make(_elm),
-   $Result = Elm.Result.make(_elm),
-   $Signal = Elm.Signal.make(_elm),
-   $Task = Elm.Task.make(_elm);
-   var _op = {};
-   var init = {listings: _U.list([])};
-   var Listing = F8(function (a,b,c,d,e,f,g,h) {    return {key: a,title: b,body: c,price: d,categories: e,approved: f,sold: g,lastUpdated: h};});
-   var listingDecoder = A9($Json$Decode.object8,
-   Listing,
-   A2($Json$Decode._op[":="],"key",$Json$Decode.string),
-   A2($Json$Decode._op[":="],"title",$Json$Decode.string),
-   A2($Json$Decode._op[":="],"body",$Json$Decode.string),
-   A2($Json$Decode._op[":="],"price",$Json$Decode.$float),
-   A2($Json$Decode._op[":="],"categories",$Json$Decode.list($Json$Decode.string)),
-   A2($Json$Decode._op[":="],"approved",$Json$Decode.bool),
-   A2($Json$Decode._op[":="],"sold",$Json$Decode.bool),
-   A2($Json$Decode._op[":="],"lastUpdate",$Json$Decode.string));
-   var Blob = function (a) {    return {listings: a};};
-   var blobDecoder = A2($Json$Decode.object1,Blob,A2($Json$Decode._op[":="],"listings",$Json$Decode.list(listingDecoder)));
-   var getListings = function (url) {    return $Task.toMaybe(A2($Http.get,blobDecoder,url));};
-   return _elm.HttpGetter.values = {_op: _op
-                                   ,Blob: Blob
-                                   ,Listing: Listing
-                                   ,init: init
-                                   ,listingDecoder: listingDecoder
-                                   ,blobDecoder: blobDecoder
-                                   ,getListings: getListings};
-};
 Elm.ImageViewer = Elm.ImageViewer || {};
 Elm.ImageViewer.make = function (_elm) {
    "use strict";
@@ -11505,6 +11299,589 @@ Elm.ImageViewer.make = function (_elm) {
                                     ,toPixel: toPixel
                                     ,image_CSS: image_CSS
                                     ,clicker_CSS: clicker_CSS};
+};
+Elm.HttpGetter = Elm.HttpGetter || {};
+Elm.HttpGetter.make = function (_elm) {
+   "use strict";
+   _elm.HttpGetter = _elm.HttpGetter || {};
+   if (_elm.HttpGetter.values) return _elm.HttpGetter.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $Http = Elm.Http.make(_elm),
+   $Json$Decode = Elm.Json.Decode.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Task = Elm.Task.make(_elm);
+   var _op = {};
+   var init = {listings: _U.list([])};
+   var Listing = F8(function (a,b,c,d,e,f,g,h) {    return {key: a,title: b,body: c,price: d,categories: e,approved: f,sold: g,lastUpdated: h};});
+   var listingDecoder = A9($Json$Decode.object8,
+   Listing,
+   A2($Json$Decode._op[":="],"key",$Json$Decode.string),
+   A2($Json$Decode._op[":="],"title",$Json$Decode.string),
+   A2($Json$Decode._op[":="],"body",$Json$Decode.string),
+   A2($Json$Decode._op[":="],"price",$Json$Decode.$float),
+   A2($Json$Decode._op[":="],"categories",$Json$Decode.list($Json$Decode.string)),
+   A2($Json$Decode._op[":="],"approved",$Json$Decode.bool),
+   A2($Json$Decode._op[":="],"sold",$Json$Decode.bool),
+   A2($Json$Decode._op[":="],"lastUpdate",$Json$Decode.string));
+   var Blob = function (a) {    return {listings: a};};
+   var blobDecoder = A2($Json$Decode.object1,Blob,A2($Json$Decode._op[":="],"listings",$Json$Decode.list(listingDecoder)));
+   var getListings = function (url) {    return $Task.toMaybe(A2($Http.get,blobDecoder,url));};
+   return _elm.HttpGetter.values = {_op: _op
+                                   ,Blob: Blob
+                                   ,Listing: Listing
+                                   ,init: init
+                                   ,listingDecoder: listingDecoder
+                                   ,blobDecoder: blobDecoder
+                                   ,getListings: getListings};
+};
+Elm.Listing = Elm.Listing || {};
+Elm.Listing.make = function (_elm) {
+   "use strict";
+   _elm.Listing = _elm.Listing || {};
+   if (_elm.Listing.values) return _elm.Listing.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
+   $HttpGetter = Elm.HttpGetter.make(_elm),
+   $ImageViewer = Elm.ImageViewer.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $String = Elm.String.make(_elm);
+   var _op = {};
+   var toPixel = function (x) {    return A2($Basics._op["++"],$Basics.toString(x),"px");};
+   var Listing_CSS = F8(function (a,b,c,d,e,f,g,h) {    return {container: a,title: b,price: c,photos: d,categories: e,body: f,button: g,inner_container: h};});
+   _op["=>"] = F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};});
+   var category_tag_css = _U.list([A2(_op["=>"],"border-radius","8px")
+                                  ,A2(_op["=>"],"background-color","#777")
+                                  ,A2(_op["=>"],"font-size","100%")
+                                  ,A2(_op["=>"],"color","#fff")
+                                  ,A2(_op["=>"],"line-height","1.3")
+                                  ,A2(_op["=>"],"text-align","center")
+                                  ,A2(_op["=>"],"display","inline-block")
+                                  ,A2(_op["=>"],"padding","5px 5px")
+                                  ,A2(_op["=>"],"margin","2px 4px")]);
+   var oneCategory = function (category) {    return A2($Html.span,_U.list([$Html$Attributes.style(category_tag_css)]),_U.list([$Html.text(category)]));};
+   var categoryList = function (categories) {    return A2($List.map,oneCategory,categories);};
+   var hidden_div = _U.list([A2(_op["=>"],"display","none")]);
+   var hidden_css = {container: $Html$Attributes.style(hidden_div)
+                    ,inner_container: $Html$Attributes.style(hidden_div)
+                    ,button: $Html$Attributes.style(hidden_div)
+                    ,title: $Html$Attributes.style(hidden_div)
+                    ,price: $Html$Attributes.style(hidden_div)
+                    ,photos: $Html$Attributes.style(hidden_div)
+                    ,categories: $Html$Attributes.style(hidden_div)
+                    ,body: $Html$Attributes.style(hidden_div)};
+   var thumbnail_container = _U.list([A2(_op["=>"],"display","table-cell"),A2(_op["=>"],"width","25%"),A2(_op["=>"],"padding","5px")]);
+   var thumbnail_inner_container = _U.list([A2(_op["=>"],"position","relative")
+                                           ,A2(_op["=>"],"border","1px solid #ddd")
+                                           ,A2(_op["=>"],"overflow","auto")
+                                           ,A2(_op["=>"],"height","100%")
+                                           ,A2(_op["=>"],"background-color","#fff")
+                                           ,A2(_op["=>"],"border-radius","5px 5px 0px 0px")]);
+   var thumbnail_button = _U.list([A2(_op["=>"],"position","absolute"),A2(_op["=>"],"height","100%"),A2(_op["=>"],"width","100%")]);
+   var thumbnail_button_view = function (context) {
+      return A2($Html.div,_U.list([$Html$Attributes.style(thumbnail_button),A2($Html$Events.onClick,context.fullpage,{ctor: "_Tuple0"})]),_U.list([]));
+   };
+   var thumbnail_categories_css = _U.list([A2(_op["=>"],"overflow","auto")
+                                          ,A2(_op["=>"],"margin-left","10px")
+                                          ,A2(_op["=>"],"margin-bottom","10px")
+                                          ,A2(_op["=>"],"word-break","break-word")
+                                          ,A2(_op["=>"],"text-align","left")]);
+   var thumbnail_img_css = _U.list([A2(_op["=>"],"width","100%"),A2(_op["=>"],"border-radius","5px 5px 0px 0px")]);
+   var thumbnail_title_css = _U.list([A2(_op["=>"],"text-align","center"),A2(_op["=>"],"margin","10px"),A2(_op["=>"],"font-weight","400")]);
+   var thumbnail_price_css = _U.list([A2(_op["=>"],"display","inline")
+                                     ,A2(_op["=>"],"color","green")
+                                     ,A2(_op["=>"],"float","right")
+                                     ,A2(_op["=>"],"margin-top","7px")
+                                     ,A2(_op["=>"],"margin-bottom","10px")
+                                     ,A2(_op["=>"],"margin-right","10px")
+                                     ,A2(_op["=>"],"margin-left","10px")
+                                     ,A2(_op["=>"],"font-weight","400")]);
+   var thumbnail_css = function (listing) {
+      return {container: $Html$Attributes.style(thumbnail_container)
+             ,inner_container: $Html$Attributes.style(thumbnail_inner_container)
+             ,button: $Html$Attributes.style(thumbnail_button)
+             ,title: $Html$Attributes.style(thumbnail_title_css)
+             ,price: $Html$Attributes.style(thumbnail_price_css)
+             ,photos: $Html$Attributes.style(thumbnail_img_css)
+             ,categories: $Html$Attributes.style(thumbnail_categories_css)
+             ,body: $Html$Attributes.style(hidden_div)};
+   };
+   var fullpage_container = _U.list([A2(_op["=>"],"padding","20px 40px"),A2(_op["=>"],"margin","0 auto")]);
+   var fullpage_inner_container = _U.list([A2(_op["=>"],"width","100%"),A2(_op["=>"],"height","100%")]);
+   var fullpage_title_css = _U.list([A2(_op["=>"],"text-align","center"),A2(_op["=>"],"font-size","30px")]);
+   var fullpage_price_css = _U.list([A2(_op["=>"],"display","inline")
+                                    ,A2(_op["=>"],"color","green")
+                                    ,A2(_op["=>"],"float","right")
+                                    ,A2(_op["=>"],"margin-bottom","10px")
+                                    ,A2(_op["=>"],"margin-right","20px")
+                                    ,A2(_op["=>"],"margin-left","10px")
+                                    ,A2(_op["=>"],"font-weight","700")
+                                    ,A2(_op["=>"],"font-size","20px")]);
+   var fullpage_img_css = _U.list([A2(_op["=>"],"width","500px")
+                                  ,A2(_op["=>"],"height","500px")
+                                  ,A2(_op["=>"],"margin","auto")
+                                  ,A2(_op["=>"],"border","1px solid #ddd")]);
+   var fullpage_categories_css = _U.list([A2(_op["=>"],"margin-left","20px"),A2(_op["=>"],"font-size","20px")]);
+   var fullpage_body_css = _U.list([A2(_op["=>"],"margin","20px 20px")]);
+   var fullpage_button = _U.list([A2(_op["=>"],"height","100%")
+                                 ,A2(_op["=>"],"border","none")
+                                 ,A2(_op["=>"],"color","white")
+                                 ,A2(_op["=>"],"padding","10px 20px")
+                                 ,A2(_op["=>"],"text-align","center")
+                                 ,A2(_op["=>"],"font-size","16px")
+                                 ,A2(_op["=>"],"background-color","#800000")
+                                 ,A2(_op["=>"],"border-radius","5px")]);
+   var fullpage_button_view = function (context) {
+      return A2($Html.button,
+      _U.list([$Html$Attributes.style(fullpage_button),A2($Html$Events.onClick,context.thumbnail,{ctor: "_Tuple0"})]),
+      _U.list([$Html.text("Back")]));
+   };
+   var fullpage_css = function (listing) {
+      return {container: $Html$Attributes.style(fullpage_container)
+             ,inner_container: $Html$Attributes.style(fullpage_inner_container)
+             ,title: $Html$Attributes.style(fullpage_title_css)
+             ,price: $Html$Attributes.style(fullpage_price_css)
+             ,photos: $Html$Attributes.style(fullpage_img_css)
+             ,categories: $Html$Attributes.style(fullpage_categories_css)
+             ,body: $Html$Attributes.style(fullpage_body_css)
+             ,button: $Html$Attributes.style(fullpage_button)};
+   };
+   var Context = F3(function (a,b,c) {    return {actions: a,thumbnail: b,fullpage: c};});
+   var update = F2(function (action,listing) {    var _p0 = action;return _U.update(listing,{photos: A2($ImageViewer.update,_p0._0,listing.photos)});});
+   var ImageActions = function (a) {    return {ctor: "ImageActions",_0: a};};
+   var view = F2(function (context,listing) {
+      var _p1 = function () {
+         var _p2 = listing.view;
+         switch (_p2.ctor)
+         {case "Thumbnail": return {ctor: "_Tuple2",_0: thumbnail_css(listing),_1: thumbnail_button_view(context)};
+            case "Fullpage": return {ctor: "_Tuple2",_0: fullpage_css(listing),_1: fullpage_button_view(context)};
+            default: return {ctor: "_Tuple2",_0: hidden_css,_1: thumbnail_button_view(context)};}
+      }();
+      var div_css = _p1._0;
+      var button = _p1._1;
+      return A2($Html.div,
+      _U.list([div_css.container]),
+      _U.list([A2($Html.div,
+      _U.list([div_css.inner_container]),
+      _U.list([button
+              ,A2($Html.div,_U.list([div_css.photos]),_U.list([A2($ImageViewer.view,A2($Signal.forwardTo,context.actions,ImageActions),listing.photos)]))
+              ,A2($Html.h2,_U.list([div_css.title]),_U.list([$Html.text(listing.title)]))
+              ,A2($Html.div,_U.list([div_css.price]),_U.list([$Html.text(A2($String.cons,_U.chr("$"),$Basics.toString(listing.price)))]))
+              ,A2($Html.div,_U.list([div_css.categories]),categoryList(listing.categories))
+              ,A2($Html.div,_U.list([div_css.body]),_U.list([$Html.text(listing.body)]))]))]));
+   });
+   var Model = function (a) {
+      return function (b) {
+         return function (c) {
+            return function (d) {
+               return function (e) {
+                  return function (f) {
+                     return function (g) {
+                        return function (h) {
+                           return function (i) {
+                              return function (j) {
+                                 return function (k) {
+                                    return {key: a,title: b,body: c,price: d,categories: e,approved: f,sold: g,lastUpdated: h,photos: i,view: j,query: k};
+                                 };
+                              };
+                           };
+                        };
+                     };
+                  };
+               };
+            };
+         };
+      };
+   };
+   var Hidden = {ctor: "Hidden"};
+   var Fullpage = {ctor: "Fullpage"};
+   var Thumbnail = {ctor: "Thumbnail"};
+   var init = F2(function (p,listing) {
+      return {key: listing.key
+             ,title: listing.title
+             ,body: listing.body
+             ,price: listing.price
+             ,categories: listing.categories
+             ,approved: listing.approved
+             ,sold: listing.sold
+             ,lastUpdated: listing.lastUpdated
+             ,photos: p
+             ,view: Thumbnail
+             ,query: A2($Basics._op["++"],$String.words(listing.body),$String.words(listing.title))};
+   });
+   return _elm.Listing.values = {_op: _op
+                                ,Thumbnail: Thumbnail
+                                ,Fullpage: Fullpage
+                                ,Hidden: Hidden
+                                ,Model: Model
+                                ,init: init
+                                ,ImageActions: ImageActions
+                                ,update: update
+                                ,Context: Context
+                                ,view: view
+                                ,thumbnail_button_view: thumbnail_button_view
+                                ,fullpage_button_view: fullpage_button_view
+                                ,Listing_CSS: Listing_CSS
+                                ,toPixel: toPixel
+                                ,category_tag_css: category_tag_css
+                                ,hidden_div: hidden_div
+                                ,thumbnail_css: thumbnail_css
+                                ,thumbnail_container: thumbnail_container
+                                ,thumbnail_inner_container: thumbnail_inner_container
+                                ,thumbnail_button: thumbnail_button
+                                ,thumbnail_categories_css: thumbnail_categories_css
+                                ,thumbnail_img_css: thumbnail_img_css
+                                ,thumbnail_title_css: thumbnail_title_css
+                                ,thumbnail_price_css: thumbnail_price_css
+                                ,fullpage_css: fullpage_css
+                                ,fullpage_container: fullpage_container
+                                ,fullpage_inner_container: fullpage_inner_container
+                                ,fullpage_title_css: fullpage_title_css
+                                ,fullpage_price_css: fullpage_price_css
+                                ,fullpage_img_css: fullpage_img_css
+                                ,fullpage_categories_css: fullpage_categories_css
+                                ,fullpage_body_css: fullpage_body_css
+                                ,fullpage_button: fullpage_button
+                                ,hidden_css: hidden_css
+                                ,oneCategory: oneCategory
+                                ,categoryList: categoryList};
+};
+Elm.Listings = Elm.Listings || {};
+Elm.Listings.make = function (_elm) {
+   "use strict";
+   _elm.Listings = _elm.Listings || {};
+   if (_elm.Listings.values) return _elm.Listings.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $CategoryBar = Elm.CategoryBar.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Listing = Elm.Listing.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $String = Elm.String.make(_elm);
+   var _op = {};
+   _op["=>"] = F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};});
+   var listings_container_css = _U.list([A2(_op["=>"],"display","table")
+                                        ,A2(_op["=>"],"border-collapse","separate")
+                                        ,A2(_op["=>"],"border-spacing","5px 5px")
+                                        ,A2(_op["=>"],"margin","0 5%")
+                                        ,A2(_op["=>"],"background-color","#f5f5f5")
+                                        ,A2(_op["=>"],"text-align","center")]);
+   var listings_row_css = _U.list([A2(_op["=>"],"display","table-row")]);
+   var row_div = function (cols) {    return A2($Html.div,_U.list([$Html$Attributes.style(listings_row_css)]),cols);};
+   var fullpage_container_css = _U.list([A2(_op["=>"],"margin","0 10%")]);
+   var toPixel = function (x) {    return A2($Basics._op["++"],$Basics.toString(x),"px");};
+   var listingMatchCategories = F2(function (_p0,listing) {
+      var _p1 = _p0;
+      var _p2 = _p1._0;
+      return _U.eq(_p2,$CategoryBar.None) ? true : A2($List.member,$String.toLower($Basics.toString(_p2)),listing.categories) ? true : false;
+   });
+   var listingMatchQuery = F2(function (filter_words,listing) {
+      return _U.eq(filter_words,_U.list([])) ? true : A3($List.foldl,
+      F2(function (word,tf) {    return A2($List.member,word,listing.query) && tf;}),
+      true,
+      filter_words) ? true : false;
+   });
+   var ViewAction = function (a) {    return {ctor: "ViewAction",_0: a};};
+   var CategoryFilter = function (a) {    return {ctor: "CategoryFilter",_0: a};};
+   var FilterAction = function (a) {    return {ctor: "FilterAction",_0: a};};
+   var ListingAction = F2(function (a,b) {    return {ctor: "ListingAction",_0: a,_1: b};});
+   var FullpageAction = function (a) {    return {ctor: "FullpageAction",_0: a};};
+   var ThumbnailAction = {ctor: "ThumbnailAction"};
+   var view_listing = F2(function (address,listing) {
+      var context = A3($Listing.Context,
+      A2($Signal.forwardTo,address,ListingAction(listing.key)),
+      A2($Signal.forwardTo,address,$Basics.always(ThumbnailAction)),
+      A2($Signal.forwardTo,address,$Basics.always(FullpageAction(listing.key))));
+      return A2($Listing.view,context,listing);
+   });
+   var makeTableRows = F3(function (address,listing,acc) {
+      var _p3 = function () {
+         var _p4 = acc;
+         if (_p4.ctor === "[]") {
+               return _U.crashCase("Listings",
+               {start: {line: 153,column: 24},end: {line: 155,column: 41}},
+               _p4)("Oh no! Acc was not initialized correctly in foldr");
+            } else {
+               return {ctor: "_Tuple2",_0: _p4._0,_1: _p4._1};
+            }
+      }();
+      var acc_head = _p3._0;
+      var accs = _p3._1;
+      var new_listing_html = A2(view_listing,address,listing);
+      var new_head = _U.eq($List.length(acc_head),4) ? _U.list([_U.list([new_listing_html]),acc_head]) : _U.list([A2($List._op["::"],
+      new_listing_html,
+      acc_head)]);
+      return A2($List.append,new_head,accs);
+   });
+   var view = F2(function (address,model) {
+      var _p6 = function () {
+         var _p7 = model.view;
+         if (_p7.ctor === "ThumbnailView") {
+               return {ctor: "_Tuple2"
+                      ,_0: _U.list([$Html$Attributes.style(listings_container_css),$Html$Attributes.id("thumbnail-container")])
+                      ,_1: A2($List.map,
+                      row_div,
+                      A3($List.foldr,
+                      makeTableRows(address),
+                      _U.list([_U.list([])]),
+                      A2($List.filter,function (l) {    return _U.eq(l.view,$Listing.Thumbnail);},model.listings)))};
+            } else {
+               return {ctor: "_Tuple2"
+                      ,_0: _U.list([$Html$Attributes.style(fullpage_container_css),$Html$Attributes.id("fullpage-container")])
+                      ,_1: A2($List.map,view_listing(address),model.listings)};
+            }
+      }();
+      var container_css = _p6._0;
+      var listings_content = _p6._1;
+      var debug = A2($Debug.log,"View type",model.view);
+      return A2($Html.div,container_css,listings_content);
+   });
+   var Model = F3(function (a,b,c) {    return {view: a,searchfilter: b,listings: c};});
+   var FullpageView = {ctor: "FullpageView"};
+   var ThumbnailView = {ctor: "ThumbnailView"};
+   var init = function (listingsList) {    return {view: ThumbnailView,searchfilter: _U.list([]),listings: listingsList};};
+   var update = F2(function (action,model) {
+      var a = A2($Debug.log,"Action: ",action);
+      var _p8 = action;
+      switch (_p8.ctor)
+      {case "ThumbnailAction": return _U.update(model,
+           {view: ThumbnailView,listings: A2($List.map,function (listing) {    return _U.update(listing,{view: $Listing.Thumbnail});},model.listings)});
+         case "FullpageAction": return _U.update(model,
+           {view: FullpageView
+           ,listings: A2($List.map,
+           function (listing) {
+              return _U.eq(listing.key,_p8._0) ? _U.update(listing,{view: $Listing.Fullpage}) : _U.update(listing,{view: $Listing.Hidden});
+           },
+           model.listings)});
+         case "ListingAction": return _U.update(model,
+           {listings: A2($List.map,function (listing) {    return _U.eq(listing.key,_p8._0) ? A2($Listing.update,_p8._1,listing) : listing;},model.listings)});
+         case "FilterAction": var _p9 = _p8._0;
+           return _U.update(model,
+           {view: ThumbnailView
+           ,listings: _U.eq(_p9,_U.list([""])) ? A2($List.map,function (l) {    return _U.update(l,{view: $Listing.Thumbnail});},model.listings) : A2($List.map,
+           function (listing) {
+              return A2(listingMatchQuery,_p9,listing) ? _U.update(listing,{view: $Listing.Thumbnail}) : _U.update(listing,{view: $Listing.Hidden});
+           },
+           model.listings)});
+         case "CategoryFilter": return _U.update(model,
+           {view: ThumbnailView
+           ,listings: A2($List.map,
+           function (listing) {
+              return A2(listingMatchCategories,_p8._0,listing) ? _U.update(listing,{view: $Listing.Thumbnail}) : _U.update(listing,{view: $Listing.Hidden});
+           },
+           model.listings)});
+         default: return _U.update(model,
+           {view: _p8._0,listings: A2($List.map,function (l) {    return _U.update(l,{view: $Listing.Thumbnail});},model.listings)});}
+   });
+   return _elm.Listings.values = {_op: _op
+                                 ,ThumbnailView: ThumbnailView
+                                 ,FullpageView: FullpageView
+                                 ,Model: Model
+                                 ,init: init
+                                 ,ThumbnailAction: ThumbnailAction
+                                 ,FullpageAction: FullpageAction
+                                 ,ListingAction: ListingAction
+                                 ,FilterAction: FilterAction
+                                 ,CategoryFilter: CategoryFilter
+                                 ,ViewAction: ViewAction
+                                 ,update: update
+                                 ,listingMatchQuery: listingMatchQuery
+                                 ,listingMatchCategories: listingMatchCategories
+                                 ,view: view
+                                 ,view_listing: view_listing
+                                 ,toPixel: toPixel
+                                 ,listings_container_css: listings_container_css
+                                 ,listings_row_css: listings_row_css
+                                 ,row_div: row_div
+                                 ,makeTableRows: makeTableRows
+                                 ,fullpage_container_css: fullpage_container_css};
+};
+Elm.Search = Elm.Search || {};
+Elm.Search.make = function (_elm) {
+   "use strict";
+   _elm.Search = _elm.Search || {};
+   if (_elm.Search.values) return _elm.Search.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
+   $Json$Decode = Elm.Json.Decode.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Listings = Elm.Listings.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $String = Elm.String.make(_elm);
+   var _op = {};
+   var is13 = function (code) {    return _U.eq(code,13) ? $Result.Ok({ctor: "_Tuple0"}) : $Result.Err("not the right key code");};
+   var onEnter = F2(function (address,value) {
+      return A3($Html$Events.on,
+      "keydown",
+      A2($Json$Decode.customDecoder,$Html$Events.keyCode,is13),
+      function (_p0) {
+         return A2($Signal.message,address,value);
+      });
+   });
+   var Context = F2(function (a,b) {    return {input: a,listingsAction: b};});
+   _op["=>"] = F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};});
+   var input_css = _U.list([A2(_op["=>"],"width","calc(100% - 24px)")
+                           ,A2(_op["=>"],"padding","10px")
+                           ,A2(_op["=>"],"font-size","2em")
+                           ,A2(_op["=>"],"text-align","center")]);
+   var toPixel = function (x) {    return A2($Basics._op["++"],$Basics.toString(x),"px");};
+   var search_div_css = function (_p1) {
+      var _p2 = _p1;
+      return _U.list([A2(_op["=>"],"margin-left",toPixel(_p2._0)),A2(_op["=>"],"line-height",toPixel(_p2._1))]);
+   };
+   var update = F2(function (action,query) {    var _p3 = action;return _p3._0;});
+   var Search = function (a) {    return {ctor: "Search",_0: a};};
+   var view = F3(function (_p4,context,query) {
+      var _p5 = _p4;
+      return A2($Html.div,
+      _U.list([$Html$Attributes.style(search_div_css({ctor: "_Tuple2",_0: _p5._0,_1: _p5._1}))]),
+      _U.list([A2($Html.input,
+      _U.list([$Html$Attributes.placeholder("Search")
+              ,$Html$Attributes.value(query)
+              ,A2(onEnter,context.listingsAction,$Listings.FilterAction($String.words(query)))
+              ,A3($Html$Events.on,"input",$Html$Events.targetValue,function (_p6) {    return A2($Signal.message,context.input,Search(_p6));})
+              ,$Html$Attributes.style(input_css)]),
+      _U.list([]))]));
+   });
+   var init = "";
+   return _elm.Search.values = {_op: _op
+                               ,init: init
+                               ,Search: Search
+                               ,update: update
+                               ,toPixel: toPixel
+                               ,search_div_css: search_div_css
+                               ,input_css: input_css
+                               ,Context: Context
+                               ,view: view
+                               ,onEnter: onEnter
+                               ,is13: is13};
+};
+Elm.Header = Elm.Header || {};
+Elm.Header.make = function (_elm) {
+   "use strict";
+   _elm.Header = _elm.Header || {};
+   if (_elm.Header.values) return _elm.Header.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $CategoryBar = Elm.CategoryBar.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Listings = Elm.Listings.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Search = Elm.Search.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var _op = {};
+   var Context = F3(function (a,b,c) {    return {search: a,category: b,listingsAction: c};});
+   _op["=>"] = F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};});
+   var container_css = _U.list([A2(_op["=>"],"margin-bottom","10px")
+                               ,A2(_op["=>"],"background-color","#fff")
+                               ,A2(_op["=>"],"border-radius","0px 0px 7px 7px")
+                               ,A2(_op["=>"],"padding","0px 20px")]);
+   var name_text_css = _U.list([A2(_op["=>"],"font-size","2em"),A2(_op["=>"],"margin","0px")]);
+   var toPixel = function (x) {    return A2($Basics._op["++"],$Basics.toString(x),"px");};
+   var logo_name_css = function (_p0) {
+      var _p1 = _p0;
+      return _U.list([A2(_op["=>"],"height",toPixel(_p1._1)),A2(_op["=>"],"width",toPixel(_p1._0)),A2(_op["=>"],"float","left")]);
+   };
+   var logo_css = function (w) {
+      return _U.list([A2(_op["=>"],"height","100%")
+                     ,A2(_op["=>"],"background-image","url(assets/logo.jpg)")
+                     ,A2(_op["=>"],"width",toPixel(w))
+                     ,A2(_op["=>"],"background-size","contain")
+                     ,A2(_op["=>"],"float","left")]);
+   };
+   var div_logo = function (w) {    return A2($Html.div,_U.list([$Html$Attributes.style(logo_css(w))]),_U.list([]));};
+   var name_css = function (_p2) {
+      var _p3 = _p2;
+      return _U.list([A2(_op["=>"],"width",toPixel(_p3._0))
+                     ,A2(_op["=>"],"margin","0px")
+                     ,A2(_op["=>"],"display","table-cell")
+                     ,A2(_op["=>"],"vertical-align","middle")
+                     ,A2(_op["=>"],"height",toPixel(_p3._1))]);
+   };
+   var div_name = function (_p4) {
+      var _p5 = _p4;
+      return A2($Html.div,
+      _U.list([$Html$Attributes.style(name_css({ctor: "_Tuple2",_0: _p5._0,_1: _p5._1}))]),
+      _U.list([A2($Html.h1,_U.list([$Html$Attributes.style(name_text_css)]),_U.list([$Html.text("UChicago Marketplace")]))]));
+   };
+   var div_logo_name = F2(function (_p6,address) {
+      var _p7 = _p6;
+      var _p10 = _p7._1;
+      var _p9 = _p7._0;
+      var _p8 = _p7._2;
+      return A2($Html.div,
+      _U.list([$Html$Attributes.style(logo_name_css({ctor: "_Tuple2",_0: _p9 + _p10,_1: _p8}))
+              ,A2($Html$Events.onClick,address,$Listings.ViewAction($Listings.ThumbnailView))]),
+      _U.list([div_logo(_p9),div_name({ctor: "_Tuple2",_0: _p10,_1: _p8})]));
+   });
+   var update = F2(function (action,model) {
+      var _p11 = action;
+      if (_p11.ctor === "SearchAction") {
+            return _U.update(model,{search: A2($Search.update,_p11._0,model.search)});
+         } else {
+            return _U.update(model,{category: A2($CategoryBar.update,_p11._0,model.category)});
+         }
+   });
+   var CategoryAction = function (a) {    return {ctor: "CategoryAction",_0: a};};
+   var SearchAction = function (a) {    return {ctor: "SearchAction",_0: a};};
+   var view = F2(function (context,model) {
+      var search_context = A2($Search.Context,A2($Signal.forwardTo,context.search,SearchAction),context.listingsAction);
+      var height = 100;
+      var name_width = 200;
+      var logo_width = 77;
+      var logo_and_name_width = logo_width + name_width;
+      return A2($Html.div,
+      _U.list([$Html$Attributes.style(container_css)]),
+      _U.list([A2($CategoryBar.view,A2($Signal.forwardTo,context.category,CategoryAction),model.category)
+              ,A2(div_logo_name,{ctor: "_Tuple3",_0: logo_width,_1: name_width,_2: height},context.listingsAction)
+              ,A3($Search.view,{ctor: "_Tuple2",_0: logo_and_name_width,_1: height},search_context,model.search)]));
+   });
+   var init = {search: $Search.init,category: $CategoryBar.init};
+   var Meta = F2(function (a,b) {    return {search: a,category: b};});
+   return _elm.Header.values = {_op: _op
+                               ,Meta: Meta
+                               ,init: init
+                               ,SearchAction: SearchAction
+                               ,CategoryAction: CategoryAction
+                               ,update: update
+                               ,toPixel: toPixel
+                               ,container_css: container_css
+                               ,logo_name_css: logo_name_css
+                               ,logo_css: logo_css
+                               ,name_css: name_css
+                               ,name_text_css: name_text_css
+                               ,div_logo_name: div_logo_name
+                               ,div_logo: div_logo
+                               ,div_name: div_name
+                               ,Context: Context
+                               ,view: view};
 };
 Elm.Images = Elm.Images || {};
 Elm.Images.make = function (_elm) {
@@ -12016,379 +12393,6 @@ Elm.Images.make = function (_elm) {
                                       ,small: "https://storage.googleapis.com/hosted-caravel.appspot.com/1452315038-b5f4d65d-bc41-4072-89fa-2ed58c6cbff1-small"}])]);
    return _elm.Images.values = {_op: _op,testImages: testImages};
 };
-Elm.Listing = Elm.Listing || {};
-Elm.Listing.make = function (_elm) {
-   "use strict";
-   _elm.Listing = _elm.Listing || {};
-   if (_elm.Listing.values) return _elm.Listing.values;
-   var _U = Elm.Native.Utils.make(_elm),
-   $Basics = Elm.Basics.make(_elm),
-   $Debug = Elm.Debug.make(_elm),
-   $Html = Elm.Html.make(_elm),
-   $Html$Attributes = Elm.Html.Attributes.make(_elm),
-   $Html$Events = Elm.Html.Events.make(_elm),
-   $HttpGetter = Elm.HttpGetter.make(_elm),
-   $ImageViewer = Elm.ImageViewer.make(_elm),
-   $List = Elm.List.make(_elm),
-   $Maybe = Elm.Maybe.make(_elm),
-   $Result = Elm.Result.make(_elm),
-   $Signal = Elm.Signal.make(_elm),
-   $String = Elm.String.make(_elm);
-   var _op = {};
-   var toPixel = function (x) {    return A2($Basics._op["++"],$Basics.toString(x),"px");};
-   var Listing_CSS = F8(function (a,b,c,d,e,f,g,h) {    return {container: a,title: b,price: c,photos: d,categories: e,body: f,button: g,inner_container: h};});
-   _op["=>"] = F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};});
-   var category_tag_css = _U.list([A2(_op["=>"],"border-radius","8px")
-                                  ,A2(_op["=>"],"background-color","#777")
-                                  ,A2(_op["=>"],"font-size","100%")
-                                  ,A2(_op["=>"],"color","#fff")
-                                  ,A2(_op["=>"],"line-height","1.3")
-                                  ,A2(_op["=>"],"text-align","center")
-                                  ,A2(_op["=>"],"display","inline-block")
-                                  ,A2(_op["=>"],"padding","5px 5px")
-                                  ,A2(_op["=>"],"margin","2px 4px")]);
-   var oneCategory = function (category) {    return A2($Html.span,_U.list([$Html$Attributes.style(category_tag_css)]),_U.list([$Html.text(category)]));};
-   var categoryList = function (categories) {    return A2($List.map,oneCategory,categories);};
-   var hidden_div = _U.list([A2(_op["=>"],"display","none")]);
-   var hidden_css = {container: $Html$Attributes.style(hidden_div)
-                    ,inner_container: $Html$Attributes.style(hidden_div)
-                    ,button: $Html$Attributes.style(hidden_div)
-                    ,title: $Html$Attributes.style(hidden_div)
-                    ,price: $Html$Attributes.style(hidden_div)
-                    ,photos: $Html$Attributes.style(hidden_div)
-                    ,categories: $Html$Attributes.style(hidden_div)
-                    ,body: $Html$Attributes.style(hidden_div)};
-   var thumbnail_container = _U.list([A2(_op["=>"],"display","table-cell"),A2(_op["=>"],"width","25%"),A2(_op["=>"],"padding","5px")]);
-   var thumbnail_inner_container = _U.list([A2(_op["=>"],"position","relative")
-                                           ,A2(_op["=>"],"border","1px solid #ddd")
-                                           ,A2(_op["=>"],"overflow","auto")
-                                           ,A2(_op["=>"],"height","100%")
-                                           ,A2(_op["=>"],"background-color","#fff")
-                                           ,A2(_op["=>"],"border-radius","5px 5px 0px 0px")]);
-   var thumbnail_button = _U.list([A2(_op["=>"],"position","absolute"),A2(_op["=>"],"height","100%"),A2(_op["=>"],"width","100%")]);
-   var thumbnail_button_view = function (context) {
-      return A2($Html.div,_U.list([$Html$Attributes.style(thumbnail_button),A2($Html$Events.onClick,context.fullpage,{ctor: "_Tuple0"})]),_U.list([]));
-   };
-   var thumbnail_categories_css = _U.list([A2(_op["=>"],"overflow","auto")
-                                          ,A2(_op["=>"],"margin-left","10px")
-                                          ,A2(_op["=>"],"margin-bottom","10px")
-                                          ,A2(_op["=>"],"word-break","break-word")
-                                          ,A2(_op["=>"],"text-align","left")]);
-   var thumbnail_img_css = _U.list([A2(_op["=>"],"width","100%"),A2(_op["=>"],"border-radius","5px 5px 0px 0px")]);
-   var thumbnail_title_css = _U.list([A2(_op["=>"],"text-align","center"),A2(_op["=>"],"margin","10px"),A2(_op["=>"],"font-weight","400")]);
-   var thumbnail_price_css = _U.list([A2(_op["=>"],"display","inline")
-                                     ,A2(_op["=>"],"color","green")
-                                     ,A2(_op["=>"],"float","right")
-                                     ,A2(_op["=>"],"margin-top","7px")
-                                     ,A2(_op["=>"],"margin-bottom","10px")
-                                     ,A2(_op["=>"],"margin-right","10px")
-                                     ,A2(_op["=>"],"margin-left","10px")
-                                     ,A2(_op["=>"],"font-weight","400")]);
-   var thumbnail_css = function (listing) {
-      return {container: $Html$Attributes.style(thumbnail_container)
-             ,inner_container: $Html$Attributes.style(thumbnail_inner_container)
-             ,button: $Html$Attributes.style(thumbnail_button)
-             ,title: $Html$Attributes.style(thumbnail_title_css)
-             ,price: $Html$Attributes.style(thumbnail_price_css)
-             ,photos: $Html$Attributes.style(thumbnail_img_css)
-             ,categories: $Html$Attributes.style(thumbnail_categories_css)
-             ,body: $Html$Attributes.style(hidden_div)};
-   };
-   var fullpage_container = _U.list([A2(_op["=>"],"padding","20px 40px"),A2(_op["=>"],"margin","0 auto")]);
-   var fullpage_inner_container = _U.list([A2(_op["=>"],"width","100%"),A2(_op["=>"],"height","100%")]);
-   var fullpage_title_css = _U.list([A2(_op["=>"],"text-align","center"),A2(_op["=>"],"font-size","30px")]);
-   var fullpage_price_css = _U.list([A2(_op["=>"],"display","inline")
-                                    ,A2(_op["=>"],"color","green")
-                                    ,A2(_op["=>"],"float","right")
-                                    ,A2(_op["=>"],"margin-bottom","10px")
-                                    ,A2(_op["=>"],"margin-right","20px")
-                                    ,A2(_op["=>"],"margin-left","10px")
-                                    ,A2(_op["=>"],"font-weight","700")
-                                    ,A2(_op["=>"],"font-size","20px")]);
-   var fullpage_img_css = _U.list([A2(_op["=>"],"width","500px")
-                                  ,A2(_op["=>"],"height","500px")
-                                  ,A2(_op["=>"],"margin","auto")
-                                  ,A2(_op["=>"],"border","1px solid #ddd")]);
-   var fullpage_categories_css = _U.list([A2(_op["=>"],"margin-left","20px"),A2(_op["=>"],"font-size","20px")]);
-   var fullpage_body_css = _U.list([A2(_op["=>"],"margin","20px 20px")]);
-   var fullpage_button = _U.list([A2(_op["=>"],"height","100%")
-                                 ,A2(_op["=>"],"border","none")
-                                 ,A2(_op["=>"],"color","white")
-                                 ,A2(_op["=>"],"padding","10px 20px")
-                                 ,A2(_op["=>"],"text-align","center")
-                                 ,A2(_op["=>"],"font-size","16px")
-                                 ,A2(_op["=>"],"background-color","#800000")
-                                 ,A2(_op["=>"],"border-radius","5px")]);
-   var fullpage_button_view = function (context) {
-      return A2($Html.button,
-      _U.list([$Html$Attributes.style(fullpage_button),A2($Html$Events.onClick,context.thumbnail,{ctor: "_Tuple0"})]),
-      _U.list([$Html.text("Back")]));
-   };
-   var fullpage_css = function (listing) {
-      return {container: $Html$Attributes.style(fullpage_container)
-             ,inner_container: $Html$Attributes.style(fullpage_inner_container)
-             ,title: $Html$Attributes.style(fullpage_title_css)
-             ,price: $Html$Attributes.style(fullpage_price_css)
-             ,photos: $Html$Attributes.style(fullpage_img_css)
-             ,categories: $Html$Attributes.style(fullpage_categories_css)
-             ,body: $Html$Attributes.style(fullpage_body_css)
-             ,button: $Html$Attributes.style(fullpage_button)};
-   };
-   var Context = F3(function (a,b,c) {    return {actions: a,thumbnail: b,fullpage: c};});
-   var update = F2(function (action,listing) {    var _p0 = action;return _U.update(listing,{photos: A2($ImageViewer.update,_p0._0,listing.photos)});});
-   var ImageActions = function (a) {    return {ctor: "ImageActions",_0: a};};
-   var view = F2(function (context,listing) {
-      var _p1 = function () {
-         var _p2 = listing.view;
-         switch (_p2.ctor)
-         {case "Thumbnail": return {ctor: "_Tuple2",_0: thumbnail_css(listing),_1: thumbnail_button_view(context)};
-            case "Fullpage": return {ctor: "_Tuple2",_0: fullpage_css(listing),_1: fullpage_button_view(context)};
-            default: return {ctor: "_Tuple2",_0: hidden_css,_1: thumbnail_button_view(context)};}
-      }();
-      var div_css = _p1._0;
-      var button = _p1._1;
-      return A2($Html.div,
-      _U.list([div_css.container]),
-      _U.list([A2($Html.div,
-      _U.list([div_css.inner_container]),
-      _U.list([button
-              ,A2($Html.div,_U.list([div_css.photos]),_U.list([A2($ImageViewer.view,A2($Signal.forwardTo,context.actions,ImageActions),listing.photos)]))
-              ,A2($Html.h2,_U.list([div_css.title]),_U.list([$Html.text(listing.title)]))
-              ,A2($Html.div,_U.list([div_css.price]),_U.list([$Html.text(A2($String.cons,_U.chr("$"),$Basics.toString(listing.price)))]))
-              ,A2($Html.div,_U.list([div_css.categories]),categoryList(listing.categories))
-              ,A2($Html.div,_U.list([div_css.body]),_U.list([$Html.text(listing.body)]))]))]));
-   });
-   var Model = function (a) {
-      return function (b) {
-         return function (c) {
-            return function (d) {
-               return function (e) {
-                  return function (f) {
-                     return function (g) {
-                        return function (h) {
-                           return function (i) {
-                              return function (j) {
-                                 return function (k) {
-                                    return {key: a,title: b,body: c,price: d,categories: e,approved: f,sold: g,lastUpdated: h,photos: i,view: j,query: k};
-                                 };
-                              };
-                           };
-                        };
-                     };
-                  };
-               };
-            };
-         };
-      };
-   };
-   var Hidden = {ctor: "Hidden"};
-   var Fullpage = {ctor: "Fullpage"};
-   var Thumbnail = {ctor: "Thumbnail"};
-   var init = F2(function (p,listing) {
-      return {key: listing.key
-             ,title: listing.title
-             ,body: listing.body
-             ,price: listing.price
-             ,categories: listing.categories
-             ,approved: listing.approved
-             ,sold: listing.sold
-             ,lastUpdated: listing.lastUpdated
-             ,photos: p
-             ,view: Thumbnail
-             ,query: A2($Basics._op["++"],$String.words(listing.body),$String.words(listing.title))};
-   });
-   return _elm.Listing.values = {_op: _op
-                                ,Thumbnail: Thumbnail
-                                ,Fullpage: Fullpage
-                                ,Hidden: Hidden
-                                ,Model: Model
-                                ,init: init
-                                ,ImageActions: ImageActions
-                                ,update: update
-                                ,Context: Context
-                                ,view: view
-                                ,thumbnail_button_view: thumbnail_button_view
-                                ,fullpage_button_view: fullpage_button_view
-                                ,Listing_CSS: Listing_CSS
-                                ,toPixel: toPixel
-                                ,category_tag_css: category_tag_css
-                                ,hidden_div: hidden_div
-                                ,thumbnail_css: thumbnail_css
-                                ,thumbnail_container: thumbnail_container
-                                ,thumbnail_inner_container: thumbnail_inner_container
-                                ,thumbnail_button: thumbnail_button
-                                ,thumbnail_categories_css: thumbnail_categories_css
-                                ,thumbnail_img_css: thumbnail_img_css
-                                ,thumbnail_title_css: thumbnail_title_css
-                                ,thumbnail_price_css: thumbnail_price_css
-                                ,fullpage_css: fullpage_css
-                                ,fullpage_container: fullpage_container
-                                ,fullpage_inner_container: fullpage_inner_container
-                                ,fullpage_title_css: fullpage_title_css
-                                ,fullpage_price_css: fullpage_price_css
-                                ,fullpage_img_css: fullpage_img_css
-                                ,fullpage_categories_css: fullpage_categories_css
-                                ,fullpage_body_css: fullpage_body_css
-                                ,fullpage_button: fullpage_button
-                                ,hidden_css: hidden_css
-                                ,oneCategory: oneCategory
-                                ,categoryList: categoryList};
-};
-Elm.Listings = Elm.Listings || {};
-Elm.Listings.make = function (_elm) {
-   "use strict";
-   _elm.Listings = _elm.Listings || {};
-   if (_elm.Listings.values) return _elm.Listings.values;
-   var _U = Elm.Native.Utils.make(_elm),
-   $Basics = Elm.Basics.make(_elm),
-   $CategoryBar = Elm.CategoryBar.make(_elm),
-   $Debug = Elm.Debug.make(_elm),
-   $Html = Elm.Html.make(_elm),
-   $Html$Attributes = Elm.Html.Attributes.make(_elm),
-   $List = Elm.List.make(_elm),
-   $Listing = Elm.Listing.make(_elm),
-   $Maybe = Elm.Maybe.make(_elm),
-   $Result = Elm.Result.make(_elm),
-   $Signal = Elm.Signal.make(_elm),
-   $String = Elm.String.make(_elm);
-   var _op = {};
-   _op["=>"] = F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};});
-   var listings_container_css = _U.list([A2(_op["=>"],"display","table")
-                                        ,A2(_op["=>"],"border-collapse","separate")
-                                        ,A2(_op["=>"],"border-spacing","5px 5px")
-                                        ,A2(_op["=>"],"margin","0 5%")
-                                        ,A2(_op["=>"],"background-color","#f5f5f5")
-                                        ,A2(_op["=>"],"text-align","center")]);
-   var listings_row_css = _U.list([A2(_op["=>"],"display","table-row")]);
-   var row_div = function (cols) {    return A2($Html.div,_U.list([$Html$Attributes.style(listings_row_css)]),cols);};
-   var fullpage_container_css = _U.list([A2(_op["=>"],"margin","0 10%")]);
-   var toPixel = function (x) {    return A2($Basics._op["++"],$Basics.toString(x),"px");};
-   var listingMatchCategories = F2(function (_p0,listing) {
-      var _p1 = _p0;
-      var _p2 = _p1._0;
-      return _U.eq(_p2,$CategoryBar.None) ? true : A2($List.member,$String.toLower($Basics.toString(_p2)),listing.categories) ? true : false;
-   });
-   var listingMatchQuery = F2(function (filter_words,listing) {
-      return _U.eq(filter_words,_U.list([])) ? true : A3($List.foldl,
-      F2(function (word,tf) {    return A2($List.member,word,listing.query) && tf;}),
-      true,
-      filter_words) ? true : false;
-   });
-   var ViewAction = function (a) {    return {ctor: "ViewAction",_0: a};};
-   var CategoryFilter = function (a) {    return {ctor: "CategoryFilter",_0: a};};
-   var FilterAction = function (a) {    return {ctor: "FilterAction",_0: a};};
-   var ListingAction = F2(function (a,b) {    return {ctor: "ListingAction",_0: a,_1: b};});
-   var FullpageAction = function (a) {    return {ctor: "FullpageAction",_0: a};};
-   var ThumbnailAction = {ctor: "ThumbnailAction"};
-   var view_listing = F2(function (address,listing) {
-      var context = A3($Listing.Context,
-      A2($Signal.forwardTo,address,ListingAction(listing.key)),
-      A2($Signal.forwardTo,address,$Basics.always(ThumbnailAction)),
-      A2($Signal.forwardTo,address,$Basics.always(FullpageAction(listing.key))));
-      return A2($Listing.view,context,listing);
-   });
-   var makeTableRows = F3(function (address,listing,acc) {
-      var _p3 = function () {
-         var _p4 = acc;
-         if (_p4.ctor === "[]") {
-               return _U.crashCase("Listings",
-               {start: {line: 153,column: 24},end: {line: 155,column: 41}},
-               _p4)("Oh no! Acc was not initialized correctly in foldr");
-            } else {
-               return {ctor: "_Tuple2",_0: _p4._0,_1: _p4._1};
-            }
-      }();
-      var acc_head = _p3._0;
-      var accs = _p3._1;
-      var new_listing_html = A2(view_listing,address,listing);
-      var new_head = _U.eq($List.length(acc_head),4) ? _U.list([_U.list([new_listing_html]),acc_head]) : _U.list([A2($List._op["::"],
-      new_listing_html,
-      acc_head)]);
-      return A2($List.append,new_head,accs);
-   });
-   var view = F2(function (address,model) {
-      var _p6 = function () {
-         var _p7 = model.view;
-         if (_p7.ctor === "ThumbnailView") {
-               return {ctor: "_Tuple2"
-                      ,_0: _U.list([$Html$Attributes.style(listings_container_css),$Html$Attributes.id("thumbnail-container")])
-                      ,_1: A2($List.map,
-                      row_div,
-                      A3($List.foldr,
-                      makeTableRows(address),
-                      _U.list([_U.list([])]),
-                      A2($List.filter,function (l) {    return _U.eq(l.view,$Listing.Thumbnail);},model.listings)))};
-            } else {
-               return {ctor: "_Tuple2"
-                      ,_0: _U.list([$Html$Attributes.style(fullpage_container_css),$Html$Attributes.id("fullpage-container")])
-                      ,_1: A2($List.map,view_listing(address),model.listings)};
-            }
-      }();
-      var container_css = _p6._0;
-      var listings_content = _p6._1;
-      var debug = A2($Debug.log,"View type",model.view);
-      return A2($Html.div,container_css,listings_content);
-   });
-   var Model = F3(function (a,b,c) {    return {view: a,searchfilter: b,listings: c};});
-   var FullpageView = {ctor: "FullpageView"};
-   var ThumbnailView = {ctor: "ThumbnailView"};
-   var init = function (listingsList) {    return {view: ThumbnailView,searchfilter: _U.list([]),listings: listingsList};};
-   var update = F2(function (action,model) {
-      var a = A2($Debug.log,"Action: ",action);
-      var _p8 = action;
-      switch (_p8.ctor)
-      {case "ThumbnailAction": return _U.update(model,
-           {view: ThumbnailView,listings: A2($List.map,function (listing) {    return _U.update(listing,{view: $Listing.Thumbnail});},model.listings)});
-         case "FullpageAction": return _U.update(model,
-           {view: FullpageView
-           ,listings: A2($List.map,
-           function (listing) {
-              return _U.eq(listing.key,_p8._0) ? _U.update(listing,{view: $Listing.Fullpage}) : _U.update(listing,{view: $Listing.Hidden});
-           },
-           model.listings)});
-         case "ListingAction": return _U.update(model,
-           {listings: A2($List.map,function (listing) {    return _U.eq(listing.key,_p8._0) ? A2($Listing.update,_p8._1,listing) : listing;},model.listings)});
-         case "FilterAction": var _p9 = _p8._0;
-           return _U.update(model,
-           {view: ThumbnailView
-           ,listings: _U.eq(_p9,_U.list([""])) ? A2($List.map,function (l) {    return _U.update(l,{view: $Listing.Thumbnail});},model.listings) : A2($List.map,
-           function (listing) {
-              return A2(listingMatchQuery,_p9,listing) ? _U.update(listing,{view: $Listing.Thumbnail}) : _U.update(listing,{view: $Listing.Hidden});
-           },
-           model.listings)});
-         case "CategoryFilter": return _U.update(model,
-           {view: ThumbnailView
-           ,listings: A2($List.map,
-           function (listing) {
-              return A2(listingMatchCategories,_p8._0,listing) ? _U.update(listing,{view: $Listing.Thumbnail}) : _U.update(listing,{view: $Listing.Hidden});
-           },
-           model.listings)});
-         default: return _U.update(model,
-           {view: _p8._0,listings: A2($List.map,function (l) {    return _U.update(l,{view: $Listing.Thumbnail});},model.listings)});}
-   });
-   return _elm.Listings.values = {_op: _op
-                                 ,ThumbnailView: ThumbnailView
-                                 ,FullpageView: FullpageView
-                                 ,Model: Model
-                                 ,init: init
-                                 ,ThumbnailAction: ThumbnailAction
-                                 ,FullpageAction: FullpageAction
-                                 ,ListingAction: ListingAction
-                                 ,FilterAction: FilterAction
-                                 ,CategoryFilter: CategoryFilter
-                                 ,ViewAction: ViewAction
-                                 ,update: update
-                                 ,listingMatchQuery: listingMatchQuery
-                                 ,listingMatchCategories: listingMatchCategories
-                                 ,view: view
-                                 ,view_listing: view_listing
-                                 ,toPixel: toPixel
-                                 ,listings_container_css: listings_container_css
-                                 ,listings_row_css: listings_row_css
-                                 ,row_div: row_div
-                                 ,makeTableRows: makeTableRows
-                                 ,fullpage_container_css: fullpage_container_css};
-};
 Elm.Index = Elm.Index || {};
 Elm.Index.make = function (_elm) {
    "use strict";
@@ -12410,7 +12414,6 @@ Elm.Index.make = function (_elm) {
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
-   $String = Elm.String.make(_elm),
    $Task = Elm.Task.make(_elm);
    var _op = {};
    var testUrl = "http://go-marketplace.appspot.com/listings";
@@ -12419,44 +12422,36 @@ Elm.Index.make = function (_elm) {
    var appendListings = F2(function (old_listings,new_listings) {
       return _U.update(old_listings,{listings: A2($List.append,old_listings.listings,new_listings)});
    });
-   var HomeAction = function (a) {    return {ctor: "HomeAction",_0: a};};
    var Scroll = function (a) {    return {ctor: "Scroll",_0: a};};
    var CategoryAction = function (a) {    return {ctor: "CategoryAction",_0: a};};
-   var SearchEnter = function (a) {    return {ctor: "SearchEnter",_0: a};};
    var HeaderAction = function (a) {    return {ctor: "HeaderAction",_0: a};};
    var HttpAction = function (a) {    return {ctor: "HttpAction",_0: a};};
    var getListings = function (url) {    return $Effects.task(A2($Task.map,HttpAction,$HttpGetter.getListings(url)));};
    var update = F2(function (action,model) {
       var _p0 = action;
       switch (_p0.ctor)
-      {case "ListingsAction": return {ctor: "_Tuple2",_0: _U.update(model,{listings: A2($Listings.update,_p0._0,model.listings)}),_1: $Effects.none};
-         case "HttpAction": return {ctor: "_Tuple2"
-                                   ,_0: function (new_listings) {
-                                      return _U.update(model,{listings: A2(appendListings,model.listings,new_listings)});
-                                   }(A2(blobToListings,$Images.testImages,A2($Maybe.withDefault,$HttpGetter.init,_p0._0)))
-                                   ,_1: $Effects.none};
-         case "HeaderAction": return {ctor: "_Tuple2",_0: _U.update(model,{meta: A2($Header.update,_p0._0,model.meta)}),_1: $Effects.none};
-         case "SearchEnter": var filter_words = $String.words(model.meta.search);
-           return {ctor: "_Tuple2",_0: _U.update(model,{listings: A2($Listings.update,$Listings.FilterAction(filter_words),model.listings)}),_1: $Effects.none};
-         case "CategoryAction": var meta$ = A2($Header.update,_p0._0,model.meta);
-           var listings$ = A2($Listings.update,$Listings.CategoryFilter(meta$.category),model.listings);
-           return {ctor: "_Tuple2",_0: _U.update(model,{meta: meta$,listings: listings$}),_1: $Effects.none};
+      {case "HttpAction": return {ctor: "_Tuple2"
+                                 ,_0: function (new_listings) {
+                                    return _U.update(model,{listings: A2(appendListings,model.listings,new_listings)});
+                                 }(A2(blobToListings,$Images.testImages,A2($Maybe.withDefault,$HttpGetter.init,_p0._0)))
+                                 ,_1: $Effects.none};
          case "Scroll": return _U.eq(_p0._0,true) && _U.eq(model.listings.view,$Listings.ThumbnailView) ? {ctor: "_Tuple2"
                                                                                                           ,_0: model
                                                                                                           ,_1: getListings(testUrl)} : {ctor: "_Tuple2"
                                                                                                                                        ,_0: model
                                                                                                                                        ,_1: $Effects.none};
-         default: return {ctor: "_Tuple2"
-                         ,_0: _U.update(model,{listings: A2($Listings.update,$Listings.ViewAction($Listings.ThumbnailView),model.listings)})
-                         ,_1: $Effects.none};}
+         case "ListingsAction": return {ctor: "_Tuple2",_0: _U.update(model,{listings: A2($Listings.update,_p0._0,model.listings)}),_1: $Effects.none};
+         case "HeaderAction": return {ctor: "_Tuple2",_0: _U.update(model,{meta: A2($Header.update,_p0._0,model.meta)}),_1: $Effects.none};
+         default: var meta$ = A2($Header.update,_p0._0,model.meta);
+           var listings$ = A2($Listings.update,$Listings.CategoryFilter(meta$.category),model.listings);
+           return {ctor: "_Tuple2",_0: _U.update(model,{meta: meta$,listings: listings$}),_1: $Effects.none};}
    });
    var ListingsAction = function (a) {    return {ctor: "ListingsAction",_0: a};};
    var view = F2(function (address,model) {
-      var header_context = A4($Header.Context,
+      var header_context = A3($Header.Context,
       A2($Signal.forwardTo,address,HeaderAction),
-      A2($Signal.forwardTo,address,SearchEnter),
       A2($Signal.forwardTo,address,CategoryAction),
-      A2($Signal.forwardTo,address,HomeAction));
+      A2($Signal.forwardTo,address,ListingsAction));
       return A2($Html.div,
       _U.list([$Html$Attributes.style(_U.list([A2(_op["=>"],"background-color","#f5f5f5"),A2(_op["=>"],"font-family","sans-serif")]))
               ,$Html$Attributes.id("index-root")]),
@@ -12470,10 +12465,8 @@ Elm.Index.make = function (_elm) {
                               ,ListingsAction: ListingsAction
                               ,HttpAction: HttpAction
                               ,HeaderAction: HeaderAction
-                              ,SearchEnter: SearchEnter
                               ,CategoryAction: CategoryAction
                               ,Scroll: Scroll
-                              ,HomeAction: HomeAction
                               ,update: update
                               ,appendListings: appendListings
                               ,view: view

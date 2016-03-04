@@ -3,6 +3,7 @@ module CategoryBar where
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Listings
 
 -- Model
 type Category =
@@ -28,8 +29,20 @@ init = (None, None)
 
 allCategories : List Category
 allCategories =
-  [Apartments, Subleases, Appliances, Bikes, Books, Cars, Electronics, Employment, Furniture, Miscellaneous, Services,
-  Wanted, Free]
+  [ Apartments
+  , Subleases
+  , Appliances
+  , Bikes
+  , Books
+  , Cars
+  , Electronics
+  , Employment
+  , Furniture
+  , Miscellaneous
+  , Services
+  , Wanted
+  , Free
+  ]
 
 -- Update
 type Action =
@@ -45,14 +58,20 @@ update action (on, hover) =
     MouseEnter category -> (on, category)
     MouseLeave category -> (on, None)
 
---view
-view : Signal.Address Action -> Model -> Html
-view address model =
-  div [ style border_bar_css ]
-      (List.map (categoryView address model ) allCategories)
+-- View
+type alias Context =
+  { category_click : Signal.Address Action
+  , category_hover : Signal.Address (Action, ListingsAction) 
+  }
 
-categoryView : Signal.Address Action -> Model -> Category -> Html
-categoryView address (on, hover) category =
+
+view : Context -> Model -> Html
+view context model =
+  div [ style border_bar_css ]
+      (List.map (categoryView context model ) allCategories)
+
+categoryView : Context -> Model -> Category -> Html
+categoryView context (on, hover) category =
   let
     css = if (on == category) || (hover == category)  then on_css else off_css
     special_modifier_css = if category == Apartments then left_tab_css
@@ -60,9 +79,9 @@ categoryView address (on, hover) category =
                            else []
   in
     div [ style (css ++ individual_category_css ++ special_modifier_css)
-      , onClick address (ToggleCategory category)
-      , onMouseEnter address (MouseEnter category) 
-      , onMouseLeave address (MouseLeave category) ]
+      , onClick context.category_click (ToggleCategory category, Listings.CategoryFilter category)
+      , onMouseEnter context.context_hover (MouseEnter category) 
+      , onMouseLeave context.context_hover (MouseLeave category) ]
       [text <| toString category]
 
 

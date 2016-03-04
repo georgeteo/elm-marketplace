@@ -37,37 +37,32 @@ type Action =
   ListingsAction Listings.Action
   | HttpAction (Maybe HttpGetter.Blob)
   | HeaderAction Header.Action
-  | SearchEnter ()
   | CategoryAction Header.Action
   | Scroll Bool
-  | HomeAction ()
+  | HeaderThenListingsAction (Header.Action, Listings.Action)
 
 update : Action -> Model -> (Model, Effects Action)
 update action model =
   case action of
-    ListingsAction listings_action -> ({ model | listings = Listings.update listings_action model.listings }
-                                      , Effects.none)
     HttpAction maybeBlob -> (Maybe.withDefault HttpGetter.init maybeBlob
                               |> blobToListings Images.testImages
                               |> (\new_listings -> { model | listings = appendListings model.listings new_listings })
                             , Effects.none)
+    Scroll b -> if (b == True) && (model.listings.view == Listings.ThumbnailView) 
+                then (model, getListings testUrl)
+                else (model, Effects.none)
+    ListingsAction listings_action -> ({ model | listings = Listings.update listings_action model.listings }
+                                      , Effects.none)
     HeaderAction header_action -> ( { model | meta = Header.update header_action model.meta }
                                   , Effects.none ) 
-    SearchEnter _ -> let
-                       filter_words = String.words model.meta.search
-                     in
-                       ({ model | listings = Listings.update (Listings.FilterAction filter_words) model.listings }
-                        , Effects.none)
     CategoryAction header_action -> let
                                       meta' = Header.update header_action model.meta
                                       listings' = (Listings.update (Listings.CategoryFilter meta'.category) model.listings)
                                     in
                                       ( {model | meta = meta', listings = listings' }, Effects.none)
-    Scroll b -> if (b == True) && (model.listings.view == Listings.ThumbnailView) 
-                then (model, getListings testUrl)
-                else (model, Effects.none)
-    HomeAction _ -> ({model | listings = Listings.update (Listings.ViewAction Listings.ThumbnailView) model.listings }
-                    , Effects.none)
+    HeaderThenListingsAction (header_action, listings_action) -> let
+                                                                  meta' = Header.update header_action model.meta
+                                                                  listings_action = 
     
 
 appendListings : Listings.Model -> List Listing.Model -> Listings.Model
@@ -81,9 +76,8 @@ view : Address Action -> Model -> Html
 view address model =
   let
     header_context = Header.Context (forwardTo address HeaderAction)
-                                    (forwardTo address SearchEnter)
                                     (forwardTo address CategoryAction)
-                                    (forwardTo address HomeAction)
+                                    (forwardTo address ListingsAction)
   in
   div [ style [ "background-color" => "#f5f5f5"
               , "font-family" => "sans-serif"]

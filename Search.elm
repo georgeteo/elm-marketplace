@@ -8,6 +8,7 @@ import Signal
 import String
 import List
 import Json.Decode as Json
+import Listings
 
 -- Model
 type alias Query = String
@@ -48,14 +49,14 @@ input_css =
 -- View
 type alias Context =
   { input : Signal.Address Action
-  , enter : Signal.Address () }
+  , listingsAction : Signal.Address Listings.Action }
 
 view : (Int, Int) -> Context -> Query -> Html
 view (logo_w, h) context query =
   div [ style (search_div_css (logo_w, h)) ]
       [ input [ placeholder "Search"
               , value query
-              , onEnter context.enter ()
+              , onEnter context.listingsAction (Listings.FilterAction <| String.words query)
               , Html.Events.on "input" targetValue (Signal.message context.input << Search)
               , style input_css
               ]

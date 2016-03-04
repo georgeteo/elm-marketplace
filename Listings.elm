@@ -40,6 +40,7 @@ type Action =
     | FilterAction FilterWords
     | CategoryFilter  CategoryBar.Model
     | ViewAction View
+    | Recusive Action
 
 update : Action -> Model -> Model
 update action model =
@@ -76,6 +77,7 @@ update action model =
     ViewAction new_view -> {model | view = new_view 
                                   , listings = List.map (\l -> {l | view = Listing.Thumbnail}) model.listings
                            }
+    Recursive new_action -> update new_action model
 
 listingMatchQuery : FilterWords -> Listing.Model -> Bool
 listingMatchQuery filter_words listing =

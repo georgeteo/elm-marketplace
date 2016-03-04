@@ -9,6 +9,7 @@ import Window
 import Search exposing (Query)
 import Signal
 import CategoryBar
+import Listings
 
 -- Model
 type alias Meta =
@@ -80,10 +81,10 @@ name_text_css =
 -- HTML div for logo + name
 
 -- Input (logo_width, name_w, height)
-div_logo_name : (Int, Int, Int) -> Signal.Address () -> Html
+div_logo_name : (Int, Int, Int) -> Signal.Address Listings.Action -> Html
 div_logo_name (logo_w, name_w, h) address = 
   div [ style (logo_name_css ((logo_w + name_w), h) ) 
-      , onClick address () ]
+      , onClick address (Listings.ViewAction Listings.ThumbnailView) ]
       [ div_logo logo_w
       , div_name (name_w, h)
       ]
@@ -106,9 +107,9 @@ div_name (w, h) =
 
 type alias Context =
   { search : Signal.Address Action
-  , searchtrigger : Signal.Address ()
   , category : Signal.Address Action 
-  , home : Signal.Address () }
+  , listingsAction : Signal.Address Listings.Action 
+  , headerThenListingsAction : (Signal.Address Action, Signal.Address Listings.Action)}
 
 view : Context -> Meta -> Html
 view context model =
@@ -119,10 +120,12 @@ view context model =
     logo_and_name_width = logo_width + name_width 
     search_context = Search.Context
                      (Signal.forwardTo context.search SearchAction)
-                     context.searchtrigger
+                     context.listingsAction
+    category_context = Category.Context
+                        (Signal.forwardTo context.headerThenListingsAction CategoryAction  
   in
     div [ style container_css ]
-        [ CategoryBar.view (Signal.forwardTo context.category CategoryAction) model.category
-        , div_logo_name (logo_width, name_width, height) context.home
+        [ CategoryBar.view (Signal.forwardTo context.category CategoryAction, Signal.forwardTo context.headerThenListingsAction ) model.category
+        , div_logo_name (logo_width, name_width, height) context.listingsAction
         , Search.view (logo_and_name_width, height) search_context model.search
         ]
