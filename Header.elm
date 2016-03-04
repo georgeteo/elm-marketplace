@@ -23,13 +23,19 @@ init =
 -- Update
 type Action =
   SearchAction Search.Action
-  | CategoryAction CategoryBar.Action
+    | CategoryInput CategoryBar.Action
+    | CategoryEnter CategoryBar.Category
 
 update : Action -> Meta -> Meta
 update action model =
   case action of
-    SearchAction search_action -> { model | search = Search.update search_action model.search }
-    CategoryAction category_action -> { model | category = CategoryBar.update category_action model.category }
+    SearchAction search_action -> 
+      { model | search = Search.update search_action model.search }
+    CategoryInput category_action -> 
+      { model | category = CategoryBar.update category_action model.category }
+    CategoryEnter c ->
+      { model | category = CategoryBar.update (CategoryBar.ToggleCategory c) model.category }
+
 
 -- Util
 toPixel : number -> String
@@ -106,10 +112,11 @@ div_name (w, h) =
       ]
 
 type alias Context =
-  { search : Signal.Address Action
-  , searchtrigger : Signal.Address ()
-  , category : Signal.Address Action 
-  , home : Signal.Address () }
+  { headerAction : Signal.Address Action
+  , searchEnter : Signal.Address (List String)
+  , categoryEnter : Signal.Address CategoryBar.Category
+  , reset : Signal.Address ()
+  }
 
 view : Context -> Meta -> Html
 view context model =
@@ -119,11 +126,14 @@ view context model =
     height = 100
     logo_and_name_width = logo_width + name_width 
     search_context = Search.Context
-                     (Signal.forwardTo context.search SearchAction)
-                     context.searchtrigger
+                     (Signal.forwardTo context.headerAction SearchAction)
+                     context.searchEnter
+    category_context = CategoryBar.Context
+                        (Signal.forwardTo context.headerAction CategoryInput)
+                        context.categoryEnter
   in
     div [ style container_css ]
-        [ CategoryBar.view (Signal.forwardTo context.category CategoryAction) model.category
-        , div_logo_name (logo_width, name_width, height) context.home
+        [ CategoryBar.view category_context model.category
+        , div_logo_name (logo_width, name_width, height) context.reset
         , Search.view (logo_and_name_width, height) search_context model.search
         ]

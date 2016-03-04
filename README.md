@@ -27,11 +27,12 @@ evancz/virtual-dom
 #### Critical
 
 1. Index page wonky when search happens -- DONE
-2. Category bar highlight will return to thumbnail view
+2. Category bar highlight will return to thumbnail view -- DONE
 3. Add icons for left and right images if necessary -- DONE
 4. Search empty returns to homepage -- DONE
 5. Click logo returns to homepage -- DONE
 6. Mouse pointer icon from I to < on logo -- DONE
+7. Unify filtering of category and search
 
 #### Non-critical
 

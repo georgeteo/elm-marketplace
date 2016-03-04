@@ -48,14 +48,14 @@ input_css =
 -- View
 type alias Context =
   { input : Signal.Address Action
-  , enter : Signal.Address () }
+  , enter : Signal.Address (List String)}
 
 view : (Int, Int) -> Context -> Query -> Html
 view (logo_w, h) context query =
   div [ style (search_div_css (logo_w, h)) ]
       [ input [ placeholder "Search"
               , value query
-              , onEnter context.enter ()
+              , onEnter context.enter (String.words query)
               , Html.Events.on "input" targetValue (Signal.message context.input << Search)
               , style input_css
               ]

@@ -25,10 +25,6 @@ type alias Model =
   , listings : List Listing.Model
   }
 
--- For the purposes for testing, init has been initalized with a sample listings.
--- Currently, HTTP.get is not working so I am unable to get the json from the server.
--- This is a temporary measure in o"rder to continue work.
-
 init : List Listing.Model -> Model
 init listingsList = {view = ThumbnailView, searchfilter = [], listings = listingsList }
 
@@ -37,45 +33,47 @@ type Action =
   ThumbnailAction
     | FullpageAction Listing.UUID
     | ListingAction Listing.UUID Listing.Action
-    | FilterAction FilterWords
-    | CategoryFilter  CategoryBar.Model
-    | ViewAction View
+    | SearchEnter FilterWords
+    | CategoryEnter  CategoryBar.Category
 
 update : Action -> Model -> Model
 update action model =
   let a = Debug.log "Action: " action in
   case action of
-    ThumbnailAction -> { model | view = ThumbnailView
-                       , listings = List.map (\listing -> {listing | view = Listing.Thumbnail }) model.listings
-                       }
-    FullpageAction uuid -> { model | view = FullpageView
-                                   , listings = List.map (\listing -> if listing.key == uuid
-                                                                      then {listing | view = Listing.Fullpage}
-                                                                      else {listing | view = Listing.Hidden}
-                                                         ) model.listings
-                           } 
-    ListingAction uuid listing_action -> { model | listings = List.map
-                                                              (\listing -> if listing.key == uuid
-                                                                           then Listing.update listing_action listing
-                                                                           else listing
-                                                              ) model.listings
-                                         }
-    FilterAction filter_words -> { model | view = ThumbnailView
-                                         , listings = if filter_words == [""] then List.map (\l -> {l | view = Listing.Thumbnail}) model.listings
-                                                      else List.map (\listing -> if listingMatchQuery filter_words listing
-                                                                                 then {listing | view = Listing.Thumbnail}
-                                                                                 else {listing | view = Listing.Hidden}
-                                                                    ) model.listings
-                                 }
-    CategoryFilter category -> {model | view = ThumbnailView
-                                      , listings = List.map (\listing -> if listingMatchCategories category listing
-                                                                        then {listing | view = Listing.Thumbnail}
-                                                                        else {listing | view = Listing.Hidden}
-                                                               ) model.listings
-                                   }
-    ViewAction new_view -> {model | view = new_view 
-                                  , listings = List.map (\l -> {l | view = Listing.Thumbnail}) model.listings
-                           }
+    ThumbnailAction -> 
+      { model | view = ThumbnailView
+      , listings = List.map (\listing -> {listing | view = Listing.Thumbnail }) model.listings
+      }
+    FullpageAction uuid -> 
+      { model | view = FullpageView
+              , listings = List.map (\listing -> if listing.key == uuid
+                           then {listing | view = Listing.Fullpage}
+                           else {listing | view = Listing.Hidden}
+              ) model.listings
+      } 
+    ListingAction uuid listing_action -> 
+      { model | listings = List.map (\listing -> if listing.key == uuid
+                                      then Listing.update listing_action listing
+                                      else listing
+                                    ) model.listings
+      }
+    SearchEnter filter_words -> 
+      { model | view = ThumbnailView
+              , listings = if filter_words == [""]
+                           then List.map (\l -> {l | view = Listing.Thumbnail}) model.listings
+                           else List.map (\listing -> if listingMatchQuery filter_words listing
+                                                      then {listing | view = Listing.Thumbnail}
+                                                      else {listing | view = Listing.Hidden}
+                                          ) model.listings
+      }
+    CategoryEnter category ->
+      let c = Debug.log "Category" category in 
+      {model | view = ThumbnailView
+             , listings = List.map (\listing -> if listingMatchCategories category listing
+                                                then {listing | view = Listing.Thumbnail}
+                                                else {listing | view = Listing.Hidden}
+                                   ) model.listings
+      }
 
 listingMatchQuery : FilterWords -> Listing.Model -> Bool
 listingMatchQuery filter_words listing =
@@ -84,16 +82,20 @@ listingMatchQuery filter_words listing =
        then True
        else False
 
-listingMatchCategories : CategoryBar.Model -> Listing.Model -> Bool
-listingMatchCategories (category, _) listing =
+listingMatchCategories : CategoryBar.Category -> Listing.Model -> Bool
+listingMatchCategories category listing =
   if category == CategoryBar.None then True
   else if List.member (toString category |> toLower) listing.categories then True
        else False 
 
 
 -- View
-view : Address Action -> Model -> Html
-view address model =
+type alias Context =
+  { listingsAction : Address Action 
+  }
+
+view : Context -> Model -> Html
+view context model =
   let
     debug = Debug.log "View type" model.view 
     (container_css, listings_content) =
@@ -108,25 +110,25 @@ view address model =
           in
             ([ style (List.append listings_container_css one_listing_hack )
               , id "thumbnail-container"]
-              , List.foldr (makeTableRows address) [[]] filtered_listings
+              , List.foldr (makeTableRows context) [[]] filtered_listings
                  |> List.map row_div
             )
         FullpageView -> ( [ style fullpage_container_css
                           , id "fullpage-container"]
-                        , List.map (view_listing address) model.listings
+                        , List.map (view_listing context) model.listings
                         )
   in
     div container_css listings_content
 
-view_listing : Address Action -> Listing.Model -> Html
-view_listing address listing =
+view_listing : Context -> Listing.Model -> Html
+view_listing context listing =
   let 
-    context = Listing.Context 
-             (forwardTo address (ListingAction listing.key))
-             (forwardTo address (always (ThumbnailAction)))
-             (forwardTo address (always (FullpageAction listing.key)))
+    listing_context = Listing.Context 
+             (forwardTo context.listingsAction (ListingAction listing.key))
+             (forwardTo context.listingsAction (always (ThumbnailAction)))
+             (forwardTo context.listingsAction (always (FullpageAction listing.key)))
   in
-    Listing.view context listing
+    Listing.view listing_context listing
 
   -- CSS
 toPixel : number -> String
@@ -153,10 +155,10 @@ row_div cols =
   div [ style listings_row_css ]
       cols
 
-makeTableRows : Address Action -> Listing.Model -> List (List Html) -> List (List Html)
-makeTableRows address listing acc =
+makeTableRows : Context -> Listing.Model -> List (List Html) -> List (List Html)
+makeTableRows context listing acc =
   let
-    new_listing_html = view_listing address listing
+    new_listing_html = view_listing context listing
     (acc_head, accs) = case acc of
                         [] -> Debug.crash "Oh no! Acc was not initialized correctly in foldr"
                         x::xs -> (x, xs)

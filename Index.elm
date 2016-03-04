@@ -15,10 +15,10 @@ import Images
 import ImageViewer
 import Task
 import String
+import CategoryBar
 
 -- Model
 
--- TODO: expand Model to account for search and category filters
 type alias SearchFilters = String
 
 type alias Model =
@@ -34,40 +34,44 @@ init =
 
 -- Update
 type Action =
-  ListingsAction Listings.Action
-  | HttpAction (Maybe HttpGetter.Blob)
-  | HeaderAction Header.Action
-  | SearchEnter ()
-  | CategoryAction Header.Action
-  | Scroll Bool
-  | HomeAction ()
+  HttpAction (Maybe HttpGetter.Blob) -- GET HTTP response
+    | Scroll Bool -- Scroll information for JS port
+    | ListingsAction (Listings.Action) -- Internal Listings Actions: view and image viewer changes
+    | HeaderAction Header.Action -- Internal Header Actions: search input or category hover
+    | SearchEnter (List String) -- Search query with list of query words
+    | CategoryEnter CategoryBar.Category -- Category query with a category
+    | Reset () -- Reset action to all listings and no filter settings
 
 update : Action -> Model -> (Model, Effects Action)
 update action model =
   case action of
-    ListingsAction listings_action -> ({ model | listings = Listings.update listings_action model.listings }
-                                      , Effects.none)
-    HttpAction maybeBlob -> (Maybe.withDefault HttpGetter.init maybeBlob
-                              |> blobToListings Images.testImages
-                              |> (\new_listings -> { model | listings = appendListings model.listings new_listings })
-                            , Effects.none)
-    HeaderAction header_action -> ( { model | meta = Header.update header_action model.meta }
-                                  , Effects.none ) 
-    SearchEnter _ -> let
-                       filter_words = String.words model.meta.search
-                     in
-                       ({ model | listings = Listings.update (Listings.FilterAction filter_words) model.listings }
-                        , Effects.none)
-    CategoryAction header_action -> let
-                                      meta' = Header.update header_action model.meta
-                                      listings' = (Listings.update (Listings.CategoryFilter meta'.category) model.listings)
-                                    in
-                                      ( {model | meta = meta', listings = listings' }, Effects.none)
-    Scroll b -> if (b == True) && (model.listings.view == Listings.ThumbnailView) 
-                then (model, getListings testUrl)
-                else (model, Effects.none)
-    HomeAction _ -> ({model | listings = Listings.update (Listings.ViewAction Listings.ThumbnailView) model.listings }
-                    , Effects.none)
+    HttpAction maybeBlob -> 
+      (Maybe.withDefault HttpGetter.init maybeBlob
+        |> blobToListings Images.testImages
+        |> (\new_listings -> { model | listings = appendListings model.listings new_listings })
+      , Effects.none)
+    Scroll b -> 
+      if (b == True) && (model.listings.view == Listings.ThumbnailView) 
+      then (model, getListings testUrl)
+      else (model, Effects.none)
+    ListingsAction listings_action -> 
+      ({ model | listings = Listings.update listings_action model.listings }
+      , Effects.none)
+    HeaderAction header_action -> 
+      ( { model | meta = Header.update header_action model.meta }
+      , Effects.none ) 
+    SearchEnter filter_words ->
+      ({ model | listings = Listings.update (Listings.SearchEnter filter_words) model.listings }
+      , Effects.none)
+    CategoryEnter category -> 
+      let
+        meta' = Header.update (Header.CategoryEnter category) model.meta
+        listings' = Listings.update (Listings.CategoryEnter (fst meta'.category)) model.listings
+      in
+        ({model | meta = meta', listings = listings' }, Effects.none)
+    Reset _ -> 
+      ({model | listings = Listings.update Listings.ThumbnailAction model.listings }
+      , Effects.none)
     
 
 appendListings : Listings.Model -> List Listing.Model -> Listings.Model
@@ -82,16 +86,15 @@ view address model =
   let
     header_context = Header.Context (forwardTo address HeaderAction)
                                     (forwardTo address SearchEnter)
-                                    (forwardTo address CategoryAction)
-                                    (forwardTo address HomeAction)
+                                    (forwardTo address CategoryEnter)
+                                    (forwardTo address Reset)
+    listings_context = Listings.Context (forwardTo address ListingsAction)
   in
-  div [ style [ "background-color" => "#f5f5f5"
-              , "font-family" => "sans-serif"]
-      , id "index-root"]
-      [ Header.view header_context
-                    model.meta
-      , Listings.view (forwardTo address ListingsAction)
-                      model.listings
+    div [ style [ "background-color" => "#f5f5f5"
+                , "font-family" => "sans-serif"]
+        , id "index-root"]
+      [ Header.view header_context model.meta
+      , Listings.view listings_context model.listings
       ]
 
 -- Effects

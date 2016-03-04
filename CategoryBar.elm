@@ -46,13 +46,18 @@ update action (on, hover) =
     MouseLeave category -> (on, None)
 
 --view
-view : Signal.Address Action -> Model -> Html
-view address model =
-  div [ style border_bar_css ]
-      (List.map (categoryView address model ) allCategories)
+type alias Context =
+  { categoryInput : Signal.Address Action
+  , categoryEnter : Signal.Address Category
+  }
 
-categoryView : Signal.Address Action -> Model -> Category -> Html
-categoryView address (on, hover) category =
+view : Context -> Model -> Html
+view context model =
+  div [ style border_bar_css ]
+      (List.map (categoryView context model ) allCategories)
+
+categoryView : Context -> Model -> Category -> Html
+categoryView context (on, hover) category =
   let
     css = if (on == category) || (hover == category)  then on_css else off_css
     special_modifier_css = if category == Apartments then left_tab_css
@@ -60,9 +65,9 @@ categoryView address (on, hover) category =
                            else []
   in
     div [ style (css ++ individual_category_css ++ special_modifier_css)
-      , onClick address (ToggleCategory category)
-      , onMouseEnter address (MouseEnter category) 
-      , onMouseLeave address (MouseLeave category) ]
+        , onClick context.categoryEnter category
+        , onMouseEnter context.categoryInput (MouseEnter category) 
+        , onMouseLeave context.categoryInput (MouseLeave category) ]
       [text <| toString category]
 
 

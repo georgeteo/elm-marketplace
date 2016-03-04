@@ -11121,6 +11121,7 @@ Elm.CategoryBar.make = function (_elm) {
    var left_tab_css = _U.list([A2(_op["=>"],"border-top-left-radius","5px")]);
    var right_tab_css = _U.list([A2(_op["=>"],"border-top-right-radius","5px")]);
    var border_bar_css = _U.list([A2(_op["=>"],"text-align","center")]);
+   var Context = F2(function (a,b) {    return {categoryInput: a,categoryEnter: b};});
    var MouseLeave = function (a) {    return {ctor: "MouseLeave",_0: a};};
    var MouseEnter = function (a) {    return {ctor: "MouseEnter",_0: a};};
    var ToggleCategory = function (a) {    return {ctor: "ToggleCategory",_0: a};};
@@ -11151,19 +11152,19 @@ Elm.CategoryBar.make = function (_elm) {
    var Subleases = {ctor: "Subleases"};
    var Apartments = {ctor: "Apartments"};
    var allCategories = _U.list([Apartments,Subleases,Appliances,Bikes,Books,Cars,Electronics,Employment,Furniture,Miscellaneous,Services,Wanted,Free]);
-   var categoryView = F3(function (address,_p6,category) {
+   var categoryView = F3(function (context,_p6,category) {
       var _p7 = _p6;
       var special_modifier_css = _U.eq(category,Apartments) ? left_tab_css : _U.eq(category,Free) ? right_tab_css : _U.list([]);
       var css = _U.eq(_p7._0,category) || _U.eq(_p7._1,category) ? on_css : off_css;
       return A2($Html.div,
       _U.list([$Html$Attributes.style(A2($Basics._op["++"],css,A2($Basics._op["++"],individual_category_css,special_modifier_css)))
-              ,A2($Html$Events.onClick,address,ToggleCategory(category))
-              ,A2($Html$Events.onMouseEnter,address,MouseEnter(category))
-              ,A2($Html$Events.onMouseLeave,address,MouseLeave(category))]),
+              ,A2($Html$Events.onClick,context.categoryEnter,category)
+              ,A2($Html$Events.onMouseEnter,context.categoryInput,MouseEnter(category))
+              ,A2($Html$Events.onMouseLeave,context.categoryInput,MouseLeave(category))]),
       _U.list([$Html.text($Basics.toString(category))]));
    });
-   var view = F2(function (address,model) {
-      return A2($Html.div,_U.list([$Html$Attributes.style(border_bar_css)]),A2($List.map,A2(categoryView,address,model),allCategories));
+   var view = F2(function (context,model) {
+      return A2($Html.div,_U.list([$Html$Attributes.style(border_bar_css)]),A2($List.map,A2(categoryView,context,model),allCategories));
    });
    return _elm.CategoryBar.values = {_op: _op
                                     ,Apartments: Apartments
@@ -11186,6 +11187,7 @@ Elm.CategoryBar.make = function (_elm) {
                                     ,MouseEnter: MouseEnter
                                     ,MouseLeave: MouseLeave
                                     ,update: update
+                                    ,Context: Context
                                     ,view: view
                                     ,categoryView: categoryView
                                     ,on_css: on_css
@@ -11210,7 +11212,8 @@ Elm.Search.make = function (_elm) {
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
-   $Signal = Elm.Signal.make(_elm);
+   $Signal = Elm.Signal.make(_elm),
+   $String = Elm.String.make(_elm);
    var _op = {};
    var is13 = function (code) {    return _U.eq(code,13) ? $Result.Ok({ctor: "_Tuple0"}) : $Result.Err("not the right key code");};
    var onEnter = F2(function (address,value) {
@@ -11241,7 +11244,7 @@ Elm.Search.make = function (_elm) {
       _U.list([A2($Html.input,
       _U.list([$Html$Attributes.placeholder("Search")
               ,$Html$Attributes.value(query)
-              ,A2(onEnter,context.enter,{ctor: "_Tuple0"})
+              ,A2(onEnter,context.enter,$String.words(query))
               ,A3($Html$Events.on,"input",$Html$Events.targetValue,function (_p6) {    return A2($Signal.message,context.input,Search(_p6));})
               ,$Html$Attributes.style(input_css)]),
       _U.list([]))]));
@@ -11277,7 +11280,7 @@ Elm.Header.make = function (_elm) {
    $Search = Elm.Search.make(_elm),
    $Signal = Elm.Signal.make(_elm);
    var _op = {};
-   var Context = F4(function (a,b,c,d) {    return {search: a,searchtrigger: b,category: c,home: d};});
+   var Context = F4(function (a,b,c,d) {    return {headerAction: a,searchEnter: b,categoryEnter: c,reset: d};});
    _op["=>"] = F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};});
    var container_css = _U.list([A2(_op["=>"],"margin-bottom","10px")
                                ,A2(_op["=>"],"background-color","#fff")
@@ -11325,24 +11328,25 @@ Elm.Header.make = function (_elm) {
    });
    var update = F2(function (action,model) {
       var _p11 = action;
-      if (_p11.ctor === "SearchAction") {
-            return _U.update(model,{search: A2($Search.update,_p11._0,model.search)});
-         } else {
-            return _U.update(model,{category: A2($CategoryBar.update,_p11._0,model.category)});
-         }
+      switch (_p11.ctor)
+      {case "SearchAction": return _U.update(model,{search: A2($Search.update,_p11._0,model.search)});
+         case "CategoryInput": return _U.update(model,{category: A2($CategoryBar.update,_p11._0,model.category)});
+         default: return _U.update(model,{category: A2($CategoryBar.update,$CategoryBar.ToggleCategory(_p11._0),model.category)});}
    });
-   var CategoryAction = function (a) {    return {ctor: "CategoryAction",_0: a};};
+   var CategoryEnter = function (a) {    return {ctor: "CategoryEnter",_0: a};};
+   var CategoryInput = function (a) {    return {ctor: "CategoryInput",_0: a};};
    var SearchAction = function (a) {    return {ctor: "SearchAction",_0: a};};
    var view = F2(function (context,model) {
-      var search_context = A2($Search.Context,A2($Signal.forwardTo,context.search,SearchAction),context.searchtrigger);
+      var category_context = A2($CategoryBar.Context,A2($Signal.forwardTo,context.headerAction,CategoryInput),context.categoryEnter);
+      var search_context = A2($Search.Context,A2($Signal.forwardTo,context.headerAction,SearchAction),context.searchEnter);
       var height = 100;
       var name_width = 200;
       var logo_width = 77;
       var logo_and_name_width = logo_width + name_width;
       return A2($Html.div,
       _U.list([$Html$Attributes.style(container_css)]),
-      _U.list([A2($CategoryBar.view,A2($Signal.forwardTo,context.category,CategoryAction),model.category)
-              ,A2(div_logo_name,{ctor: "_Tuple3",_0: logo_width,_1: name_width,_2: height},context.home)
+      _U.list([A2($CategoryBar.view,category_context,model.category)
+              ,A2(div_logo_name,{ctor: "_Tuple3",_0: logo_width,_1: name_width,_2: height},context.reset)
               ,A3($Search.view,{ctor: "_Tuple2",_0: logo_and_name_width,_1: height},search_context,model.search)]));
    });
    var init = {search: $Search.init,category: $CategoryBar.init};
@@ -11351,7 +11355,8 @@ Elm.Header.make = function (_elm) {
                                ,Meta: Meta
                                ,init: init
                                ,SearchAction: SearchAction
-                               ,CategoryAction: CategoryAction
+                               ,CategoryInput: CategoryInput
+                               ,CategoryEnter: CategoryEnter
                                ,update: update
                                ,toPixel: toPixel
                                ,container_css: container_css
@@ -12130,7 +12135,7 @@ Elm.Listing.make = function (_elm) {
                                  ,A2(_op["=>"],"font-size","16px")
                                  ,A2(_op["=>"],"background-color","#800000")
                                  ,A2(_op["=>"],"border-radius","5px")
-                                 ,A2(_op["=>"],"cursor","button")]);
+                                 ,A2(_op["=>"],"cursor","pointer")]);
    var fullpage_button_view = function (context) {
       return A2($Html.button,
       _U.list([$Html$Attributes.style(fullpage_button),A2($Html$Events.onClick,context.thumbnail,{ctor: "_Tuple0"})]),
@@ -12275,10 +12280,9 @@ Elm.Listings.make = function (_elm) {
    var row_div = function (cols) {    return A2($Html.div,_U.list([$Html$Attributes.style(listings_row_css)]),cols);};
    var fullpage_container_css = _U.list([A2(_op["=>"],"margin","0 10%")]);
    var toPixel = function (x) {    return A2($Basics._op["++"],$Basics.toString(x),"px");};
-   var listingMatchCategories = F2(function (_p0,listing) {
-      var _p1 = _p0;
-      var _p2 = _p1._0;
-      return _U.eq(_p2,$CategoryBar.None) ? true : A2($List.member,$String.toLower($Basics.toString(_p2)),listing.categories) ? true : false;
+   var Context = function (a) {    return {listingsAction: a};};
+   var listingMatchCategories = F2(function (category,listing) {
+      return _U.eq(category,$CategoryBar.None) ? true : A2($List.member,$String.toLower($Basics.toString(category)),listing.categories) ? true : false;
    });
    var listingMatchQuery = F2(function (filter_words,listing) {
       return _U.eq(filter_words,_U.list([])) ? true : A3($List.foldl,
@@ -12286,42 +12290,41 @@ Elm.Listings.make = function (_elm) {
       true,
       filter_words) ? true : false;
    });
-   var ViewAction = function (a) {    return {ctor: "ViewAction",_0: a};};
-   var CategoryFilter = function (a) {    return {ctor: "CategoryFilter",_0: a};};
-   var FilterAction = function (a) {    return {ctor: "FilterAction",_0: a};};
+   var CategoryEnter = function (a) {    return {ctor: "CategoryEnter",_0: a};};
+   var SearchEnter = function (a) {    return {ctor: "SearchEnter",_0: a};};
    var ListingAction = F2(function (a,b) {    return {ctor: "ListingAction",_0: a,_1: b};});
    var FullpageAction = function (a) {    return {ctor: "FullpageAction",_0: a};};
    var ThumbnailAction = {ctor: "ThumbnailAction"};
-   var view_listing = F2(function (address,listing) {
-      var context = A3($Listing.Context,
-      A2($Signal.forwardTo,address,ListingAction(listing.key)),
-      A2($Signal.forwardTo,address,$Basics.always(ThumbnailAction)),
-      A2($Signal.forwardTo,address,$Basics.always(FullpageAction(listing.key))));
-      return A2($Listing.view,context,listing);
+   var view_listing = F2(function (context,listing) {
+      var listing_context = A3($Listing.Context,
+      A2($Signal.forwardTo,context.listingsAction,ListingAction(listing.key)),
+      A2($Signal.forwardTo,context.listingsAction,$Basics.always(ThumbnailAction)),
+      A2($Signal.forwardTo,context.listingsAction,$Basics.always(FullpageAction(listing.key))));
+      return A2($Listing.view,listing_context,listing);
    });
-   var makeTableRows = F3(function (address,listing,acc) {
-      var _p3 = function () {
-         var _p4 = acc;
-         if (_p4.ctor === "[]") {
+   var makeTableRows = F3(function (context,listing,acc) {
+      var _p0 = function () {
+         var _p1 = acc;
+         if (_p1.ctor === "[]") {
                return _U.crashCase("Listings",
-               {start: {line: 160,column: 24},end: {line: 162,column: 41}},
-               _p4)("Oh no! Acc was not initialized correctly in foldr");
+               {start: {line: 162,column: 24},end: {line: 164,column: 41}},
+               _p1)("Oh no! Acc was not initialized correctly in foldr");
             } else {
-               return {ctor: "_Tuple2",_0: _p4._0,_1: _p4._1};
+               return {ctor: "_Tuple2",_0: _p1._0,_1: _p1._1};
             }
       }();
-      var acc_head = _p3._0;
-      var accs = _p3._1;
-      var new_listing_html = A2(view_listing,address,listing);
+      var acc_head = _p0._0;
+      var accs = _p0._1;
+      var new_listing_html = A2(view_listing,context,listing);
       var new_head = _U.eq($List.length(acc_head),4) ? _U.list([_U.list([new_listing_html]),acc_head]) : _U.list([A2($List._op["::"],
       new_listing_html,
       acc_head)]);
       return A2($List.append,new_head,accs);
    });
-   var view = F2(function (address,model) {
-      var _p6 = function () {
-         var _p7 = model.view;
-         if (_p7.ctor === "ThumbnailView") {
+   var view = F2(function (context,model) {
+      var _p3 = function () {
+         var _p4 = model.view;
+         if (_p4.ctor === "ThumbnailView") {
                var filtered_listings = A2($List.filter,function (l) {    return _U.eq(l.view,$Listing.Thumbnail);},model.listings);
                var number_of_listings = $List.length(filtered_listings);
                var one_listing_hack = _U.cmp(number_of_listings,4) < 0 ? _U.list([{ctor: "_Tuple2"
@@ -12332,15 +12335,15 @@ Elm.Listings.make = function (_elm) {
                return {ctor: "_Tuple2"
                       ,_0: _U.list([$Html$Attributes.style(A2($List.append,listings_container_css,one_listing_hack))
                                    ,$Html$Attributes.id("thumbnail-container")])
-                      ,_1: A2($List.map,row_div,A3($List.foldr,makeTableRows(address),_U.list([_U.list([])]),filtered_listings))};
+                      ,_1: A2($List.map,row_div,A3($List.foldr,makeTableRows(context),_U.list([_U.list([])]),filtered_listings))};
             } else {
                return {ctor: "_Tuple2"
                       ,_0: _U.list([$Html$Attributes.style(fullpage_container_css),$Html$Attributes.id("fullpage-container")])
-                      ,_1: A2($List.map,view_listing(address),model.listings)};
+                      ,_1: A2($List.map,view_listing(context),model.listings)};
             }
       }();
-      var container_css = _p6._0;
-      var listings_content = _p6._1;
+      var container_css = _p3._0;
+      var listings_content = _p3._1;
       var debug = A2($Debug.log,"View type",model.view);
       return A2($Html.div,container_css,listings_content);
    });
@@ -12350,36 +12353,36 @@ Elm.Listings.make = function (_elm) {
    var init = function (listingsList) {    return {view: ThumbnailView,searchfilter: _U.list([]),listings: listingsList};};
    var update = F2(function (action,model) {
       var a = A2($Debug.log,"Action: ",action);
-      var _p8 = action;
-      switch (_p8.ctor)
+      var _p5 = action;
+      switch (_p5.ctor)
       {case "ThumbnailAction": return _U.update(model,
            {view: ThumbnailView,listings: A2($List.map,function (listing) {    return _U.update(listing,{view: $Listing.Thumbnail});},model.listings)});
          case "FullpageAction": return _U.update(model,
            {view: FullpageView
            ,listings: A2($List.map,
            function (listing) {
-              return _U.eq(listing.key,_p8._0) ? _U.update(listing,{view: $Listing.Fullpage}) : _U.update(listing,{view: $Listing.Hidden});
+              return _U.eq(listing.key,_p5._0) ? _U.update(listing,{view: $Listing.Fullpage}) : _U.update(listing,{view: $Listing.Hidden});
            },
            model.listings)});
          case "ListingAction": return _U.update(model,
-           {listings: A2($List.map,function (listing) {    return _U.eq(listing.key,_p8._0) ? A2($Listing.update,_p8._1,listing) : listing;},model.listings)});
-         case "FilterAction": var _p9 = _p8._0;
+           {listings: A2($List.map,function (listing) {    return _U.eq(listing.key,_p5._0) ? A2($Listing.update,_p5._1,listing) : listing;},model.listings)});
+         case "SearchEnter": var _p6 = _p5._0;
            return _U.update(model,
            {view: ThumbnailView
-           ,listings: _U.eq(_p9,_U.list([""])) ? A2($List.map,function (l) {    return _U.update(l,{view: $Listing.Thumbnail});},model.listings) : A2($List.map,
+           ,listings: _U.eq(_p6,_U.list([""])) ? A2($List.map,function (l) {    return _U.update(l,{view: $Listing.Thumbnail});},model.listings) : A2($List.map,
            function (listing) {
-              return A2(listingMatchQuery,_p9,listing) ? _U.update(listing,{view: $Listing.Thumbnail}) : _U.update(listing,{view: $Listing.Hidden});
+              return A2(listingMatchQuery,_p6,listing) ? _U.update(listing,{view: $Listing.Thumbnail}) : _U.update(listing,{view: $Listing.Hidden});
            },
            model.listings)});
-         case "CategoryFilter": return _U.update(model,
+         default: var _p7 = _p5._0;
+           var c = A2($Debug.log,"Category",_p7);
+           return _U.update(model,
            {view: ThumbnailView
            ,listings: A2($List.map,
            function (listing) {
-              return A2(listingMatchCategories,_p8._0,listing) ? _U.update(listing,{view: $Listing.Thumbnail}) : _U.update(listing,{view: $Listing.Hidden});
+              return A2(listingMatchCategories,_p7,listing) ? _U.update(listing,{view: $Listing.Thumbnail}) : _U.update(listing,{view: $Listing.Hidden});
            },
-           model.listings)});
-         default: return _U.update(model,
-           {view: _p8._0,listings: A2($List.map,function (l) {    return _U.update(l,{view: $Listing.Thumbnail});},model.listings)});}
+           model.listings)});}
    });
    return _elm.Listings.values = {_op: _op
                                  ,ThumbnailView: ThumbnailView
@@ -12389,12 +12392,12 @@ Elm.Listings.make = function (_elm) {
                                  ,ThumbnailAction: ThumbnailAction
                                  ,FullpageAction: FullpageAction
                                  ,ListingAction: ListingAction
-                                 ,FilterAction: FilterAction
-                                 ,CategoryFilter: CategoryFilter
-                                 ,ViewAction: ViewAction
+                                 ,SearchEnter: SearchEnter
+                                 ,CategoryEnter: CategoryEnter
                                  ,update: update
                                  ,listingMatchQuery: listingMatchQuery
                                  ,listingMatchCategories: listingMatchCategories
+                                 ,Context: Context
                                  ,view: view
                                  ,view_listing: view_listing
                                  ,toPixel: toPixel
@@ -12411,6 +12414,7 @@ Elm.Index.make = function (_elm) {
    if (_elm.Index.values) return _elm.Index.values;
    var _U = Elm.Native.Utils.make(_elm),
    $Basics = Elm.Basics.make(_elm),
+   $CategoryBar = Elm.CategoryBar.make(_elm),
    $Debug = Elm.Debug.make(_elm),
    $Effects = Elm.Effects.make(_elm),
    $Header = Elm.Header.make(_elm),
@@ -12425,7 +12429,6 @@ Elm.Index.make = function (_elm) {
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
-   $String = Elm.String.make(_elm),
    $Task = Elm.Task.make(_elm);
    var _op = {};
    var testUrl = "http://go-marketplace.appspot.com/listings";
@@ -12434,61 +12437,61 @@ Elm.Index.make = function (_elm) {
    var appendListings = F2(function (old_listings,new_listings) {
       return _U.update(old_listings,{listings: A2($List.append,old_listings.listings,new_listings)});
    });
-   var HomeAction = function (a) {    return {ctor: "HomeAction",_0: a};};
-   var Scroll = function (a) {    return {ctor: "Scroll",_0: a};};
-   var CategoryAction = function (a) {    return {ctor: "CategoryAction",_0: a};};
+   var Reset = function (a) {    return {ctor: "Reset",_0: a};};
+   var CategoryEnter = function (a) {    return {ctor: "CategoryEnter",_0: a};};
    var SearchEnter = function (a) {    return {ctor: "SearchEnter",_0: a};};
    var HeaderAction = function (a) {    return {ctor: "HeaderAction",_0: a};};
+   var ListingsAction = function (a) {    return {ctor: "ListingsAction",_0: a};};
+   var view = F2(function (address,model) {
+      var listings_context = $Listings.Context(A2($Signal.forwardTo,address,ListingsAction));
+      var header_context = A4($Header.Context,
+      A2($Signal.forwardTo,address,HeaderAction),
+      A2($Signal.forwardTo,address,SearchEnter),
+      A2($Signal.forwardTo,address,CategoryEnter),
+      A2($Signal.forwardTo,address,Reset));
+      return A2($Html.div,
+      _U.list([$Html$Attributes.style(_U.list([A2(_op["=>"],"background-color","#f5f5f5"),A2(_op["=>"],"font-family","sans-serif")]))
+              ,$Html$Attributes.id("index-root")]),
+      _U.list([A2($Header.view,header_context,model.meta),A2($Listings.view,listings_context,model.listings)]));
+   });
+   var Scroll = function (a) {    return {ctor: "Scroll",_0: a};};
    var HttpAction = function (a) {    return {ctor: "HttpAction",_0: a};};
    var getListings = function (url) {    return $Effects.task(A2($Task.map,HttpAction,$HttpGetter.getListings(url)));};
    var update = F2(function (action,model) {
       var _p0 = action;
       switch (_p0.ctor)
-      {case "ListingsAction": return {ctor: "_Tuple2",_0: _U.update(model,{listings: A2($Listings.update,_p0._0,model.listings)}),_1: $Effects.none};
-         case "HttpAction": return {ctor: "_Tuple2"
-                                   ,_0: function (new_listings) {
-                                      return _U.update(model,{listings: A2(appendListings,model.listings,new_listings)});
-                                   }(A2(blobToListings,$Images.testImages,A2($Maybe.withDefault,$HttpGetter.init,_p0._0)))
-                                   ,_1: $Effects.none};
-         case "HeaderAction": return {ctor: "_Tuple2",_0: _U.update(model,{meta: A2($Header.update,_p0._0,model.meta)}),_1: $Effects.none};
-         case "SearchEnter": var filter_words = $String.words(model.meta.search);
-           return {ctor: "_Tuple2",_0: _U.update(model,{listings: A2($Listings.update,$Listings.FilterAction(filter_words),model.listings)}),_1: $Effects.none};
-         case "CategoryAction": var meta$ = A2($Header.update,_p0._0,model.meta);
-           var listings$ = A2($Listings.update,$Listings.CategoryFilter(meta$.category),model.listings);
-           return {ctor: "_Tuple2",_0: _U.update(model,{meta: meta$,listings: listings$}),_1: $Effects.none};
+      {case "HttpAction": return {ctor: "_Tuple2"
+                                 ,_0: function (new_listings) {
+                                    return _U.update(model,{listings: A2(appendListings,model.listings,new_listings)});
+                                 }(A2(blobToListings,$Images.testImages,A2($Maybe.withDefault,$HttpGetter.init,_p0._0)))
+                                 ,_1: $Effects.none};
          case "Scroll": return _U.eq(_p0._0,true) && _U.eq(model.listings.view,$Listings.ThumbnailView) ? {ctor: "_Tuple2"
                                                                                                           ,_0: model
                                                                                                           ,_1: getListings(testUrl)} : {ctor: "_Tuple2"
                                                                                                                                        ,_0: model
                                                                                                                                        ,_1: $Effects.none};
-         default: return {ctor: "_Tuple2"
-                         ,_0: _U.update(model,{listings: A2($Listings.update,$Listings.ViewAction($Listings.ThumbnailView),model.listings)})
-                         ,_1: $Effects.none};}
-   });
-   var ListingsAction = function (a) {    return {ctor: "ListingsAction",_0: a};};
-   var view = F2(function (address,model) {
-      var header_context = A4($Header.Context,
-      A2($Signal.forwardTo,address,HeaderAction),
-      A2($Signal.forwardTo,address,SearchEnter),
-      A2($Signal.forwardTo,address,CategoryAction),
-      A2($Signal.forwardTo,address,HomeAction));
-      return A2($Html.div,
-      _U.list([$Html$Attributes.style(_U.list([A2(_op["=>"],"background-color","#f5f5f5"),A2(_op["=>"],"font-family","sans-serif")]))
-              ,$Html$Attributes.id("index-root")]),
-      _U.list([A2($Header.view,header_context,model.meta),A2($Listings.view,A2($Signal.forwardTo,address,ListingsAction),model.listings)]));
+         case "ListingsAction": return {ctor: "_Tuple2",_0: _U.update(model,{listings: A2($Listings.update,_p0._0,model.listings)}),_1: $Effects.none};
+         case "HeaderAction": return {ctor: "_Tuple2",_0: _U.update(model,{meta: A2($Header.update,_p0._0,model.meta)}),_1: $Effects.none};
+         case "SearchEnter": return {ctor: "_Tuple2"
+                                    ,_0: _U.update(model,{listings: A2($Listings.update,$Listings.SearchEnter(_p0._0),model.listings)})
+                                    ,_1: $Effects.none};
+         case "CategoryEnter": var meta$ = A2($Header.update,$Header.CategoryEnter(_p0._0),model.meta);
+           var listings$ = A2($Listings.update,$Listings.CategoryEnter($Basics.fst(meta$.category)),model.listings);
+           return {ctor: "_Tuple2",_0: _U.update(model,{meta: meta$,listings: listings$}),_1: $Effects.none};
+         default: return {ctor: "_Tuple2",_0: _U.update(model,{listings: A2($Listings.update,$Listings.ThumbnailAction,model.listings)}),_1: $Effects.none};}
    });
    var init = {ctor: "_Tuple2",_0: {listings: $Listings.init(_U.list([])),meta: $Header.init},_1: getListings(testUrl)};
    var Model = F2(function (a,b) {    return {listings: a,meta: b};});
    return _elm.Index.values = {_op: _op
                               ,Model: Model
                               ,init: init
-                              ,ListingsAction: ListingsAction
                               ,HttpAction: HttpAction
+                              ,Scroll: Scroll
+                              ,ListingsAction: ListingsAction
                               ,HeaderAction: HeaderAction
                               ,SearchEnter: SearchEnter
-                              ,CategoryAction: CategoryAction
-                              ,Scroll: Scroll
-                              ,HomeAction: HomeAction
+                              ,CategoryEnter: CategoryEnter
+                              ,Reset: Reset
                               ,update: update
                               ,appendListings: appendListings
                               ,view: view
