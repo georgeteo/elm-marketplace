@@ -11267,13 +11267,14 @@ Elm.Header.make = function (_elm) {
    $Debug = Elm.Debug.make(_elm),
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Search = Elm.Search.make(_elm),
    $Signal = Elm.Signal.make(_elm);
    var _op = {};
-   var Context = F3(function (a,b,c) {    return {search: a,searchtrigger: b,category: c};});
+   var Context = F4(function (a,b,c,d) {    return {search: a,searchtrigger: b,category: c,home: d};});
    _op["=>"] = F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};});
    var container_css = _U.list([A2(_op["=>"],"margin-bottom","10px")
                                ,A2(_op["=>"],"background-color","#fff")
@@ -11307,15 +11308,15 @@ Elm.Header.make = function (_elm) {
       _U.list([$Html$Attributes.style(name_css({ctor: "_Tuple2",_0: _p5._0,_1: _p5._1}))]),
       _U.list([A2($Html.h1,_U.list([$Html$Attributes.style(name_text_css)]),_U.list([$Html.text("UChicago Marketplace")]))]));
    };
-   var div_logo_name = function (_p6) {
+   var div_logo_name = F2(function (_p6,address) {
       var _p7 = _p6;
       var _p10 = _p7._1;
       var _p9 = _p7._0;
       var _p8 = _p7._2;
       return A2($Html.div,
-      _U.list([$Html$Attributes.style(logo_name_css({ctor: "_Tuple2",_0: _p9 + _p10,_1: _p8}))]),
+      _U.list([$Html$Attributes.style(logo_name_css({ctor: "_Tuple2",_0: _p9 + _p10,_1: _p8})),A2($Html$Events.onClick,address,{ctor: "_Tuple0"})]),
       _U.list([div_logo(_p9),div_name({ctor: "_Tuple2",_0: _p10,_1: _p8})]));
-   };
+   });
    var update = F2(function (action,model) {
       var _p11 = action;
       if (_p11.ctor === "SearchAction") {
@@ -11335,7 +11336,7 @@ Elm.Header.make = function (_elm) {
       return A2($Html.div,
       _U.list([$Html$Attributes.style(container_css)]),
       _U.list([A2($CategoryBar.view,A2($Signal.forwardTo,context.category,CategoryAction),model.category)
-              ,div_logo_name({ctor: "_Tuple3",_0: logo_width,_1: name_width,_2: height})
+              ,A2(div_logo_name,{ctor: "_Tuple3",_0: logo_width,_1: name_width,_2: height},context.home)
               ,A3($Search.view,{ctor: "_Tuple2",_0: logo_and_name_width,_1: height},search_context,model.search)]));
    });
    var init = {search: $Search.init,category: $CategoryBar.init};
@@ -12273,6 +12274,7 @@ Elm.Listings.make = function (_elm) {
       true,
       filter_words) ? true : false;
    });
+   var ViewAction = function (a) {    return {ctor: "ViewAction",_0: a};};
    var CategoryFilter = function (a) {    return {ctor: "CategoryFilter",_0: a};};
    var FilterAction = function (a) {    return {ctor: "FilterAction",_0: a};};
    var ListingAction = F2(function (a,b) {    return {ctor: "ListingAction",_0: a,_1: b};});
@@ -12290,7 +12292,7 @@ Elm.Listings.make = function (_elm) {
          var _p4 = acc;
          if (_p4.ctor === "[]") {
                return _U.crashCase("Listings",
-               {start: {line: 149,column: 24},end: {line: 151,column: 41}},
+               {start: {line: 153,column: 24},end: {line: 155,column: 41}},
                _p4)("Oh no! Acc was not initialized correctly in foldr");
             } else {
                return {ctor: "_Tuple2",_0: _p4._0,_1: _p4._1};
@@ -12354,13 +12356,15 @@ Elm.Listings.make = function (_elm) {
               return A2(listingMatchQuery,_p9,listing) ? _U.update(listing,{view: $Listing.Thumbnail}) : _U.update(listing,{view: $Listing.Hidden});
            },
            model.listings)});
-         default: return _U.update(model,
+         case "CategoryFilter": return _U.update(model,
            {view: ThumbnailView
            ,listings: A2($List.map,
            function (listing) {
               return A2(listingMatchCategories,_p8._0,listing) ? _U.update(listing,{view: $Listing.Thumbnail}) : _U.update(listing,{view: $Listing.Hidden});
            },
-           model.listings)});}
+           model.listings)});
+         default: return _U.update(model,
+           {view: _p8._0,listings: A2($List.map,function (l) {    return _U.update(l,{view: $Listing.Thumbnail});},model.listings)});}
    });
    return _elm.Listings.values = {_op: _op
                                  ,ThumbnailView: ThumbnailView
@@ -12372,6 +12376,7 @@ Elm.Listings.make = function (_elm) {
                                  ,ListingAction: ListingAction
                                  ,FilterAction: FilterAction
                                  ,CategoryFilter: CategoryFilter
+                                 ,ViewAction: ViewAction
                                  ,update: update
                                  ,listingMatchQuery: listingMatchQuery
                                  ,listingMatchCategories: listingMatchCategories
@@ -12414,6 +12419,7 @@ Elm.Index.make = function (_elm) {
    var appendListings = F2(function (old_listings,new_listings) {
       return _U.update(old_listings,{listings: A2($List.append,old_listings.listings,new_listings)});
    });
+   var HomeAction = function (a) {    return {ctor: "HomeAction",_0: a};};
    var Scroll = function (a) {    return {ctor: "Scroll",_0: a};};
    var CategoryAction = function (a) {    return {ctor: "CategoryAction",_0: a};};
    var SearchEnter = function (a) {    return {ctor: "SearchEnter",_0: a};};
@@ -12435,18 +12441,22 @@ Elm.Index.make = function (_elm) {
          case "CategoryAction": var meta$ = A2($Header.update,_p0._0,model.meta);
            var listings$ = A2($Listings.update,$Listings.CategoryFilter(meta$.category),model.listings);
            return {ctor: "_Tuple2",_0: _U.update(model,{meta: meta$,listings: listings$}),_1: $Effects.none};
-         default: return _U.eq(_p0._0,true) && _U.eq(model.listings.view,$Listings.ThumbnailView) ? {ctor: "_Tuple2"
-                                                                                                    ,_0: model
-                                                                                                    ,_1: getListings(testUrl)} : {ctor: "_Tuple2"
-                                                                                                                                 ,_0: model
-                                                                                                                                 ,_1: $Effects.none};}
+         case "Scroll": return _U.eq(_p0._0,true) && _U.eq(model.listings.view,$Listings.ThumbnailView) ? {ctor: "_Tuple2"
+                                                                                                          ,_0: model
+                                                                                                          ,_1: getListings(testUrl)} : {ctor: "_Tuple2"
+                                                                                                                                       ,_0: model
+                                                                                                                                       ,_1: $Effects.none};
+         default: return {ctor: "_Tuple2"
+                         ,_0: _U.update(model,{listings: A2($Listings.update,$Listings.ViewAction($Listings.ThumbnailView),model.listings)})
+                         ,_1: $Effects.none};}
    });
    var ListingsAction = function (a) {    return {ctor: "ListingsAction",_0: a};};
    var view = F2(function (address,model) {
-      var header_context = A3($Header.Context,
+      var header_context = A4($Header.Context,
       A2($Signal.forwardTo,address,HeaderAction),
       A2($Signal.forwardTo,address,SearchEnter),
-      A2($Signal.forwardTo,address,CategoryAction));
+      A2($Signal.forwardTo,address,CategoryAction),
+      A2($Signal.forwardTo,address,HomeAction));
       return A2($Html.div,
       _U.list([$Html$Attributes.style(_U.list([A2(_op["=>"],"background-color","#f5f5f5"),A2(_op["=>"],"font-family","sans-serif")]))
               ,$Html$Attributes.id("index-root")]),
@@ -12463,6 +12473,7 @@ Elm.Index.make = function (_elm) {
                               ,SearchEnter: SearchEnter
                               ,CategoryAction: CategoryAction
                               ,Scroll: Scroll
+                              ,HomeAction: HomeAction
                               ,update: update
                               ,appendListings: appendListings
                               ,view: view

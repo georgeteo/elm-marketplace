@@ -40,6 +40,7 @@ type Action =
   | SearchEnter ()
   | CategoryAction Header.Action
   | Scroll Bool
+  | HomeAction ()
 
 update : Action -> Model -> (Model, Effects Action)
 update action model =
@@ -65,6 +66,9 @@ update action model =
     Scroll b -> if (b == True) && (model.listings.view == Listings.ThumbnailView) 
                 then (model, getListings testUrl)
                 else (model, Effects.none)
+    HomeAction _ -> ({model | listings = Listings.update (Listings.ViewAction Listings.ThumbnailView) model.listings }
+                    , Effects.none)
+    
 
 appendListings : Listings.Model -> List Listing.Model -> Listings.Model
 appendListings old_listings new_listings =
@@ -79,6 +83,7 @@ view address model =
     header_context = Header.Context (forwardTo address HeaderAction)
                                     (forwardTo address SearchEnter)
                                     (forwardTo address CategoryAction)
+                                    (forwardTo address HomeAction)
   in
   div [ style [ "background-color" => "#f5f5f5"
               , "font-family" => "sans-serif"]

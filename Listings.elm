@@ -39,6 +39,7 @@ type Action =
     | ListingAction Listing.UUID Listing.Action
     | FilterAction FilterWords
     | CategoryFilter  CategoryBar.Model
+    | ViewAction View
 
 update : Action -> Model -> Model
 update action model =
@@ -72,6 +73,9 @@ update action model =
                                                                         else {listing | view = Listing.Hidden}
                                                                ) model.listings
                                    }
+    ViewAction new_view -> {model | view = new_view 
+                                  , listings = List.map (\l -> {l | view = Listing.Thumbnail}) model.listings
+                           }
 
 listingMatchQuery : FilterWords -> Listing.Model -> Bool
 listingMatchQuery filter_words listing =

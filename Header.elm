@@ -4,6 +4,7 @@ module Header where
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 import Window
 import Search exposing (Query)
 import Signal
@@ -79,9 +80,10 @@ name_text_css =
 -- HTML div for logo + name
 
 -- Input (logo_width, name_w, height)
-div_logo_name : (Int, Int, Int) -> Html
-div_logo_name (logo_w, name_w, h) = 
-  div [ style (logo_name_css ((logo_w + name_w), h) ) ]
+div_logo_name : (Int, Int, Int) -> Signal.Address () -> Html
+div_logo_name (logo_w, name_w, h) address = 
+  div [ style (logo_name_css ((logo_w + name_w), h) ) 
+      , onClick address () ]
       [ div_logo logo_w
       , div_name (name_w, h)
       ]
@@ -105,7 +107,8 @@ div_name (w, h) =
 type alias Context =
   { search : Signal.Address Action
   , searchtrigger : Signal.Address ()
-  , category : Signal.Address Action }
+  , category : Signal.Address Action 
+  , home : Signal.Address () }
 
 view : Context -> Meta -> Html
 view context model =
@@ -120,6 +123,6 @@ view context model =
   in
     div [ style container_css ]
         [ CategoryBar.view (Signal.forwardTo context.category CategoryAction) model.category
-        , div_logo_name (logo_width, name_width, height)
+        , div_logo_name (logo_width, name_width, height) context.home
         , Search.view (logo_and_name_width, height) search_context model.search
         ]

@@ -30,7 +30,8 @@ evancz/virtual-dom
 2. Category bar highlight will return to thumbnail view
 3. Add icons for left and right images if necessary -- DONE
 4. Search empty returns to homepage -- DONE
-5. Click logo returns to homepage
+5. Click logo returns to homepage -- DONE
+6. Mouse pointer icon from I to < on logo
 
 #### Non-critical
 
