@@ -24,12 +24,14 @@ type alias SearchFilters = String
 type alias Meta =
   { searchFilter : List String
   , categoryFilter : CategoryBar.Category
+  , windowDim : (Int, Int)
   }
 
 metaInit : Meta
 metaInit =
   { searchFilter = []
   , categoryFilter = CategoryBar.None
+  , windowDim = (0,0)
   }
 
 type alias Model =
@@ -43,8 +45,12 @@ init =
   ({ listings = Listings.init []
    , header = Header.init 
    , meta = metaInit }
-  , getListings testUrl)
-
+  , Effects.batch
+      [ getListings testUrl
+      , windowInit
+      ]
+  )
+  
 -- Update
 type Action =
   HttpAction (Maybe HttpGetter.Blob) -- GET HTTP response
@@ -55,6 +61,8 @@ type Action =
     | SearchEnter (List String) -- Search query with list of query words
     | CategoryEnter CategoryBar.Category -- Category query with a category
     | Reset () -- Reset action to all listings and no filter settings
+    | Resize (Int, Int)
+    | NoOp
 
 update : Action -> Model -> (Model, Effects Action)
 update action model =
@@ -76,7 +84,8 @@ update action model =
       , Effects.none ) 
     SearchEnter filter_words ->
       let 
-        meta' =  {searchFilter = filter_words, categoryFilter = model.meta.categoryFilter }
+        metaModel = model.meta
+        meta' =  { metaModel | searchFilter = filter_words }
         listings' = Listings.update (Listings.ThumbnailAction meta'.searchFilter 
                                     meta'.categoryFilter) model.listings
       in
@@ -84,15 +93,16 @@ update action model =
     CategoryEnter category -> 
       let
         header' = Header.update (Header.CategoryEnter category) model.header
-        meta' = { searchFilter = model.meta.searchFilter, categoryFilter = (fst header'.category)}
+        metaModel = model.meta
+        meta' = { metaModel | categoryFilter = (fst header'.category)}
         listings' = Listings.update (Listings.ThumbnailAction
                     meta'.searchFilter meta'.categoryFilter) model.listings
       in
         ({model | header = header', listings = listings', meta = meta'}, Effects.none)
     Reset _ -> 
       let
-        meta' = {categoryFilter = CategoryBar.None
-                            , searchFilter = []}
+        metaModel = model.meta
+        meta' = {metaModel | categoryFilter = CategoryBar.None , searchFilter = []}
         listings' = Listings.update (Listings.ThumbnailAction
                       meta'.searchFilter meta'.categoryFilter) model.listings
         header' = Header.update Header.Reset model.header
@@ -102,6 +112,13 @@ update action model =
       ( { model | listings = Listings.update (Listings.ThumbnailAction
                   model.meta.searchFilter model.meta.categoryFilter) model.listings }
       , Effects.none )
+    Resize dim ->
+      let
+        metaModel = model.meta
+        meta' = Debug.log "New dimensions" {metaModel | windowDim = dim}
+      in
+        ( {model | meta = meta'}, Effects.none )
+    NoOp -> (model, Effects.none)
     
 
 appendListings : Listings.Model -> List Listing.Model -> Listings.Model
@@ -114,6 +131,14 @@ appendListings old_listings new_listings =
 view : Address Action -> Model -> Html
 view address model =
   let
+    w = fst model.meta.windowDim
+    one_col_limit = 640
+    two_col_limit = 940
+    three_col_limit = 1250
+    (col_limit, col_percent) = if w < one_col_limit then (1, 100)
+                               else if w < two_col_limit then (2, 50)
+                               else if w < three_col_limit then (3, 33)
+                               else (4, 25)
     header_context = Header.Context (forwardTo address HeaderAction)
                                     (forwardTo address SearchEnter)
                                     (forwardTo address CategoryEnter)
@@ -124,8 +149,8 @@ view address model =
     div [ style [ "background-color" => "#f5f5f5"
                 , "font-family" => "sans-serif"]
         , id "index-root"]
-      [ Header.view header_context model.header
-      , Listings.view listings_context model.listings
+      [ Header.view (col_limit, col_percent) header_context model.header
+      , Listings.view (col_limit, col_percent) listings_context model.listings
       ]
 
 -- Effects
@@ -135,6 +160,21 @@ getListings url =
   HttpGetter.getListings url
    |> Task.map HttpAction
    |> Effects.task
+
+resizes : Signal Action
+resizes = Signal.map Resize Window.dimensions
+
+startMailbox : Signal.Mailbox ()
+startMailbox = Signal.mailbox ()
+
+firstResize : Signal Action
+firstResize = Signal.sampleOn startMailbox.signal resizes
+
+windowInit : Effects Action
+windowInit =
+  Signal.send startMailbox.address ()
+    |> Task.map (always NoOp)
+    |> Effects.task
 
 -- Test
 blobToListings : List (ImageViewer.Photos) -> HttpGetter.Blob -> List Listing.Model

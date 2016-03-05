@@ -11,7 +11,7 @@ app =
     { init = Index.init
     , update = Index.update
     , view = Index.view
-    , inputs = [infiniteScroll]
+    , inputs = [infiniteScroll, Index.firstResize, Index.resizes]
     }
 
 main = app.html

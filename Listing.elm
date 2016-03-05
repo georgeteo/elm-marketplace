@@ -65,12 +65,12 @@ type alias Context =
   }
 (=>) = (,)
 
-view : Context -> Model -> Html
-view context listing =
+view : Int -> Context -> Model -> Html
+view col_percent context listing =
   let 
       (div_css, button) = 
         case listing.view of
-          Thumbnail -> (thumbnail_css listing, thumbnail_button_view context)
+          Thumbnail -> (thumbnail_css col_percent listing, thumbnail_button_view context)
           Fullpage -> (fullpage_css listing, fullpage_button_view context)
           Hidden -> (hidden_css, thumbnail_button_view context)
   in
@@ -139,9 +139,9 @@ hidden_div =
   ["display" => "none" ]
 
 -- Thumbnail CSS
-thumbnail_css : Model -> Listing_CSS
-thumbnail_css listing =
-  { container = style thumbnail_container
+thumbnail_css : Int -> Model -> Listing_CSS
+thumbnail_css col_percent listing =
+  { container = style (thumbnail_container col_percent)
   , inner_container = style thumbnail_inner_container
   , button = style thumbnail_button
   , title = style thumbnail_title_css
@@ -151,10 +151,10 @@ thumbnail_css listing =
   , body = style hidden_div
   }
 
-thumbnail_container : List (String, String)
-thumbnail_container =
+thumbnail_container : Int -> List (String, String)
+thumbnail_container col_percent =
   [ "display" => "table-cell"
-  , "width" => "25%"
+  , "width" => ((toString col_percent) ++ "%")
   , "padding" => "5px"
   ]
 

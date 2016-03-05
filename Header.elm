@@ -60,7 +60,6 @@ logo_name_css : (Int, Int) -> List (String, String)
 logo_name_css (w, h) =
   [ "height" => toPixel h
   , "width" => toPixel w
-  , "float" => "left"
   , "cursor" => "pointer"
   ]
 
@@ -91,9 +90,13 @@ name_text_css =
 -- HTML div for logo + name
 
 -- Input (logo_width, name_w, height)
-div_logo_name : (Int, Int, Int) -> Signal.Address () -> Html
-div_logo_name (logo_w, name_w, h) address = 
-  div [ style (logo_name_css ((logo_w + name_w), h) ) 
+div_logo_name : (Int, Int, Int) -> Int -> Signal.Address () -> Html
+div_logo_name (logo_w, name_w, h) col_limit address = 
+  let
+    position = if col_limit <= 2 then [ "margin" => "0 auto"]
+                else ["float" => "left"]
+  in
+    div [ style (logo_name_css ((logo_w + name_w), h) `List.append` position) 
       , onClick address () ]
       [ div_logo logo_w
       , div_name (name_w, h)
@@ -122,8 +125,8 @@ type alias Context =
   , reset : Signal.Address ()
   }
 
-view : Context -> Model -> Html
-view context model =
+view : (Int, Int) -> Context -> Model -> Html
+view (col_limit, col_percent) context model =
   let
     logo_width = 77
     name_width = 200
@@ -138,6 +141,6 @@ view context model =
   in
     div [ style container_css ]
         [ CategoryBar.view category_context model.category
-        , div_logo_name (logo_width, name_width, height) context.reset
-        , Search.view (logo_and_name_width, height) search_context model.search
+        , div_logo_name (logo_width, name_width, height) col_limit context.reset
+        , Search.view (logo_and_name_width, height) col_limit search_context model.search
         ]

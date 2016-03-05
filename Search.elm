@@ -33,10 +33,9 @@ toPixel x = (toString x) ++ "px"
 -- CSS
 (=>) = (,)
 
-search_div_css : (Int, Int) -> List (String, String)
-search_div_css (w, h) =
-  [ "margin-left" => toPixel w
-  , "line-height" => toPixel h
+search_div_css : Int -> List (String, String)
+search_div_css h =
+  [ "line-height" => toPixel h
   ]
 
 input_css : List (String, String)
@@ -52,10 +51,14 @@ type alias Context =
   { input : Signal.Address Action
   , enter : Signal.Address (List String)}
 
-view : (Int, Int) -> Context -> Query -> Html
-view (logo_w, h) context query =
-  div [ style (search_div_css (logo_w, h)) ]
-      [ input [ placeholder "Search"
+view : (Int, Int) -> Int -> Context -> Query -> Html
+view (logo_w, h) col_limit context query =
+  let
+    position = if col_limit <= 2 then []
+                else ["margin-left" => toPixel logo_w]
+  in
+    div [ style ((search_div_css  h) `List.append` position) ]
+        [ input [ placeholder "Search"
               , value query
               , onEnter context.enter (String.words query)
               , Html.Events.on "input" targetValue (Signal.message context.input << Search)

@@ -80,8 +80,8 @@ type alias Context =
   , thumbnailAction : Address ()
   }
 
-view : Context -> Model -> Html
-view context model =
+view : (Int, Int) -> Context -> Model -> Html
+view (col_limit, col_percent) context model =
   let
     (container_css, listings_content) =
       case model.view of
@@ -89,31 +89,32 @@ view context model =
           let 
             filtered_listings = List.filter(\l -> l.view == Listing.Thumbnail) model.listings 
             number_of_listings = List.length filtered_listings
-            one_listing_hack = if number_of_listings < 4
-                                then [("width", (toString (number_of_listings * 25)) ++ "%")]
+            one_listing_hack = if number_of_listings < col_limit
+                                then [("width", (toString (number_of_listings * col_percent)) ++ "%")]
                                 else []
           in
             ([ style (List.append listings_container_css one_listing_hack )
               , id "thumbnail-container"]
-              , List.foldr (makeTableRows context) [[]] filtered_listings
+              , List.foldl (makeTableRows (col_limit, col_percent) context) [[]] filtered_listings
+                 |> List.reverse
                  |> List.map row_div
             )
         FullpageView -> ( [ style fullpage_container_css
                           , id "fullpage-container"]
-                        , List.map (view_listing context) model.listings
+                        , List.map (view_listing 100 context) model.listings
                         )
   in
     div container_css listings_content
 
-view_listing : Context -> Listing.Model -> Html
-view_listing context listing =
+view_listing : Int -> Context -> Listing.Model -> Html
+view_listing col_percent context listing =
   let 
     listing_context = Listing.Context 
              (forwardTo context.listingsAction (ListingAction listing.key))
              context.thumbnailAction
              (forwardTo context.listingsAction (always (FullpageAction listing.key)))
   in
-    Listing.view listing_context listing
+    Listing.view col_percent listing_context listing
 
   -- CSS
 toPixel : number -> String
@@ -140,14 +141,14 @@ row_div cols =
   div [ style listings_row_css ]
       cols
 
-makeTableRows : Context -> Listing.Model -> List (List Html) -> List (List Html)
-makeTableRows context listing acc =
+makeTableRows : (Int, Int) -> Context -> Listing.Model -> List (List Html) -> List (List Html)
+makeTableRows (col_limit, col_percent) context listing acc =
   let
-    new_listing_html = view_listing context listing
+    new_listing_html = view_listing col_percent context listing
     (acc_head, accs) = case acc of
                         [] -> Debug.crash "Oh no! Acc was not initialized correctly in foldr"
                         x::xs -> (x, xs)
-    new_head = if List.length acc_head == 4 then [[new_listing_html], acc_head]
+    new_head = if List.length acc_head == col_limit then [[new_listing_html], acc_head]
                 else [new_listing_html :: acc_head]
   in
     List.append new_head accs
