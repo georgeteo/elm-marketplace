@@ -16,6 +16,9 @@ import ImageViewer
 import Task
 import String
 import CategoryBar
+import Html.Animation as UI
+import Html.Animation.Properties exposing (..)
+import Html.Events exposing (..)
 
 -- Model
 
@@ -38,19 +41,24 @@ type alias Model =
   { listings : Listings.Model
   , header : Header.Model
   , meta : Meta
+  , style : UI.Animation
   }
 
 init : (Model, Effects Action)
 init =
   ({ listings = Listings.init []
-   , header = Header.init 
-   , meta = metaInit }
-  , Effects.batch
+   , header = Header.init
+   , meta = metaInit
+   , style = UI.init [ Left -350.0 Px
+                     , Opacity 0.0
+                     ]
+   }
+   , Effects.batch
       [ getListings testUrl
       , windowInit
       ]
   )
-  
+
 -- Update
 type Action =
   HttpAction (Maybe HttpGetter.Blob) -- GET HTTP response
@@ -63,34 +71,37 @@ type Action =
     | Reset () -- Reset action to all listings and no filter settings
     | Resize (Int, Int)
     | NoOp
+    | Show
+    | Hide
+    | Animate UI.Action
 
 update : Action -> Model -> (Model, Effects Action)
 update action model =
   case action of
-    HttpAction maybeBlob -> 
+    HttpAction maybeBlob ->
       (Maybe.withDefault HttpGetter.init maybeBlob
         |> blobToListings Images.testImages
         |> (\new_listings -> { model | listings = appendListings model.listings new_listings })
       , Effects.none)
-    Scroll b -> 
-      if (b == True) && (model.listings.view == Listings.ThumbnailView) 
+    Scroll b ->
+      if (b == True) && (model.listings.view == Listings.ThumbnailView)
       then (model, getListings testUrl)
       else (model, Effects.none)
-    ListingsAction listings_action -> 
+    ListingsAction listings_action ->
       ({ model | listings = Listings.update listings_action model.listings }
       , Effects.none)
-    HeaderAction header_action -> 
+    HeaderAction header_action ->
       ( { model | header = Header.update header_action model.header }
-      , Effects.none ) 
+      , Effects.none )
     SearchEnter filter_words ->
-      let 
+      let
         metaModel = model.meta
         meta' =  { metaModel | searchFilter = filter_words }
-        listings' = Listings.update (Listings.ThumbnailAction meta'.searchFilter 
+        listings' = Listings.update (Listings.ThumbnailAction meta'.searchFilter
                                     meta'.categoryFilter) model.listings
       in
       ({model | listings = listings', meta = meta'}, Effects.none )
-    CategoryEnter category -> 
+    CategoryEnter category ->
       let
         header' = Header.update (Header.CategoryEnter category) model.header
         metaModel = model.meta
@@ -99,7 +110,7 @@ update action model =
                     meta'.searchFilter meta'.categoryFilter) model.listings
       in
         ({model | header = header', listings = listings', meta = meta'}, Effects.none)
-    Reset _ -> 
+    Reset _ ->
       let
         metaModel = model.meta
         meta' = {metaModel | categoryFilter = CategoryBar.None , searchFilter = []}
@@ -119,11 +130,33 @@ update action model =
       in
         ( {model | meta = meta'}, Effects.none )
     NoOp -> (model, Effects.none)
-    
+    Show ->
+      UI.animate
+        |> UI.props
+          [ Left (UI.to 0) Px
+          , Opacity (UI.to 1)
+          ]
+        |> onMenu model
+    Hide ->
+      UI.animate
+        |> UI.props
+          [ Left (UI.to -350) Px
+          , Opacity (UI.to 0)
+          ]
+        |> onMenu model
+    Animate action ->
+      onMenu model action
+
 
 appendListings : Listings.Model -> List Listing.Model -> Listings.Model
 appendListings old_listings new_listings =
   {old_listings | listings = List.append old_listings.listings new_listings }
+
+onMenu =
+  UI.forwardTo
+    Animate
+    .style
+    (\w style -> {w | style = style })
 
 -- View
 (=>) = (,)
@@ -145,13 +178,50 @@ view address model =
                                     (forwardTo address Reset)
     listings_context = Listings.Context (forwardTo address ListingsAction)
                                         (forwardTo address ThumbnailAction)
+    triggerStyle = [ ("position", "absolute")
+                    , ("left", "0px")
+                    , ("top", "0px")
+                    , ("width", "350px")
+                    , ("height", "50%")
+                    --, ("background-color", "#AAA")
+                    , ("border", "2px dashed #AAA")
+                    ]
   in
     div [ style [ "background-color" => "#f5f5f5"
                 , "font-family" => "sans-serif"]
         , id "index-root"]
       [ Header.view (col_limit, col_percent) header_context model.header
+      , div [ onMouseEnter address Show
+            , onMouseLeave address Hide
+            , style triggerStyle
+            ]
+            [ h1 [ style [("padding","25px")]]
+                 [ text "Hover here to see menu!"]
+            , viewMenu address model
+            ]
       , Listings.view (col_limit, col_percent) listings_context model.listings
       ]
+viewMenu : Address Action -> Model -> Html
+viewMenu address model =
+  let
+    menuStyle = [ ("position", "absolute")
+                , ("top", "-2px")
+                , ("margin-left", "-2px")
+                , ("padding", "25px")
+                , ("width", "300px")
+                , ("height", "100%")
+                , ("background-color", "rgb(58,40,69)")
+                , ("color", "white")
+                , ("border", "2px solid rgb(58,40,69)")
+                ]
+  in
+    div [ style (menuStyle ++ (UI.render model.style)) ]
+        [ h1 [] [ text "Hidden Menu"]
+            , ul []
+            [li [] [text "Some things"]
+            , li [] [text "in a list"]
+            ]
+        ]
 
 -- Effects
 
@@ -180,6 +250,6 @@ windowInit =
 blobToListings : List (ImageViewer.Photos) -> HttpGetter.Blob -> List Listing.Model
 blobToListings photosList blob =
   let blobListings = blob.listings in
-  List.map2 Listing.init photosList blobListings 
+  List.map2 Listing.init photosList blobListings
 
 testUrl = "http://go-marketplace.appspot.com/listings"
