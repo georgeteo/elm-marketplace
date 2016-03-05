@@ -33,7 +33,7 @@ evancz/virtual-dom
 5. Click logo returns to homepage -- DONE
 6. Mouse pointer icon from I to < on logo -- DONE
 7. Unify filtering of category and search -- DONE
-8. Load more from server in category view. 
+8. Load more from server in category view. -- DONE 
 
 #### Non-critical
 

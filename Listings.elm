@@ -36,7 +36,6 @@ type Action =
 
 update : Action -> Model -> Model
 update action model =
-  let a = Debug.log "Action: " action in
   case action of
     ThumbnailAction searchFilter categoryFilter -> 
       { model | view = ThumbnailView
@@ -84,7 +83,6 @@ type alias Context =
 view : Context -> Model -> Html
 view context model =
   let
-    debug = Debug.log "View type" model.view 
     (container_css, listings_content) =
       case model.view of
         ThumbnailView -> 

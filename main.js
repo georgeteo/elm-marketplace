@@ -12316,7 +12316,7 @@ Elm.Listings.make = function (_elm) {
          var _p1 = acc;
          if (_p1.ctor === "[]") {
                return _U.crashCase("Listings",
-               {start: {line: 149,column: 24},end: {line: 151,column: 41}},
+               {start: {line: 147,column: 24},end: {line: 149,column: 41}},
                _p1)("Oh no! Acc was not initialized correctly in foldr");
             } else {
                return {ctor: "_Tuple2",_0: _p1._0,_1: _p1._1};
@@ -12353,7 +12353,6 @@ Elm.Listings.make = function (_elm) {
       }();
       var container_css = _p3._0;
       var listings_content = _p3._1;
-      var debug = A2($Debug.log,"View type",model.view);
       return A2($Html.div,container_css,listings_content);
    });
    var ThumbnailAction = F2(function (a,b) {    return {ctor: "ThumbnailAction",_0: a,_1: b};});
@@ -12362,7 +12361,6 @@ Elm.Listings.make = function (_elm) {
    var ThumbnailView = {ctor: "ThumbnailView"};
    var init = function (listingsList) {    return {view: ThumbnailView,searchfilter: _U.list([]),listings: listingsList};};
    var update = F2(function (action,model) {
-      var a = A2($Debug.log,"Action: ",action);
       var _p5 = action;
       switch (_p5.ctor)
       {case "ThumbnailAction": return _U.update(model,{view: ThumbnailView,listings: A2($List.map,A2(filterListings,_p5._0,_p5._1),model.listings)});
@@ -12457,11 +12455,13 @@ Elm.Index.make = function (_elm) {
                                     return _U.update(model,{listings: A2(appendListings,model.listings,new_listings)});
                                  }(A2(blobToListings,$Images.testImages,A2($Maybe.withDefault,$HttpGetter.init,_p0._0)))
                                  ,_1: $Effects.none};
-         case "Scroll": return _U.eq(_p0._0,true) && _U.eq(model.listings.view,$Listings.ThumbnailView) ? {ctor: "_Tuple2"
-                                                                                                          ,_0: model
-                                                                                                          ,_1: getListings(testUrl)} : {ctor: "_Tuple2"
-                                                                                                                                       ,_0: model
-                                                                                                                                       ,_1: $Effects.none};
+         case "Scroll": if (_U.eq(_p0._0,true) && _U.eq(model.listings.view,$Listings.ThumbnailView)) {
+                 var a = A2($Debug.log,"Trigger Scroll",5);
+                 return {ctor: "_Tuple2",_0: model,_1: getListings(testUrl)};
+              } else {
+                 var a = A2($Debug.log,"No Trigger Scroll",5);
+                 return {ctor: "_Tuple2",_0: model,_1: $Effects.none};
+              }
          case "ListingsAction": return {ctor: "_Tuple2",_0: _U.update(model,{listings: A2($Listings.update,_p0._0,model.listings)}),_1: $Effects.none};
          case "HeaderAction": return {ctor: "_Tuple2",_0: _U.update(model,{header: A2($Header.update,_p0._0,model.header)}),_1: $Effects.none};
          case "SearchEnter": var meta$ = {searchFilter: _p0._0,categoryFilter: model.meta.categoryFilter};
