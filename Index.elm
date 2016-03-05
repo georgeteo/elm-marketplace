@@ -77,8 +77,8 @@ update action model =
     SearchEnter filter_words ->
       let 
         meta' =  {searchFilter = filter_words, categoryFilter = model.meta.categoryFilter }
-        listings' = Listings.update (Listings.ThumbnailAction model.meta'.searchFilter
-                                    model.meta'.categoryFilter) model.listings
+        listings' = Listings.update (Listings.ThumbnailAction meta'.searchFilter 
+                                    meta'.categoryFilter) model.listings
       in
       ({model | listings = listings', meta = meta'}, Effects.none )
     CategoryEnter category -> 
@@ -86,7 +86,7 @@ update action model =
         header' = Header.update (Header.CategoryEnter category) model.header
         meta' = { searchFilter = model.meta.searchFilter, categoryFilter = (fst header'.category)}
         listings' = Listings.update (Listings.ThumbnailAction
-                    model.meta'.searchFilter model.meta'.categoryFilter) model.listings
+                    meta'.searchFilter meta'.categoryFilter) model.listings
       in
         ({model | header = header', listings = listings', meta = meta'}, Effects.none)
     Reset _ -> 
@@ -94,7 +94,7 @@ update action model =
         meta' = {categoryFilter = CategoryBar.None
                             , searchFilter = []}
         listings' = Listings.update (Listings.ThumbnailAction
-                      model.meta'.searchFilter model.meta'.categoryFilter) model.listings
+                      meta'.searchFilter meta'.categoryFilter) model.listings
         header' = Header.update Header.Reset model.header
       in
         ({model | meta = meta', listings = listings', header = header'}, Effects.none)

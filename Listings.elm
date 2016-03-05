@@ -33,9 +33,6 @@ type Action =
   ThumbnailAction (List String) CategoryBar.Category
     | FullpageAction Listing.UUID
     | ListingAction Listing.UUID Listing.Action
-    | SearchEnter FilterWords
-    | CategoryEnter  CategoryBar.Category
-
 
 update : Action -> Model -> Model
 update action model =
@@ -58,27 +55,10 @@ update action model =
                                       else listing
                                     ) model.listings
       }
-    SearchEnter filter_words -> 
-      { model | view = ThumbnailView
-              , listings = if filter_words == [""]
-                           then List.map (\l -> {l | view = Listing.Thumbnail}) model.listings
-                           else List.map (\listing -> if listingMatchQuery filter_words listing
-                                                      then {listing | view = Listing.Thumbnail}
-                                                      else {listing | view = Listing.Hidden}
-                                          ) model.listings
-      }
-    CategoryEnter category ->
-      let c = Debug.log "Category" category in 
-      {model | view = ThumbnailView
-             , listings = List.map (\listing -> if listingMatchCategories category listing
-                                                then {listing | view = Listing.Thumbnail}
-                                                else {listing | view = Listing.Hidden}
-                                   ) model.listings
-      }
 
 listingMatchQuery : FilterWords -> Listing.Model -> Bool
 listingMatchQuery filter_words listing =
-  if filter_words == [] then True
+  if (filter_words == []) || (filter_words == [""]) then True
   else if List.foldl (\word tf -> (List.member word listing.query) && tf) True filter_words
        then True
        else False
