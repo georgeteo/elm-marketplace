@@ -40,6 +40,7 @@ metaInit =
 type alias Model =
   { listings : Listings.Model
   , header : Header.Model
+  , category : CategoryBar.Model
   , meta : Meta
   , style : UI.Animation
   }
@@ -48,6 +49,7 @@ init : (Model, Effects Action)
 init =
   ({ listings = Listings.init []
    , header = Header.init
+   , category = CategoryBar.init
    , meta = metaInit
    , style = UI.init [ Left -350.0 Px
                      , Opacity 0.0
@@ -67,6 +69,7 @@ type Action =
     | HeaderAction Header.Action -- Internal Header Actions: search input or category hover
     | ThumbnailAction () -- Rendering view based on filters
     | SearchEnter (List String) -- Search query with list of query words
+    | CategoryHover CategoryBar.Action
     | CategoryEnter CategoryBar.Category -- Category query with a category
     | Reset () -- Reset action to all listings and no filter settings
     | Resize (Int, Int)
@@ -101,15 +104,18 @@ update action model =
                                     meta'.categoryFilter) model.listings
       in
       ({model | listings = listings', meta = meta'}, Effects.none )
+    CategoryHover category_action ->
+      ( {model | category = CategoryBar.update category_action model.category}
+      , Effects.none)
     CategoryEnter category ->
       let
-        header' = Header.update (Header.CategoryEnter category) model.header
+        category' = CategoryBar.update (CategoryBar.ToggleCategory category) model.category
         metaModel = model.meta
-        meta' = { metaModel | categoryFilter = (fst header'.category)}
+        meta' = { metaModel | categoryFilter = (fst category')}
         listings' = Listings.update (Listings.ThumbnailAction
                     meta'.searchFilter meta'.categoryFilter) model.listings
       in
-        ({model | header = header', listings = listings', meta = meta'}, Effects.none)
+        ({model | category=category', listings = listings', meta = meta'}, Effects.none)
     Reset _ ->
       let
         metaModel = model.meta
@@ -117,8 +123,10 @@ update action model =
         listings' = Listings.update (Listings.ThumbnailAction
                       meta'.searchFilter meta'.categoryFilter) model.listings
         header' = Header.update Header.Reset model.header
+        category' = CategoryBar.update CategoryBar.Reset model.category
       in
-        ({model | meta = meta', listings = listings', header = header'}, Effects.none)
+        ( {model | meta = meta', listings = listings', header = header', category = category'}
+        , Effects.none)
     ThumbnailAction _ -> -- Move up later
       ( { model | listings = Listings.update (Listings.ThumbnailAction
                   model.meta.searchFilter model.meta.categoryFilter) model.listings }
@@ -148,7 +156,7 @@ update action model =
       onMenu model action
 
 
-appendListings : Listings.Model -> List Listing.Model -> Listings.Model
+appendListings : Listings.Model -> List Listing.Model -> Listings.Model 
 appendListings old_listings new_listings =
   {old_listings | listings = List.append old_listings.listings new_listings }
 
@@ -174,10 +182,11 @@ view address model =
                                else (4, 25)
     header_context = Header.Context (forwardTo address HeaderAction)
                                     (forwardTo address SearchEnter)
-                                    (forwardTo address CategoryEnter)
                                     (forwardTo address Reset)
     listings_context = Listings.Context (forwardTo address ListingsAction)
-                                        (forwardTo address ThumbnailAction)
+                                        (forwardTo address ThumbnailAction) 
+    category_context = CategoryBar.Context (forwardTo address CategoryHover)
+                                           (forwardTo address CategoryEnter)
     triggerStyle = [ ("position", "absolute")
                     , ("left", "0px")
                     , ("top", "0px")
@@ -190,7 +199,8 @@ view address model =
     div [ style [ "background-color" => "#f5f5f5"
                 , "font-family" => "sans-serif"]
         , id "index-root"]
-      [ Header.view (col_limit, col_percent) header_context model.header
+      [ CategoryBar.view category_context model.category
+      ,  Header.view (col_limit, col_percent) header_context model.header
       , div [ onMouseEnter address Show
             , onMouseLeave address Hide
             , style triggerStyle

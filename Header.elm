@@ -13,18 +13,15 @@ import CategoryBar
 -- Model
 type alias Model =
   { search : Query
-  , category : CategoryBar.Model }
-
+  }
 init : Model
 init =
   { search = Search.init
-  , category = CategoryBar.init }
+  }
 
 -- Update
 type Action =
   SearchAction Search.Action
-    | CategoryInput CategoryBar.Action
-    | CategoryEnter CategoryBar.Category
     | Reset
 
 update : Action -> Model -> Model
@@ -32,13 +29,8 @@ update action model =
   case action of
     SearchAction search_action -> 
       { model | search = Search.update search_action model.search }
-    CategoryInput category_action -> 
-      { model | category = CategoryBar.update category_action model.category }
-    CategoryEnter c ->
-      { model | category = CategoryBar.update (CategoryBar.ToggleCategory c) model.category }
     Reset -> 
-      { category = CategoryBar.update (CategoryBar.Reset) model.category
-      , search = Search.update Search.Reset model.search }
+      { search = Search.update Search.Reset model.search }
 
 
 -- Util
@@ -121,7 +113,6 @@ div_name (w, h) =
 type alias Context =
   { headerAction : Signal.Address Action
   , searchEnter : Signal.Address (List String)
-  , categoryEnter : Signal.Address CategoryBar.Category
   , reset : Signal.Address ()
   }
 
@@ -135,12 +126,8 @@ view (col_limit, col_percent) context model =
     search_context = Search.Context
                      (Signal.forwardTo context.headerAction SearchAction)
                      context.searchEnter
-    category_context = CategoryBar.Context
-                        (Signal.forwardTo context.headerAction CategoryInput)
-                        context.categoryEnter
   in
     div [ style container_css ]
-        [ CategoryBar.view category_context model.category
-        , div_logo_name (logo_width, name_width, height) col_limit context.reset
+        [ div_logo_name (logo_width, name_width, height) col_limit context.reset
         , Search.view (logo_and_name_width, height) col_limit search_context model.search
         ]

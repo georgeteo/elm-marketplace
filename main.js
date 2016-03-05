@@ -13215,7 +13215,6 @@ Elm.Header.make = function (_elm) {
    if (_elm.Header.values) return _elm.Header.values;
    var _U = Elm.Native.Utils.make(_elm),
    $Basics = Elm.Basics.make(_elm),
-   $CategoryBar = Elm.CategoryBar.make(_elm),
    $Debug = Elm.Debug.make(_elm),
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
@@ -13226,7 +13225,7 @@ Elm.Header.make = function (_elm) {
    $Search = Elm.Search.make(_elm),
    $Signal = Elm.Signal.make(_elm);
    var _op = {};
-   var Context = F4(function (a,b,c,d) {    return {headerAction: a,searchEnter: b,categoryEnter: c,reset: d};});
+   var Context = F3(function (a,b,c) {    return {headerAction: a,searchEnter: b,reset: c};});
    _op["=>"] = F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};});
    var container_css = _U.list([A2(_op["=>"],"margin-bottom","10px")
                                ,A2(_op["=>"],"background-color","#fff")
@@ -13273,20 +13272,17 @@ Elm.Header.make = function (_elm) {
    });
    var update = F2(function (action,model) {
       var _p11 = action;
-      switch (_p11.ctor)
-      {case "SearchAction": return _U.update(model,{search: A2($Search.update,_p11._0,model.search)});
-         case "CategoryInput": return _U.update(model,{category: A2($CategoryBar.update,_p11._0,model.category)});
-         case "CategoryEnter": return _U.update(model,{category: A2($CategoryBar.update,$CategoryBar.ToggleCategory(_p11._0),model.category)});
-         default: return {category: A2($CategoryBar.update,$CategoryBar.Reset,model.category),search: A2($Search.update,$Search.Reset,model.search)};}
+      if (_p11.ctor === "SearchAction") {
+            return _U.update(model,{search: A2($Search.update,_p11._0,model.search)});
+         } else {
+            return {search: A2($Search.update,$Search.Reset,model.search)};
+         }
    });
    var Reset = {ctor: "Reset"};
-   var CategoryEnter = function (a) {    return {ctor: "CategoryEnter",_0: a};};
-   var CategoryInput = function (a) {    return {ctor: "CategoryInput",_0: a};};
    var SearchAction = function (a) {    return {ctor: "SearchAction",_0: a};};
    var view = F3(function (_p12,context,model) {
       var _p13 = _p12;
       var _p14 = _p13._0;
-      var category_context = A2($CategoryBar.Context,A2($Signal.forwardTo,context.headerAction,CategoryInput),context.categoryEnter);
       var search_context = A2($Search.Context,A2($Signal.forwardTo,context.headerAction,SearchAction),context.searchEnter);
       var height = 100;
       var name_width = 200;
@@ -13294,18 +13290,15 @@ Elm.Header.make = function (_elm) {
       var logo_and_name_width = logo_width + name_width;
       return A2($Html.div,
       _U.list([$Html$Attributes.style(container_css)]),
-      _U.list([A2($CategoryBar.view,category_context,model.category)
-              ,A3(div_logo_name,{ctor: "_Tuple3",_0: logo_width,_1: name_width,_2: height},_p14,context.reset)
+      _U.list([A3(div_logo_name,{ctor: "_Tuple3",_0: logo_width,_1: name_width,_2: height},_p14,context.reset)
               ,A4($Search.view,{ctor: "_Tuple2",_0: logo_and_name_width,_1: height},_p14,search_context,model.search)]));
    });
-   var init = {search: $Search.init,category: $CategoryBar.init};
-   var Model = F2(function (a,b) {    return {search: a,category: b};});
+   var init = {search: $Search.init};
+   var Model = function (a) {    return {search: a};};
    return _elm.Header.values = {_op: _op
                                ,Model: Model
                                ,init: init
                                ,SearchAction: SearchAction
-                               ,CategoryInput: CategoryInput
-                               ,CategoryEnter: CategoryEnter
                                ,Reset: Reset
                                ,update: update
                                ,toPixel: toPixel
@@ -14415,6 +14408,7 @@ Elm.Index.make = function (_elm) {
    var firstResize = A2($Signal.sampleOn,startMailbox.signal,resizes);
    var Reset = function (a) {    return {ctor: "Reset",_0: a};};
    var CategoryEnter = function (a) {    return {ctor: "CategoryEnter",_0: a};};
+   var CategoryHover = function (a) {    return {ctor: "CategoryHover",_0: a};};
    var SearchEnter = function (a) {    return {ctor: "SearchEnter",_0: a};};
    var ThumbnailAction = function (a) {    return {ctor: "ThumbnailAction",_0: a};};
    var HeaderAction = function (a) {    return {ctor: "HeaderAction",_0: a};};
@@ -14426,11 +14420,11 @@ Elm.Index.make = function (_elm) {
                                  ,{ctor: "_Tuple2",_0: "width",_1: "350px"}
                                  ,{ctor: "_Tuple2",_0: "height",_1: "50%"}
                                  ,{ctor: "_Tuple2",_0: "border",_1: "2px dashed #AAA"}]);
+      var category_context = A2($CategoryBar.Context,A2($Signal.forwardTo,address,CategoryHover),A2($Signal.forwardTo,address,CategoryEnter));
       var listings_context = A2($Listings.Context,A2($Signal.forwardTo,address,ListingsAction),A2($Signal.forwardTo,address,ThumbnailAction));
-      var header_context = A4($Header.Context,
+      var header_context = A3($Header.Context,
       A2($Signal.forwardTo,address,HeaderAction),
       A2($Signal.forwardTo,address,SearchEnter),
-      A2($Signal.forwardTo,address,CategoryEnter),
       A2($Signal.forwardTo,address,Reset));
       var three_col_limit = 1250;
       var two_col_limit = 940;
@@ -14443,7 +14437,8 @@ Elm.Index.make = function (_elm) {
       return A2($Html.div,
       _U.list([$Html$Attributes.style(_U.list([A2(_op["=>"],"background-color","#f5f5f5"),A2(_op["=>"],"font-family","sans-serif")]))
               ,$Html$Attributes.id("index-root")]),
-      _U.list([A3($Header.view,{ctor: "_Tuple2",_0: col_limit,_1: col_percent},header_context,model.header)
+      _U.list([A2($CategoryBar.view,category_context,model.category)
+              ,A3($Header.view,{ctor: "_Tuple2",_0: col_limit,_1: col_percent},header_context,model.header)
               ,A2($Html.div,
               _U.list([A2($Html$Events.onMouseEnter,address,Show),A2($Html$Events.onMouseLeave,address,Hide),$Html$Attributes.style(triggerStyle)]),
               _U.list([A2($Html.h1,
@@ -14474,16 +14469,18 @@ Elm.Index.make = function (_elm) {
            var meta$ = _U.update(metaModel,{searchFilter: _p1._0});
            var listings$ = A2($Listings.update,A2($Listings.ThumbnailAction,meta$.searchFilter,meta$.categoryFilter),model.listings);
            return {ctor: "_Tuple2",_0: _U.update(model,{listings: listings$,meta: meta$}),_1: $Effects.none};
+         case "CategoryHover": return {ctor: "_Tuple2",_0: _U.update(model,{category: A2($CategoryBar.update,_p1._0,model.category)}),_1: $Effects.none};
          case "CategoryEnter": var metaModel = model.meta;
-           var header$ = A2($Header.update,$Header.CategoryEnter(_p1._0),model.header);
-           var meta$ = _U.update(metaModel,{categoryFilter: $Basics.fst(header$.category)});
+           var category$ = A2($CategoryBar.update,$CategoryBar.ToggleCategory(_p1._0),model.category);
+           var meta$ = _U.update(metaModel,{categoryFilter: $Basics.fst(category$)});
            var listings$ = A2($Listings.update,A2($Listings.ThumbnailAction,meta$.searchFilter,meta$.categoryFilter),model.listings);
-           return {ctor: "_Tuple2",_0: _U.update(model,{header: header$,listings: listings$,meta: meta$}),_1: $Effects.none};
-         case "Reset": var header$ = A2($Header.update,$Header.Reset,model.header);
+           return {ctor: "_Tuple2",_0: _U.update(model,{category: category$,listings: listings$,meta: meta$}),_1: $Effects.none};
+         case "Reset": var category$ = A2($CategoryBar.update,$CategoryBar.Reset,model.category);
+           var header$ = A2($Header.update,$Header.Reset,model.header);
            var metaModel = model.meta;
            var meta$ = _U.update(metaModel,{categoryFilter: $CategoryBar.None,searchFilter: _U.list([])});
            var listings$ = A2($Listings.update,A2($Listings.ThumbnailAction,meta$.searchFilter,meta$.categoryFilter),model.listings);
-           return {ctor: "_Tuple2",_0: _U.update(model,{meta: meta$,listings: listings$,header: header$}),_1: $Effects.none};
+           return {ctor: "_Tuple2",_0: _U.update(model,{meta: meta$,listings: listings$,header: header$,category: category$}),_1: $Effects.none};
          case "ThumbnailAction": return {ctor: "_Tuple2"
                                         ,_0: _U.update(model,
                                         {listings: A2($Listings.update,
@@ -14508,11 +14505,12 @@ Elm.Index.make = function (_elm) {
            $Html$Animation.animate));
          default: return A2(onMenu,model,_p1._0);}
    });
-   var Model = F4(function (a,b,c,d) {    return {listings: a,header: b,meta: c,style: d};});
+   var Model = F5(function (a,b,c,d,e) {    return {listings: a,header: b,category: c,meta: d,style: e};});
    var metaInit = {searchFilter: _U.list([]),categoryFilter: $CategoryBar.None,windowDim: {ctor: "_Tuple2",_0: 0,_1: 0}};
    var init = {ctor: "_Tuple2"
               ,_0: {listings: $Listings.init(_U.list([]))
                    ,header: $Header.init
+                   ,category: $CategoryBar.init
                    ,meta: metaInit
                    ,style: $Html$Animation.init(_U.list([A2($Html$Animation$Properties.Left,-350.0,$Html$Animation$Properties.Px)
                                                         ,$Html$Animation$Properties.Opacity(0.0)]))}
@@ -14529,6 +14527,7 @@ Elm.Index.make = function (_elm) {
                               ,HeaderAction: HeaderAction
                               ,ThumbnailAction: ThumbnailAction
                               ,SearchEnter: SearchEnter
+                              ,CategoryHover: CategoryHover
                               ,CategoryEnter: CategoryEnter
                               ,Reset: Reset
                               ,Resize: Resize
