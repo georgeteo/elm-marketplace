@@ -34,6 +34,8 @@ evancz/virtual-dom
 6. Mouse pointer icon from I to < on logo -- DONE
 7. Unify filtering of category and search -- DONE
 8. Load more from server in category view. -- DONE 
+9. Vertical Category Bar clean up CSS
+10. Vertical category bar collapse from horizontal 
 
 #### Non-critical
 

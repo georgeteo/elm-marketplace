@@ -13046,7 +13046,10 @@ Elm.CategoryBar.make = function (_elm) {
    var _U = Elm.Native.Utils.make(_elm),
    $Basics = Elm.Basics.make(_elm),
    $Debug = Elm.Debug.make(_elm),
+   $Effects = Elm.Effects.make(_elm),
    $Html = Elm.Html.make(_elm),
+   $Html$Animation = Elm.Html.Animation.make(_elm),
+   $Html$Animation$Properties = Elm.Html.Animation.Properties.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
    $Html$Events = Elm.Html.Events.make(_elm),
    $List = Elm.List.make(_elm),
@@ -13057,31 +13060,79 @@ Elm.CategoryBar.make = function (_elm) {
    _op["=>"] = F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};});
    var on_css = _U.list([A2(_op["=>"],"background-color","#800000"),A2(_op["=>"],"color","#fff")]);
    var off_css = _U.list([A2(_op["=>"],"background-color","#fff")]);
-   var individual_category_css = _U.list([A2(_op["=>"],"display","inline-block")
+   var horizontal_category_css = _U.list([A2(_op["=>"],"display","inline-block")
                                          ,A2(_op["=>"],"padding","5px")
                                          ,A2(_op["=>"],"min-width","calc(7.5% - 10px)")
                                          ,A2(_op["=>"],"cursor","pointer")]);
    var left_tab_css = _U.list([A2(_op["=>"],"border-top-left-radius","5px")]);
    var right_tab_css = _U.list([A2(_op["=>"],"border-top-right-radius","5px")]);
    var border_bar_css = _U.list([A2(_op["=>"],"text-align","center")]);
-   var Context = F2(function (a,b) {    return {categoryInput: a,categoryEnter: b};});
+   var trigger_css = _U.list([A2(_op["=>"],"position","absolute")
+                             ,A2(_op["=>"],"left","0px")
+                             ,A2(_op["=>"],"top","0px")
+                             ,A2(_op["=>"],"width","50px")
+                             ,A2(_op["=>"],"height","50px")
+                             ,A2(_op["=>"],"border","1px dashed #AAA")]);
+   var vertical_view_css = _U.list([A2(_op["=>"],"position","absolute")
+                                   ,A2(_op["=>"],"top","-2px")
+                                   ,A2(_op["=>"],"margin-left","-2px")
+                                   ,A2(_op["=>"],"height","100%")
+                                   ,A2(_op["=>"],"padding","10px 20px")
+                                   ,A2(_op["=>"],"background-color","#f5f5f5")
+                                   ,A2(_op["=>"],"border","1px solid #f5f5f5")]);
+   var vertical_category_css = _U.list([A2(_op["=>"],"display","block")
+                                       ,A2(_op["=>"],"padding","5px")
+                                       ,A2(_op["=>"],"cursor","pointer")
+                                       ,A2(_op["=>"],"float","left")]);
+   var Context = F3(function (a,b,c) {    return {categoryInput: a,categoryEnter: b,animation: c};});
+   var Animate = function (a) {    return {ctor: "Animate",_0: a};};
+   var onMenu = A3($Html$Animation.forwardTo,Animate,function (_) {    return _.style;},F2(function (w,style) {    return _U.update(w,{style: style});}));
+   var Hide = {ctor: "Hide"};
+   var Show = {ctor: "Show"};
    var Reset = {ctor: "Reset"};
    var MouseLeave = function (a) {    return {ctor: "MouseLeave",_0: a};};
    var MouseEnter = function (a) {    return {ctor: "MouseEnter",_0: a};};
+   var verticalCategory = F3(function (context,model,category) {
+      var css = _U.eq(model.on,category) || _U.eq(model.hover,category) ? on_css : off_css;
+      return A2($Html.div,
+      _U.list([$Html$Attributes.style(A2($Basics._op["++"],css,vertical_category_css))
+              ,A2($Html$Events.onClick,context.categoryEnter,category)
+              ,A2($Html$Events.onMouseEnter,context.categoryInput,MouseEnter(category))
+              ,A2($Html$Events.onMouseLeave,context.categoryInput,MouseLeave(category))]),
+      _U.list([$Html.text($Basics.toString(category))]));
+   });
    var ToggleCategory = function (a) {    return {ctor: "ToggleCategory",_0: a};};
+   var Model = F3(function (a,b,c) {    return {on: a,hover: b,style: c};});
    var None = {ctor: "None"};
-   var init = {ctor: "_Tuple2",_0: None,_1: None};
-   var update = F2(function (action,_p0) {
-      var _p1 = _p0;
-      var _p5 = _p1._0;
-      var _p4 = _p1._1;
-      var _p2 = action;
-      switch (_p2.ctor)
-      {case "ToggleCategory": var _p3 = _p2._0;
-           return _U.eq(_p3,_p5) ? {ctor: "_Tuple2",_0: None,_1: _p4} : {ctor: "_Tuple2",_0: _p3,_1: _p4};
-         case "MouseEnter": return {ctor: "_Tuple2",_0: _p5,_1: _p2._0};
-         case "MouseLeave": return {ctor: "_Tuple2",_0: _p5,_1: None};
-         default: return {ctor: "_Tuple2",_0: None,_1: _p4};}
+   var init = {on: None
+              ,hover: None
+              ,style: $Html$Animation.init(_U.list([A2($Html$Animation$Properties.Left,-100,$Html$Animation$Properties.Px)
+                                                   ,$Html$Animation$Properties.Opacity(0.0)
+                                                   ,A2($Html$Animation$Properties.Height,50,$Html$Animation$Properties.Px)]))};
+   var update = F2(function (action,model) {
+      var _p0 = action;
+      switch (_p0.ctor)
+      {case "ToggleCategory": var _p1 = _p0._0;
+           var model$ = _U.eq(_p1,model.on) ? _U.update(model,{on: None}) : _U.update(model,{on: _p1});
+           return {ctor: "_Tuple2",_0: model$,_1: $Effects.none};
+         case "MouseEnter": return {ctor: "_Tuple2",_0: _U.update(model,{hover: _p0._0}),_1: $Effects.none};
+         case "MouseLeave": return {ctor: "_Tuple2",_0: _U.update(model,{hover: None}),_1: $Effects.none};
+         case "Reset": return {ctor: "_Tuple2",_0: _U.update(model,{on: None}),_1: $Effects.none};
+         case "Show": return A2(onMenu,
+           model,
+           A2($Html$Animation.props,
+           _U.list([A2($Html$Animation$Properties.Left,$Html$Animation.to(0),$Html$Animation$Properties.Px)
+                   ,$Html$Animation$Properties.Opacity($Html$Animation.to(1))
+                   ,A2($Html$Animation$Properties.Height,$Html$Animation.to(500),$Html$Animation$Properties.Px)]),
+           $Html$Animation.animate));
+         case "Hide": return A2(onMenu,
+           model,
+           A2($Html$Animation.props,
+           _U.list([A2($Html$Animation$Properties.Left,$Html$Animation.to(-100),$Html$Animation$Properties.Px)
+                   ,$Html$Animation$Properties.Opacity($Html$Animation.to(0))
+                   ,A2($Html$Animation$Properties.Height,$Html$Animation.to(50),$Html$Animation$Properties.Px)]),
+           $Html$Animation.animate));
+         default: return A2(onMenu,model,_p0._0);}
    });
    var Free = {ctor: "Free"};
    var Wanted = {ctor: "Wanted"};
@@ -13097,19 +13148,35 @@ Elm.CategoryBar.make = function (_elm) {
    var Subleases = {ctor: "Subleases"};
    var Apartments = {ctor: "Apartments"};
    var allCategories = _U.list([Apartments,Subleases,Appliances,Bikes,Books,Cars,Electronics,Employment,Furniture,Miscellaneous,Services,Wanted,Free]);
-   var categoryView = F3(function (context,_p6,category) {
-      var _p7 = _p6;
-      var special_modifier_css = _U.eq(category,Apartments) ? left_tab_css : _U.eq(category,Free) ? right_tab_css : _U.list([]);
-      var css = _U.eq(_p7._0,category) || _U.eq(_p7._1,category) ? on_css : off_css;
+   var verticalView = F2(function (context,model) {
       return A2($Html.div,
-      _U.list([$Html$Attributes.style(A2($Basics._op["++"],css,A2($Basics._op["++"],individual_category_css,special_modifier_css)))
+      _U.list([$Html$Attributes.style(A2($Basics._op["++"],vertical_view_css,$Html$Animation.render(model.style))),$Html$Attributes.id("vertical-view")]),
+      A2($List.map,A2(verticalCategory,context,model),allCategories));
+   });
+   var verticalTrigger = F2(function (context,model) {
+      return A2($Html.div,
+      _U.list([A2($Html$Events.onMouseEnter,context.animation,Show)
+              ,A2($Html$Events.onMouseLeave,context.animation,Hide)
+              ,$Html$Attributes.style(trigger_css)
+              ,$Html$Attributes.id("vertical-trigger")]),
+      _U.list([A2(verticalView,context,model)]));
+   });
+   var horizontalCategory = F3(function (context,model,category) {
+      var special_modifier_css = _U.eq(category,Apartments) ? left_tab_css : _U.eq(category,Free) ? right_tab_css : _U.list([]);
+      var css = _U.eq(model.on,category) || _U.eq(model.hover,category) ? on_css : off_css;
+      return A2($Html.div,
+      _U.list([$Html$Attributes.style(A2($Basics._op["++"],css,A2($Basics._op["++"],horizontal_category_css,special_modifier_css)))
               ,A2($Html$Events.onClick,context.categoryEnter,category)
               ,A2($Html$Events.onMouseEnter,context.categoryInput,MouseEnter(category))
               ,A2($Html$Events.onMouseLeave,context.categoryInput,MouseLeave(category))]),
       _U.list([$Html.text($Basics.toString(category))]));
    });
-   var view = F2(function (context,model) {
-      return A2($Html.div,_U.list([$Html$Attributes.style(border_bar_css)]),A2($List.map,A2(categoryView,context,model),allCategories));
+   var horizontalView = F2(function (context,model) {
+      return A2($Html.div,_U.list([$Html$Attributes.style(border_bar_css)]),A2($List.map,A2(horizontalCategory,context,model),allCategories));
+   });
+   var view = F3(function (col_limit,context,model) {
+      var debug = A2($Debug.log,"Col Limit in CategoryBar View",col_limit);
+      return _U.cmp(col_limit,4) < 0 ? A2(verticalTrigger,context,model) : A2(horizontalView,context,model);
    });
    return _elm.CategoryBar.values = {_op: _op
                                     ,Apartments: Apartments
@@ -13126,22 +13193,34 @@ Elm.CategoryBar.make = function (_elm) {
                                     ,Wanted: Wanted
                                     ,Free: Free
                                     ,None: None
+                                    ,Model: Model
                                     ,init: init
                                     ,allCategories: allCategories
                                     ,ToggleCategory: ToggleCategory
                                     ,MouseEnter: MouseEnter
                                     ,MouseLeave: MouseLeave
                                     ,Reset: Reset
+                                    ,Show: Show
+                                    ,Hide: Hide
+                                    ,Animate: Animate
                                     ,update: update
+                                    ,onMenu: onMenu
                                     ,Context: Context
                                     ,view: view
-                                    ,categoryView: categoryView
+                                    ,horizontalView: horizontalView
+                                    ,horizontalCategory: horizontalCategory
+                                    ,verticalTrigger: verticalTrigger
+                                    ,verticalView: verticalView
+                                    ,verticalCategory: verticalCategory
                                     ,on_css: on_css
                                     ,off_css: off_css
-                                    ,individual_category_css: individual_category_css
+                                    ,horizontal_category_css: horizontal_category_css
                                     ,left_tab_css: left_tab_css
                                     ,right_tab_css: right_tab_css
-                                    ,border_bar_css: border_bar_css};
+                                    ,border_bar_css: border_bar_css
+                                    ,trigger_css: trigger_css
+                                    ,vertical_view_css: vertical_view_css
+                                    ,vertical_category_css: vertical_category_css};
 };
 Elm.Search = Elm.Search || {};
 Elm.Search.make = function (_elm) {
@@ -14357,10 +14436,7 @@ Elm.Index.make = function (_elm) {
    $Effects = Elm.Effects.make(_elm),
    $Header = Elm.Header.make(_elm),
    $Html = Elm.Html.make(_elm),
-   $Html$Animation = Elm.Html.Animation.make(_elm),
-   $Html$Animation$Properties = Elm.Html.Animation.Properties.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
-   $Html$Events = Elm.Html.Events.make(_elm),
    $HttpGetter = Elm.HttpGetter.make(_elm),
    $ImageViewer = Elm.ImageViewer.make(_elm),
    $Images = Elm.Images.make(_elm),
@@ -14376,31 +14452,11 @@ Elm.Index.make = function (_elm) {
    var testUrl = "http://go-marketplace.appspot.com/listings";
    var blobToListings = F2(function (photosList,blob) {    var blobListings = blob.listings;return A3($List.map2,$Listing.init,photosList,blobListings);});
    var startMailbox = $Signal.mailbox({ctor: "_Tuple0"});
-   var viewMenu = F2(function (address,model) {
-      var menuStyle = _U.list([{ctor: "_Tuple2",_0: "position",_1: "absolute"}
-                              ,{ctor: "_Tuple2",_0: "top",_1: "-2px"}
-                              ,{ctor: "_Tuple2",_0: "margin-left",_1: "-2px"}
-                              ,{ctor: "_Tuple2",_0: "padding",_1: "25px"}
-                              ,{ctor: "_Tuple2",_0: "width",_1: "300px"}
-                              ,{ctor: "_Tuple2",_0: "height",_1: "100%"}
-                              ,{ctor: "_Tuple2",_0: "background-color",_1: "rgb(58,40,69)"}
-                              ,{ctor: "_Tuple2",_0: "color",_1: "white"}
-                              ,{ctor: "_Tuple2",_0: "border",_1: "2px solid rgb(58,40,69)"}]);
-      return A2($Html.div,
-      _U.list([$Html$Attributes.style(A2($Basics._op["++"],menuStyle,$Html$Animation.render(model.style)))]),
-      _U.list([A2($Html.h1,_U.list([]),_U.list([$Html.text("Hidden Menu")]))
-              ,A2($Html.ul,
-              _U.list([]),
-              _U.list([A2($Html.li,_U.list([]),_U.list([$Html.text("Some things")])),A2($Html.li,_U.list([]),_U.list([$Html.text("in a list")]))]))]));
-   });
    _op["=>"] = F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};});
    var appendListings = F2(function (old_listings,new_listings) {
       return _U.update(old_listings,{listings: A2($List.append,old_listings.listings,new_listings)});
    });
-   var Animate = function (a) {    return {ctor: "Animate",_0: a};};
-   var onMenu = A3($Html$Animation.forwardTo,Animate,function (_) {    return _.style;},F2(function (w,style) {    return _U.update(w,{style: style});}));
-   var Hide = {ctor: "Hide"};
-   var Show = {ctor: "Show"};
+   var Animation = function (a) {    return {ctor: "Animation",_0: a};};
    var NoOp = {ctor: "NoOp"};
    var windowInit = $Effects.task(A2($Task.map,$Basics.always(NoOp),A2($Signal.send,startMailbox.address,{ctor: "_Tuple0"})));
    var Resize = function (a) {    return {ctor: "Resize",_0: a};};
@@ -14414,13 +14470,10 @@ Elm.Index.make = function (_elm) {
    var HeaderAction = function (a) {    return {ctor: "HeaderAction",_0: a};};
    var ListingsAction = function (a) {    return {ctor: "ListingsAction",_0: a};};
    var view = F2(function (address,model) {
-      var triggerStyle = _U.list([{ctor: "_Tuple2",_0: "position",_1: "absolute"}
-                                 ,{ctor: "_Tuple2",_0: "left",_1: "0px"}
-                                 ,{ctor: "_Tuple2",_0: "top",_1: "0px"}
-                                 ,{ctor: "_Tuple2",_0: "width",_1: "350px"}
-                                 ,{ctor: "_Tuple2",_0: "height",_1: "50%"}
-                                 ,{ctor: "_Tuple2",_0: "border",_1: "2px dashed #AAA"}]);
-      var category_context = A2($CategoryBar.Context,A2($Signal.forwardTo,address,CategoryHover),A2($Signal.forwardTo,address,CategoryEnter));
+      var category_context = A3($CategoryBar.Context,
+      A2($Signal.forwardTo,address,CategoryHover),
+      A2($Signal.forwardTo,address,CategoryEnter),
+      A2($Signal.forwardTo,address,Animation));
       var listings_context = A2($Listings.Context,A2($Signal.forwardTo,address,ListingsAction),A2($Signal.forwardTo,address,ThumbnailAction));
       var header_context = A3($Header.Context,
       A2($Signal.forwardTo,address,HeaderAction),
@@ -14437,14 +14490,8 @@ Elm.Index.make = function (_elm) {
       return A2($Html.div,
       _U.list([$Html$Attributes.style(_U.list([A2(_op["=>"],"background-color","#f5f5f5"),A2(_op["=>"],"font-family","sans-serif")]))
               ,$Html$Attributes.id("index-root")]),
-      _U.list([A2($CategoryBar.view,category_context,model.category)
+      _U.list([A3($CategoryBar.view,col_limit,category_context,model.category)
               ,A3($Header.view,{ctor: "_Tuple2",_0: col_limit,_1: col_percent},header_context,model.header)
-              ,A2($Html.div,
-              _U.list([A2($Html$Events.onMouseEnter,address,Show),A2($Html$Events.onMouseLeave,address,Hide),$Html$Attributes.style(triggerStyle)]),
-              _U.list([A2($Html.h1,
-                      _U.list([$Html$Attributes.style(_U.list([{ctor: "_Tuple2",_0: "padding",_1: "25px"}]))]),
-                      _U.list([$Html.text("Hover here to see menu!")]))
-                      ,A2(viewMenu,address,model)]))
               ,A3($Listings.view,{ctor: "_Tuple2",_0: col_limit,_1: col_percent},listings_context,model.listings)]));
    });
    var Scroll = function (a) {    return {ctor: "Scroll",_0: a};};
@@ -14469,13 +14516,20 @@ Elm.Index.make = function (_elm) {
            var meta$ = _U.update(metaModel,{searchFilter: _p1._0});
            var listings$ = A2($Listings.update,A2($Listings.ThumbnailAction,meta$.searchFilter,meta$.categoryFilter),model.listings);
            return {ctor: "_Tuple2",_0: _U.update(model,{listings: listings$,meta: meta$}),_1: $Effects.none};
-         case "CategoryHover": return {ctor: "_Tuple2",_0: _U.update(model,{category: A2($CategoryBar.update,_p1._0,model.category)}),_1: $Effects.none};
+         case "CategoryHover": var _p2 = A2($CategoryBar.update,_p1._0,model.category);
+           var category$ = _p2._0;
+           var effects$ = _p2._1;
+           return {ctor: "_Tuple2",_0: _U.update(model,{category: category$}),_1: $Effects.none};
          case "CategoryEnter": var metaModel = model.meta;
-           var category$ = A2($CategoryBar.update,$CategoryBar.ToggleCategory(_p1._0),model.category);
-           var meta$ = _U.update(metaModel,{categoryFilter: $Basics.fst(category$)});
+           var _p3 = A2($CategoryBar.update,$CategoryBar.ToggleCategory(_p1._0),model.category);
+           var category$ = _p3._0;
+           var effects$ = _p3._1;
+           var meta$ = _U.update(metaModel,{categoryFilter: category$.on});
            var listings$ = A2($Listings.update,A2($Listings.ThumbnailAction,meta$.searchFilter,meta$.categoryFilter),model.listings);
            return {ctor: "_Tuple2",_0: _U.update(model,{category: category$,listings: listings$,meta: meta$}),_1: $Effects.none};
-         case "Reset": var category$ = A2($CategoryBar.update,$CategoryBar.Reset,model.category);
+         case "Reset": var _p4 = A2($CategoryBar.update,$CategoryBar.Reset,model.category);
+           var category$ = _p4._0;
+           var effects$ = _p4._1;
            var header$ = A2($Header.update,$Header.Reset,model.header);
            var metaModel = model.meta;
            var meta$ = _U.update(metaModel,{categoryFilter: $CategoryBar.None,searchFilter: _U.list([])});
@@ -14491,29 +14545,15 @@ Elm.Index.make = function (_elm) {
            var meta$ = A2($Debug.log,"New dimensions",_U.update(metaModel,{windowDim: _p1._0}));
            return {ctor: "_Tuple2",_0: _U.update(model,{meta: meta$}),_1: $Effects.none};
          case "NoOp": return {ctor: "_Tuple2",_0: model,_1: $Effects.none};
-         case "Show": return A2(onMenu,
-           model,
-           A2($Html$Animation.props,
-           _U.list([A2($Html$Animation$Properties.Left,$Html$Animation.to(0),$Html$Animation$Properties.Px)
-                   ,$Html$Animation$Properties.Opacity($Html$Animation.to(1))]),
-           $Html$Animation.animate));
-         case "Hide": return A2(onMenu,
-           model,
-           A2($Html$Animation.props,
-           _U.list([A2($Html$Animation$Properties.Left,$Html$Animation.to(-350),$Html$Animation$Properties.Px)
-                   ,$Html$Animation$Properties.Opacity($Html$Animation.to(0))]),
-           $Html$Animation.animate));
-         default: return A2(onMenu,model,_p1._0);}
+         default: var _p5 = A2($CategoryBar.update,_p1._0,model.category);
+           var category$ = _p5._0;
+           var effects$ = _p5._1;
+           return {ctor: "_Tuple2",_0: _U.update(model,{category: category$}),_1: A2($Effects.map,Animation,effects$)};}
    });
-   var Model = F5(function (a,b,c,d,e) {    return {listings: a,header: b,category: c,meta: d,style: e};});
+   var Model = F4(function (a,b,c,d) {    return {listings: a,header: b,category: c,meta: d};});
    var metaInit = {searchFilter: _U.list([]),categoryFilter: $CategoryBar.None,windowDim: {ctor: "_Tuple2",_0: 0,_1: 0}};
    var init = {ctor: "_Tuple2"
-              ,_0: {listings: $Listings.init(_U.list([]))
-                   ,header: $Header.init
-                   ,category: $CategoryBar.init
-                   ,meta: metaInit
-                   ,style: $Html$Animation.init(_U.list([A2($Html$Animation$Properties.Left,-350.0,$Html$Animation$Properties.Px)
-                                                        ,$Html$Animation$Properties.Opacity(0.0)]))}
+              ,_0: {listings: $Listings.init(_U.list([])),header: $Header.init,category: $CategoryBar.init,meta: metaInit}
               ,_1: $Effects.batch(_U.list([getListings(testUrl),windowInit]))};
    var Meta = F3(function (a,b,c) {    return {searchFilter: a,categoryFilter: b,windowDim: c};});
    return _elm.Index.values = {_op: _op
@@ -14532,14 +14572,10 @@ Elm.Index.make = function (_elm) {
                               ,Reset: Reset
                               ,Resize: Resize
                               ,NoOp: NoOp
-                              ,Show: Show
-                              ,Hide: Hide
-                              ,Animate: Animate
+                              ,Animation: Animation
                               ,update: update
                               ,appendListings: appendListings
-                              ,onMenu: onMenu
                               ,view: view
-                              ,viewMenu: viewMenu
                               ,getListings: getListings
                               ,resizes: resizes
                               ,startMailbox: startMailbox

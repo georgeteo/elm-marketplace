@@ -22,8 +22,6 @@ import Html.Events exposing (..)
 
 -- Model
 
-type alias SearchFilters = String
-
 type alias Meta =
   { searchFilter : List String
   , categoryFilter : CategoryBar.Category
@@ -42,7 +40,6 @@ type alias Model =
   , header : Header.Model
   , category : CategoryBar.Model
   , meta : Meta
-  , style : UI.Animation
   }
 
 init : (Model, Effects Action)
@@ -51,9 +48,6 @@ init =
    , header = Header.init
    , category = CategoryBar.init
    , meta = metaInit
-   , style = UI.init [ Left -350.0 Px
-                     , Opacity 0.0
-                     ]
    }
    , Effects.batch
       [ getListings testUrl
@@ -74,9 +68,7 @@ type Action =
     | Reset () -- Reset action to all listings and no filter settings
     | Resize (Int, Int)
     | NoOp
-    | Show
-    | Hide
-    | Animate UI.Action
+    | Animation CategoryBar.Action
 
 update : Action -> Model -> (Model, Effects Action)
 update action model =
@@ -105,13 +97,15 @@ update action model =
       in
       ({model | listings = listings', meta = meta'}, Effects.none )
     CategoryHover category_action ->
-      ( {model | category = CategoryBar.update category_action model.category}
-      , Effects.none)
+      let
+        (category', effects') = CategoryBar.update category_action model.category
+      in
+      ( {model | category = category'}, Effects.none )
     CategoryEnter category ->
       let
-        category' = CategoryBar.update (CategoryBar.ToggleCategory category) model.category
+        (category', effects') = CategoryBar.update (CategoryBar.ToggleCategory category) model.category
         metaModel = model.meta
-        meta' = { metaModel | categoryFilter = (fst category')}
+        meta' = { metaModel | categoryFilter = category'.on}
         listings' = Listings.update (Listings.ThumbnailAction
                     meta'.searchFilter meta'.categoryFilter) model.listings
       in
@@ -123,7 +117,7 @@ update action model =
         listings' = Listings.update (Listings.ThumbnailAction
                       meta'.searchFilter meta'.categoryFilter) model.listings
         header' = Header.update Header.Reset model.header
-        category' = CategoryBar.update CategoryBar.Reset model.category
+        (category', effects') = CategoryBar.update CategoryBar.Reset model.category
       in
         ( {model | meta = meta', listings = listings', header = header', category = category'}
         , Effects.none)
@@ -138,33 +132,17 @@ update action model =
       in
         ( {model | meta = meta'}, Effects.none )
     NoOp -> (model, Effects.none)
-    Show ->
-      UI.animate
-        |> UI.props
-          [ Left (UI.to 0) Px
-          , Opacity (UI.to 1)
-          ]
-        |> onMenu model
-    Hide ->
-      UI.animate
-        |> UI.props
-          [ Left (UI.to -350) Px
-          , Opacity (UI.to 0)
-          ]
-        |> onMenu model
-    Animate action ->
-      onMenu model action
+    Animation animation ->
+      let
+        (category', effects') = CategoryBar.update animation model.category
+      in
+        ({model | category = category'}, Effects.map Animation effects')
+
 
 
 appendListings : Listings.Model -> List Listing.Model -> Listings.Model 
 appendListings old_listings new_listings =
   {old_listings | listings = List.append old_listings.listings new_listings }
-
-onMenu =
-  UI.forwardTo
-    Animate
-    .style
-    (\w style -> {w | style = style })
 
 -- View
 (=>) = (,)
@@ -187,51 +165,15 @@ view address model =
                                         (forwardTo address ThumbnailAction) 
     category_context = CategoryBar.Context (forwardTo address CategoryHover)
                                            (forwardTo address CategoryEnter)
-    triggerStyle = [ ("position", "absolute")
-                    , ("left", "0px")
-                    , ("top", "0px")
-                    , ("width", "350px")
-                    , ("height", "50%")
-                    --, ("background-color", "#AAA")
-                    , ("border", "2px dashed #AAA")
-                    ]
+                                           (forwardTo address Animation)
   in
     div [ style [ "background-color" => "#f5f5f5"
                 , "font-family" => "sans-serif"]
         , id "index-root"]
-      [ CategoryBar.view category_context model.category
+      [ CategoryBar.view col_limit category_context model.category
       ,  Header.view (col_limit, col_percent) header_context model.header
-      , div [ onMouseEnter address Show
-            , onMouseLeave address Hide
-            , style triggerStyle
-            ]
-            [ h1 [ style [("padding","25px")]]
-                 [ text "Hover here to see menu!"]
-            , viewMenu address model
-            ]
       , Listings.view (col_limit, col_percent) listings_context model.listings
       ]
-viewMenu : Address Action -> Model -> Html
-viewMenu address model =
-  let
-    menuStyle = [ ("position", "absolute")
-                , ("top", "-2px")
-                , ("margin-left", "-2px")
-                , ("padding", "25px")
-                , ("width", "300px")
-                , ("height", "100%")
-                , ("background-color", "rgb(58,40,69)")
-                , ("color", "white")
-                , ("border", "2px solid rgb(58,40,69)")
-                ]
-  in
-    div [ style (menuStyle ++ (UI.render model.style)) ]
-        [ h1 [] [ text "Hidden Menu"]
-            , ul []
-            [li [] [text "Some things"]
-            , li [] [text "in a list"]
-            ]
-        ]
 
 -- Effects
 
