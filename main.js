@@ -12316,7 +12316,7 @@ Elm.Listings.make = function (_elm) {
          var _p1 = acc;
          if (_p1.ctor === "[]") {
                return _U.crashCase("Listings",
-               {start: {line: 150,column: 24},end: {line: 152,column: 41}},
+               {start: {line: 149,column: 24},end: {line: 151,column: 41}},
                _p1)("Oh no! Acc was not initialized correctly in foldr");
             } else {
                return {ctor: "_Tuple2",_0: _p1._0,_1: _p1._1};
