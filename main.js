@@ -13070,20 +13070,27 @@ Elm.CategoryBar.make = function (_elm) {
    var trigger_css = _U.list([A2(_op["=>"],"position","absolute")
                              ,A2(_op["=>"],"left","0px")
                              ,A2(_op["=>"],"top","0px")
-                             ,A2(_op["=>"],"width","50px")
-                             ,A2(_op["=>"],"height","50px")
-                             ,A2(_op["=>"],"border","1px dashed #AAA")]);
+                             ,A2(_op["=>"],"width","25px")
+                             ,A2(_op["=>"],"height","100%")
+                             ,A2(_op["=>"],"border","1px solid #f5f5f5")
+                             ,A2(_op["=>"],"background-color","white")]);
    var vertical_view_css = _U.list([A2(_op["=>"],"position","absolute")
                                    ,A2(_op["=>"],"top","-2px")
                                    ,A2(_op["=>"],"margin-left","-2px")
-                                   ,A2(_op["=>"],"height","100%")
-                                   ,A2(_op["=>"],"padding","10px 20px")
-                                   ,A2(_op["=>"],"background-color","#f5f5f5")
-                                   ,A2(_op["=>"],"border","1px solid #f5f5f5")]);
+                                   ,A2(_op["=>"],"padding","5px 20px")
+                                   ,A2(_op["=>"],"background-color","#fff")
+                                   ,A2(_op["=>"],"border","1px solid #f5f5f5")
+                                   ,A2(_op["=>"],"text-align","center")]);
    var vertical_category_css = _U.list([A2(_op["=>"],"display","block")
-                                       ,A2(_op["=>"],"padding","5px")
+                                       ,A2(_op["=>"],"padding","5px 5px 5px 0px")
                                        ,A2(_op["=>"],"cursor","pointer")
-                                       ,A2(_op["=>"],"float","left")]);
+                                       ,A2(_op["=>"],"float","left")
+                                       ,A2(_op["=>"],"width","100%")]);
+   var vertical_text_css = _U.list([A2(_op["=>"],"width","1px")
+                                   ,A2(_op["=>"],"font-size","1em")
+                                   ,A2(_op["=>"],"padding","0px 4px")
+                                   ,A2(_op["=>"],"word-wrap","break-word")
+                                   ,A2(_op["=>"],"margin-top","10px")]);
    var Context = F3(function (a,b,c) {    return {categoryInput: a,categoryEnter: b,animation: c};});
    var Animate = function (a) {    return {ctor: "Animate",_0: a};};
    var onMenu = A3($Html$Animation.forwardTo,Animate,function (_) {    return _.style;},F2(function (w,style) {    return _U.update(w,{style: style});}));
@@ -13107,8 +13114,7 @@ Elm.CategoryBar.make = function (_elm) {
    var init = {on: None
               ,hover: None
               ,style: $Html$Animation.init(_U.list([A2($Html$Animation$Properties.Left,-100,$Html$Animation$Properties.Px)
-                                                   ,$Html$Animation$Properties.Opacity(0.0)
-                                                   ,A2($Html$Animation$Properties.Height,50,$Html$Animation$Properties.Px)]))};
+                                                   ,$Html$Animation$Properties.Opacity(0.0)]))};
    var update = F2(function (action,model) {
       var _p0 = action;
       switch (_p0.ctor)
@@ -13122,15 +13128,13 @@ Elm.CategoryBar.make = function (_elm) {
            model,
            A2($Html$Animation.props,
            _U.list([A2($Html$Animation$Properties.Left,$Html$Animation.to(0),$Html$Animation$Properties.Px)
-                   ,$Html$Animation$Properties.Opacity($Html$Animation.to(1))
-                   ,A2($Html$Animation$Properties.Height,$Html$Animation.to(500),$Html$Animation$Properties.Px)]),
+                   ,$Html$Animation$Properties.Opacity($Html$Animation.to(1))]),
            $Html$Animation.animate));
          case "Hide": return A2(onMenu,
            model,
            A2($Html$Animation.props,
            _U.list([A2($Html$Animation$Properties.Left,$Html$Animation.to(-100),$Html$Animation$Properties.Px)
-                   ,$Html$Animation$Properties.Opacity($Html$Animation.to(0))
-                   ,A2($Html$Animation$Properties.Height,$Html$Animation.to(50),$Html$Animation$Properties.Px)]),
+                   ,$Html$Animation$Properties.Opacity($Html$Animation.to(0))]),
            $Html$Animation.animate));
          default: return A2(onMenu,model,_p0._0);}
    });
@@ -13154,12 +13158,13 @@ Elm.CategoryBar.make = function (_elm) {
       A2($List.map,A2(verticalCategory,context,model),allCategories));
    });
    var verticalTrigger = F2(function (context,model) {
+      var on_category = _U.eq(model.on,None) ? "Category" : $Basics.toString(model.on);
       return A2($Html.div,
       _U.list([A2($Html$Events.onMouseEnter,context.animation,Show)
               ,A2($Html$Events.onMouseLeave,context.animation,Hide)
               ,$Html$Attributes.style(trigger_css)
               ,$Html$Attributes.id("vertical-trigger")]),
-      _U.list([A2(verticalView,context,model)]));
+      _U.list([A2($Html.h4,_U.list([$Html$Attributes.style(vertical_text_css)]),_U.list([$Html.text(on_category)])),A2(verticalView,context,model)]));
    });
    var horizontalCategory = F3(function (context,model,category) {
       var special_modifier_css = _U.eq(category,Apartments) ? left_tab_css : _U.eq(category,Free) ? right_tab_css : _U.list([]);
@@ -13220,7 +13225,8 @@ Elm.CategoryBar.make = function (_elm) {
                                     ,border_bar_css: border_bar_css
                                     ,trigger_css: trigger_css
                                     ,vertical_view_css: vertical_view_css
-                                    ,vertical_category_css: vertical_category_css};
+                                    ,vertical_category_css: vertical_category_css
+                                    ,vertical_text_css: vertical_text_css};
 };
 Elm.Search = Elm.Search || {};
 Elm.Search.make = function (_elm) {

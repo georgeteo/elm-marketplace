@@ -25,19 +25,18 @@ type Category =
     | Free
     | None
 
-type alias Model = 
+type alias Model =
   { on : Category
   , hover : Category
   , style : UI.Animation
   }
 
 init : Model
-init = 
+init =
   { on = None
     , hover = None
     , style = UI.init [ Left -100 Px
                       , Opacity 0.0
-                      , Height 50 Px
                       ]
   }
 
@@ -59,8 +58,8 @@ type Action =
 update : Action -> Model -> (Model , Effects Action)
 update action model =
   case action of
-    ToggleCategory category -> 
-      let 
+    ToggleCategory category ->
+      let
         model' = if category == model.on then {model | on = None}
                     else {model | on = category }
       in
@@ -73,7 +72,6 @@ update action model =
         |> UI.props
           [ Left (UI.to 0) Px
           , Opacity (UI.to 1)
-          , Height (UI.to 500) Px
           ]
         |> onMenu model
     Hide ->
@@ -81,7 +79,6 @@ update action model =
         |> UI.props
           [ Left (UI.to -100) Px
           , Opacity (UI.to 0)
-          , Height (UI.to 50) Px
           ]
         |> onMenu model
     Animate action ->
@@ -105,8 +102,8 @@ view col_limit context model =
   let debug = Debug.log "Col Limit in CategoryBar View" col_limit in
   if col_limit < 4 then verticalTrigger context model
   else horizontalView context model
-  
-      
+
+
 horizontalView : Context -> Model -> Html
 horizontalView context model =
   div [ style border_bar_css ]
@@ -122,33 +119,37 @@ horizontalCategory context model category =
   in
     div [ style (css ++ horizontal_category_css ++ special_modifier_css)
         , onClick context.categoryEnter category
-        , onMouseEnter context.categoryInput (MouseEnter category) 
+        , onMouseEnter context.categoryInput (MouseEnter category)
         , onMouseLeave context.categoryInput (MouseLeave category) ]
         [text <| toString category]
 
 verticalTrigger : Context -> Model -> Html
 verticalTrigger context model =
-  div [ onMouseEnter context.animation Show
-      , onMouseLeave context.animation Hide
-      , style trigger_css
-      , id "vertical-trigger"
-      ]
-      [verticalView context model]
- 
+  let
+    on_category = if model.on == None then "Category" else toString model.on
+  in
+    div [ onMouseEnter context.animation Show
+        , onMouseLeave context.animation Hide
+        , style trigger_css
+        , id "vertical-trigger"
+        ]
+        [ h4 [style vertical_text_css ] [text on_category]
+        , verticalView context model]
+
 verticalView : Context -> Model -> Html
 verticalView context model =
-  div [ style (vertical_view_css ++ (UI.render model.style)) 
+  div [ style (vertical_view_css ++ (UI.render model.style))
       , id "vertical-view"]
       (List.map (verticalCategory context model) allCategories)
-  
+
 verticalCategory : Context -> Model -> Category -> Html
 verticalCategory context model category =
   let
     css = if (model.on == category) || (model.hover == category)  then on_css else off_css
   in
-    div [style (css ++ vertical_category_css) 
+    div [style (css ++ vertical_category_css)
         , onClick context.categoryEnter category
-        , onMouseEnter context.categoryInput (MouseEnter category) 
+        , onMouseEnter context.categoryInput (MouseEnter category)
         , onMouseLeave context.categoryInput (MouseLeave category) ]
         [text <| toString category]
 
@@ -187,25 +188,36 @@ trigger_css : List (String, String)
 trigger_css = [ "position" => "absolute"
               , "left" => "0px"
               , "top"=> "0px"
-              , "width" => "50px"
-              , "height" => "50px"
-              , "border" => "1px dashed #AAA"
+              , "width" => "25px"
+              , "height" => "100%"
+              , "border" => "1px solid #f5f5f5"
+              , "background-color" => "white"
               ]
 
 vertical_view_css : List (String, String)
 vertical_view_css = [ "position"=> "absolute"
                     , "top" => "-2px" -- TODO: What is this doing here?
                     , "margin-left" => "-2px" -- TODO: What is this doing here?
-                    , "height" => "100%"
-                    , "padding" => "10px 20px"
-                    , "background-color" => "#f5f5f5"
+                    , "padding" => "5px 20px"
+                    , "background-color" => "#fff"
                     , "border" => "1px solid #f5f5f5"
+                    , "text-align" => "center"
                     ]
 
 vertical_category_css : List (String, String)
 vertical_category_css =
   [ "display" => "block"
-  , "padding" => "5px"
+  , "padding" => "5px 5px 5px 0px"
   , "cursor" => "pointer"
   , "float" => "left"
+  , "width" => "100%"
+  ]
+
+vertical_text_css : List (String, String)
+vertical_text_css =
+  [ "width" => "1px"
+  , "font-size" => "1em"
+  , "padding" => "0px 4px"
+  , "word-wrap" => "break-word"
+  , "margin-top" => "10px"
   ]
