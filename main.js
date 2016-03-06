@@ -13324,7 +13324,7 @@ Elm.Header.make = function (_elm) {
    };
    var logo_css = function (w) {
       return _U.list([A2(_op["=>"],"height","100%")
-                     ,A2(_op["=>"],"background-image","url(assets/logo.jpg)")
+                     ,A2(_op["=>"],"background-image","url(logo.jpg)")
                      ,A2(_op["=>"],"width",toPixel(w))
                      ,A2(_op["=>"],"background-size","contain")
                      ,A2(_op["=>"],"float","left")]);
@@ -13490,13 +13490,9 @@ Elm.ImageViewer.make = function (_elm) {
    var clicker_view = F2(function (action,address) {
       var _p1 = action;
       if (_p1.ctor === "Left") {
-            return A2($Html.div,
-            _U.list([$Html$Attributes.style(A2(clicker_CSS,"assets/left.png",action)),A2($Html$Events.onClick,address,action)]),
-            _U.list([]));
+            return A2($Html.div,_U.list([$Html$Attributes.style(A2(clicker_CSS,"left.png",action)),A2($Html$Events.onClick,address,action)]),_U.list([]));
          } else {
-            return A2($Html.div,
-            _U.list([$Html$Attributes.style(A2(clicker_CSS,"assets/right.png",action)),A2($Html$Events.onClick,address,action)]),
-            _U.list([]));
+            return A2($Html.div,_U.list([$Html$Attributes.style(A2(clicker_CSS,"right.png",action)),A2($Html$Events.onClick,address,action)]),_U.list([]));
          }
    });
    var image_view = F2(function (p,buttons) {    return A2($Html.div,_U.list([$Html$Attributes.style(image_CSS(p))]),buttons);});

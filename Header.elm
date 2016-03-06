@@ -58,7 +58,7 @@ logo_name_css (w, h) =
 logo_css : Int -> List (String, String)
 logo_css w =
   [ "height" => "100%"
-  , "background-image" => "url(assets/logo.jpg)"
+  , "background-image" => "url(logo.jpg)"
   , "width" => toPixel w
   , "background-size" => "contain"
   , "float" => "left"

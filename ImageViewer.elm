@@ -41,11 +41,11 @@ image_view p buttons =
 clicker_view : Action -> Address Action -> Html
 clicker_view action address =
   case action of
-    Left -> div [ style (clicker_CSS "assets/left.png" action)
+    Left -> div [ style (clicker_CSS "left.png" action)
                 , onClick address action
                 ]
                 []
-    Right -> div [ style (clicker_CSS "assets/right.png" action)
+    Right -> div [ style (clicker_CSS "right.png" action)
                  , onClick address action
                  ]
                  []
