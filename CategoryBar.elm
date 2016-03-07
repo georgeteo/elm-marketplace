@@ -196,12 +196,13 @@ trigger_css = [ "position" => "absolute"
 
 vertical_view_css : List (String, String)
 vertical_view_css = [ "position"=> "absolute"
-                    , "top" => "-2px" -- TODO: What is this doing here?
-                    , "margin-left" => "-2px" -- TODO: What is this doing here?
+                    , "top" => "-2px"
+                    , "margin-left" => "-2px"
                     , "padding" => "5px 20px"
                     , "background-color" => "#fff"
                     , "border" => "1px solid #f5f5f5"
                     , "text-align" => "center"
+                    , "z-index" => "9"
                     ]
 
 vertical_category_css : List (String, String)
@@ -211,6 +212,7 @@ vertical_category_css =
   , "cursor" => "pointer"
   , "float" => "left"
   , "width" => "100%"
+  , "font-size" => "large"
   ]
 
 vertical_text_css : List (String, String)

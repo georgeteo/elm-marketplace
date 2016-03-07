@@ -13080,12 +13080,14 @@ Elm.CategoryBar.make = function (_elm) {
                                    ,A2(_op["=>"],"padding","5px 20px")
                                    ,A2(_op["=>"],"background-color","#fff")
                                    ,A2(_op["=>"],"border","1px solid #f5f5f5")
-                                   ,A2(_op["=>"],"text-align","center")]);
+                                   ,A2(_op["=>"],"text-align","center")
+                                   ,A2(_op["=>"],"z-index","9")]);
    var vertical_category_css = _U.list([A2(_op["=>"],"display","block")
                                        ,A2(_op["=>"],"padding","5px 5px 5px 0px")
                                        ,A2(_op["=>"],"cursor","pointer")
                                        ,A2(_op["=>"],"float","left")
-                                       ,A2(_op["=>"],"width","100%")]);
+                                       ,A2(_op["=>"],"width","100%")
+                                       ,A2(_op["=>"],"font-size","large")]);
    var vertical_text_css = _U.list([A2(_op["=>"],"width","1px")
                                    ,A2(_op["=>"],"font-size","1em")
                                    ,A2(_op["=>"],"padding","0px 4px")
@@ -14300,8 +14302,8 @@ Elm.Listings.make = function (_elm) {
    _op["=>"] = F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};});
    var listings_container_css = _U.list([A2(_op["=>"],"display","table")
                                         ,A2(_op["=>"],"border-collapse","separate")
-                                        ,A2(_op["=>"],"border-spacing","5px 5px")
-                                        ,A2(_op["=>"],"margin","0 5%")
+                                        ,A2(_op["=>"],"border-spacing","10px 11px")
+                                        ,A2(_op["=>"],"margin","0 10%")
                                         ,A2(_op["=>"],"background-color","#f5f5f5")
                                         ,A2(_op["=>"],"text-align","center")]);
    var listings_row_css = _U.list([A2(_op["=>"],"display","table-row")]);

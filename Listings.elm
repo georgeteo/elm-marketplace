@@ -125,8 +125,8 @@ listings_container_css : List (String, String)
 listings_container_css =
   [ "display" => "table"
   , "border-collapse" => "separate"
-  , "border-spacing" => "5px 5px"
-  , "margin" => "0 5%"
+  , "border-spacing" => "10px 11px"
+  , "margin" => "0 10%"
   , "background-color" => "#f5f5f5"
   , "text-align" => "center"
   ]
