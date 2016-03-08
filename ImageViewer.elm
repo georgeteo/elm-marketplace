@@ -1,6 +1,11 @@
 module ImageViewer where
 
--- Module for image viewer
+-- Module for image viewer.
+-- ImageViewer renders a default "no-image" image if there is no image attached
+-- to a listing.
+-- If there is greater than one image, than the first image in the list is rendered
+-- and there are buttons to cycle through the images.
+-- If there is only one image then there will be no options to rotate through the images. 
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -10,11 +15,16 @@ import Window
 import String exposing (..)
 
 -- Model
+-- Each Photo is record type to a url of a large and small picture.
+-- Photos type is a List Photo
+-- Photos will cycle through the images according to the actions below.
 type alias Photo = { large : String,
                      small : String }
 type alias Photos = List Photo
 
 -- Update
+-- There are two actions internal to ImageViewer:
+-- Left and Right which cycles through the images. 
 type Action = Left | Right 
 
 update : Action -> Photos -> Photos
@@ -33,11 +43,13 @@ update action photos =
               p'::ps' -> List.reverse (ps' ++ [p']) 
 
 -- View
+-- image_view renders a single image. 
 image_view : String -> List Html -> Html
 image_view p buttons =
   div [ style (image_CSS p) ]
       buttons
 
+-- The clicker renders a Left or Right clicker 
 clicker_view : Action -> Address Action -> Html
 clicker_view action address =
   case action of
@@ -50,6 +62,8 @@ clicker_view action address =
                  ]
                  []
 
+-- ImageViewer.view renders the overall Html for the ImageViewer which contains
+-- a image_view for the current head of the Photos List with clickers if appropriate. 
 view : Address Action -> Photos -> Html
 view address photos =
   let

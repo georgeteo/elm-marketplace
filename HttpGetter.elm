@@ -1,5 +1,8 @@
 module HttpGetter where
 
+-- Module that sends HTTP GET requests to the server. 
+-- The server returns a JSON Blob that is of Blob type.
+
 import Json.Decode exposing ((:=))
 import Http exposing (Error) 
 import Task exposing (Task)
@@ -44,6 +47,7 @@ blobDecoder =
     ("listings" := (Json.Decode.list listingDecoder))
 
 -- Effects
+-- getListings will trigger a GET request at this url.
 getListings : String -> Task never (Maybe Blob)
 getListings url =
   Http.get blobDecoder url

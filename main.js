@@ -13248,6 +13248,13 @@ Elm.Search.make = function (_elm) {
    $Signal = Elm.Signal.make(_elm),
    $String = Elm.String.make(_elm);
    var _op = {};
+   _op["=>"] = F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};});
+   var input_css = _U.list([A2(_op["=>"],"width","calc(100% - 24px)")
+                           ,A2(_op["=>"],"padding","10px")
+                           ,A2(_op["=>"],"font-size","2em")
+                           ,A2(_op["=>"],"text-align","center")]);
+   var toPixel = function (x) {    return A2($Basics._op["++"],$Basics.toString(x),"px");};
+   var search_div_css = function (h) {    return _U.list([A2(_op["=>"],"line-height",toPixel(h))]);};
    var is13 = function (code) {    return _U.eq(code,13) ? $Result.Ok({ctor: "_Tuple0"}) : $Result.Err("not the right key code");};
    var onEnter = F2(function (address,value) {
       return A3($Html$Events.on,
@@ -13258,13 +13265,6 @@ Elm.Search.make = function (_elm) {
       });
    });
    var Context = F2(function (a,b) {    return {input: a,enter: b};});
-   _op["=>"] = F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};});
-   var input_css = _U.list([A2(_op["=>"],"width","calc(100% - 24px)")
-                           ,A2(_op["=>"],"padding","10px")
-                           ,A2(_op["=>"],"font-size","2em")
-                           ,A2(_op["=>"],"text-align","center")]);
-   var toPixel = function (x) {    return A2($Basics._op["++"],$Basics.toString(x),"px");};
-   var search_div_css = function (h) {    return _U.list([A2(_op["=>"],"line-height",toPixel(h))]);};
    var update = F2(function (action,query) {    var _p1 = action;if (_p1.ctor === "Search") {    return _p1._0;} else {    return "";}});
    var Reset = {ctor: "Reset"};
    var Search = function (a) {    return {ctor: "Search",_0: a};};
@@ -13287,13 +13287,13 @@ Elm.Search.make = function (_elm) {
                                ,Search: Search
                                ,Reset: Reset
                                ,update: update
-                               ,toPixel: toPixel
-                               ,search_div_css: search_div_css
-                               ,input_css: input_css
                                ,Context: Context
                                ,view: view
                                ,onEnter: onEnter
-                               ,is13: is13};
+                               ,is13: is13
+                               ,toPixel: toPixel
+                               ,search_div_css: search_div_css
+                               ,input_css: input_css};
 };
 Elm.Header = Elm.Header || {};
 Elm.Header.make = function (_elm) {
@@ -13312,7 +13312,6 @@ Elm.Header.make = function (_elm) {
    $Search = Elm.Search.make(_elm),
    $Signal = Elm.Signal.make(_elm);
    var _op = {};
-   var Context = F3(function (a,b,c) {    return {headerAction: a,searchEnter: b,reset: c};});
    _op["=>"] = F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};});
    var container_css = _U.list([A2(_op["=>"],"margin-bottom","10px")
                                ,A2(_op["=>"],"background-color","#fff")
@@ -13331,7 +13330,6 @@ Elm.Header.make = function (_elm) {
                      ,A2(_op["=>"],"background-size","contain")
                      ,A2(_op["=>"],"float","left")]);
    };
-   var div_logo = function (w) {    return A2($Html.div,_U.list([$Html$Attributes.style(logo_css(w))]),_U.list([]));};
    var name_css = function (_p2) {
       var _p3 = _p2;
       return _U.list([A2(_op["=>"],"width",toPixel(_p3._0))
@@ -13346,6 +13344,7 @@ Elm.Header.make = function (_elm) {
       _U.list([$Html$Attributes.style(name_css({ctor: "_Tuple2",_0: _p5._0,_1: _p5._1}))]),
       _U.list([A2($Html.h1,_U.list([$Html$Attributes.style(name_text_css)]),_U.list([$Html.text("UChicago Marketplace")]))]));
    };
+   var div_logo = function (w) {    return A2($Html.div,_U.list([$Html$Attributes.style(logo_css(w))]),_U.list([]));};
    var div_logo_name = F3(function (_p6,col_limit,address) {
       var _p7 = _p6;
       var _p10 = _p7._1;
@@ -13357,6 +13356,7 @@ Elm.Header.make = function (_elm) {
               ,A2($Html$Events.onClick,address,{ctor: "_Tuple0"})]),
       _U.list([div_logo(_p9),div_name({ctor: "_Tuple2",_0: _p10,_1: _p8})]));
    });
+   var Context = F3(function (a,b,c) {    return {headerAction: a,searchEnter: b,reset: c};});
    var update = F2(function (action,model) {
       var _p11 = action;
       if (_p11.ctor === "SearchAction") {
@@ -13388,17 +13388,17 @@ Elm.Header.make = function (_elm) {
                                ,SearchAction: SearchAction
                                ,Reset: Reset
                                ,update: update
+                               ,Context: Context
+                               ,view: view
+                               ,div_logo_name: div_logo_name
+                               ,div_logo: div_logo
+                               ,div_name: div_name
                                ,toPixel: toPixel
                                ,container_css: container_css
                                ,logo_name_css: logo_name_css
                                ,logo_css: logo_css
                                ,name_css: name_css
-                               ,name_text_css: name_text_css
-                               ,div_logo_name: div_logo_name
-                               ,div_logo: div_logo
-                               ,div_name: div_name
-                               ,Context: Context
-                               ,view: view};
+                               ,name_text_css: name_text_css};
 };
 Elm.HttpGetter = Elm.HttpGetter || {};
 Elm.HttpGetter.make = function (_elm) {
@@ -14076,6 +14076,7 @@ Elm.Listing.make = function (_elm) {
    var _op = {};
    var toPixel = function (x) {    return A2($Basics._op["++"],$Basics.toString(x),"px");};
    var Listing_CSS = F8(function (a,b,c,d,e,f,g,h) {    return {container: a,title: b,price: c,photos: d,categories: e,body: f,button: g,inner_container: h};});
+   var Context = F3(function (a,b,c) {    return {actions: a,thumbnail: b,fullpage: c};});
    _op["=>"] = F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};});
    var category_tag_css = _U.list([A2(_op["=>"],"border-radius","8px")
                                   ,A2(_op["=>"],"background-color","#777")
@@ -14181,7 +14182,6 @@ Elm.Listing.make = function (_elm) {
              ,body: $Html$Attributes.style(fullpage_body_css)
              ,button: $Html$Attributes.style(fullpage_button)};
    };
-   var Context = F3(function (a,b,c) {    return {actions: a,thumbnail: b,fullpage: c};});
    var update = F2(function (action,listing) {    var _p0 = action;return _U.update(listing,{photos: A2($ImageViewer.update,_p0._0,listing.photos)});});
    var ImageActions = function (a) {    return {ctor: "ImageActions",_0: a};};
    var view = F3(function (col_percent,context,listing) {
@@ -14339,7 +14339,7 @@ Elm.Listings.make = function (_elm) {
          var _p3 = acc;
          if (_p3.ctor === "[]") {
                return _U.crashCase("Listings",
-               {start: {line: 148,column: 24},end: {line: 150,column: 41}},
+               {start: {line: 166,column: 24},end: {line: 168,column: 41}},
                _p3)("Oh no! Acc was not initialized correctly in foldr");
             } else {
                return {ctor: "_Tuple2",_0: _p3._0,_1: _p3._1};
@@ -14362,14 +14362,13 @@ Elm.Listings.make = function (_elm) {
          if (_p8.ctor === "ThumbnailView") {
                var filtered_listings = A2($List.filter,function (l) {    return _U.eq(l.view,$Listing.Thumbnail);},model.listings);
                var number_of_listings = $List.length(filtered_listings);
-               var one_listing_hack = _U.cmp(number_of_listings,_p9) < 0 ? _U.list([{ctor: "_Tuple2"
-                                                                                    ,_0: "width"
-                                                                                    ,_1: A2($Basics._op["++"],
-                                                                                    $Basics.toString(number_of_listings * _p10),
-                                                                                    "%")}]) : _U.list([]);
+               var num_cols = _U.cmp(number_of_listings,_p9) < 0 ? _U.list([{ctor: "_Tuple2"
+                                                                            ,_0: "width"
+                                                                            ,_1: A2($Basics._op["++"],
+                                                                            $Basics.toString(number_of_listings * _p10),
+                                                                            "%")}]) : _U.list([]);
                return {ctor: "_Tuple2"
-                      ,_0: _U.list([$Html$Attributes.style(A2($List.append,listings_container_css,one_listing_hack))
-                                   ,$Html$Attributes.id("thumbnail-container")])
+                      ,_0: _U.list([$Html$Attributes.style(A2($List.append,listings_container_css,num_cols)),$Html$Attributes.id("thumbnail-container")])
                       ,_1: A2($List.map,
                       row_div,
                       $List.reverse(A3($List.foldl,A2(makeTableRows,{ctor: "_Tuple2",_0: _p9,_1: _p10},context),_U.list([_U.list([])]),filtered_listings)))};
@@ -14384,10 +14383,10 @@ Elm.Listings.make = function (_elm) {
       return A2($Html.div,container_css,listings_content);
    });
    var ThumbnailAction = F2(function (a,b) {    return {ctor: "ThumbnailAction",_0: a,_1: b};});
-   var Model = F3(function (a,b,c) {    return {view: a,searchfilter: b,listings: c};});
+   var Model = F2(function (a,b) {    return {view: a,listings: b};});
    var FullpageView = {ctor: "FullpageView"};
    var ThumbnailView = {ctor: "ThumbnailView"};
-   var init = function (listingsList) {    return {view: ThumbnailView,searchfilter: _U.list([]),listings: listingsList};};
+   var init = function (listingsList) {    return {view: ThumbnailView,listings: listingsList};};
    var update = F2(function (action,model) {
       var _p11 = action;
       switch (_p11.ctor)

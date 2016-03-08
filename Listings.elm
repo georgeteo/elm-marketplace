@@ -1,5 +1,7 @@
 module Listings where
 
+-- Module for the set of listings. 
+
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Listing
@@ -19,16 +21,25 @@ type View =
 
 type alias FilterWords = List String
 
+-- Model of Listings type has two fields:
+-- view is of View type and indicates which type of view is being rendered.
+-- listings is a List of individual Listing. 
 type alias Model =
   { view : View
-  , searchfilter : FilterWords
   , listings : List Listing.Model
   }
 
 init : List Listing.Model -> Model
-init listingsList = {view = ThumbnailView, searchfilter = [], listings = listingsList }
+init listingsList = {view = ThumbnailView, listings = listingsList }
 
 -- Update
+-- Three types of Action:
+-- ThumbnailAction FilterWords Category will render the ThumbnailView with
+-- FilterWords as the search filter terms and Category as the category filter.
+-- FullpageAction will render the Listing in a FullpageView with all other Listings
+-- turned to Hidden.
+-- ListingAction are wrapper actions to pass the update to an individual listing.
+-- ListingAction currently corresponds to a ImageViewer updates. 
 type Action =
   ThumbnailAction (List String) CategoryBar.Category
     | FullpageAction Listing.UUID
@@ -55,6 +66,7 @@ update action model =
                                     ) model.listings
       }
 
+-- Helper function that returns a Bool if a Listing matches the filterWords. 
 listingMatchQuery : FilterWords -> Listing.Model -> Bool
 listingMatchQuery filter_words listing =
   if (filter_words == []) || (filter_words == [""]) then True
@@ -62,12 +74,14 @@ listingMatchQuery filter_words listing =
        then True
        else False
 
+-- Helepr function for checking whether a Listing matches the Category filter
 listingMatchCategories : CategoryBar.Category -> Listing.Model -> Bool
 listingMatchCategories category listing =
   if category == CategoryBar.None then True
   else if List.member (toString category |> toLower) listing.categories then True
        else False 
 
+-- Wrapper filter function that filters based on both FilterWords and Category
 filterListings : FilterWords -> CategoryBar.Category -> Listing.Model -> Listing.Model
 filterListings filter_words category listing =
   if (listingMatchQuery filter_words listing) && (listingMatchCategories category listing)
@@ -80,6 +94,9 @@ type alias Context =
   , thumbnailAction : Address ()
   }
 
+-- View is rendered based on the current view type (ThumbnailView or FullPageView).
+-- View is also rendered based on col_limits, which is responsive based on the 
+-- viewport width. 
 view : (Int, Int) -> Context -> Model -> Html
 view (col_limit, col_percent) context model =
   let
@@ -89,11 +106,11 @@ view (col_limit, col_percent) context model =
           let 
             filtered_listings = List.filter(\l -> l.view == Listing.Thumbnail) model.listings 
             number_of_listings = List.length filtered_listings
-            one_listing_hack = if number_of_listings < col_limit
+            num_cols = if number_of_listings < col_limit
                                 then [("width", (toString (number_of_listings * col_percent)) ++ "%")]
                                 else []
           in
-            ([ style (List.append listings_container_css one_listing_hack )
+            ([ style (List.append listings_container_css num_cols )
               , id "thumbnail-container"]
               , List.foldl (makeTableRows (col_limit, col_percent) context) [[]] filtered_listings
                  |> List.reverse
@@ -106,6 +123,7 @@ view (col_limit, col_percent) context model =
   in
     div container_css listings_content
 
+-- Helper function for rending a single listing
 view_listing : Int -> Context -> Listing.Model -> Html
 view_listing col_percent context listing =
   let 

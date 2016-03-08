@@ -1,5 +1,9 @@
 module CategoryBar where
 
+-- Module for category bar.
+-- Category bar will be horizontal allowed.
+-- Else it will collapse into a vertical sidebar. 
+
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -25,6 +29,10 @@ type Category =
     | Free
     | None
 
+-- CategoryBar model contains 3 objects:
+-- on is the category that has been clicked. 
+-- hover contains the category indicates a category that the mouse hovers over.
+-- style is a style for the vertical category bar that slides out when the browser screen is small.
 type alias Model =
   { on : Category
   , hover : Category
@@ -40,12 +48,34 @@ init =
                       ]
   }
 
+-- List of all categories that will be rendered in the view
 allCategories : List Category
 allCategories =
-  [Apartments, Subleases, Appliances, Bikes, Books, Cars, Electronics, Employment, Furniture, Miscellaneous, Services,
-  Wanted, Free]
+  [Apartments
+  , Subleases
+  , Appliances
+  , Bikes
+  , Books
+  , Cars
+  , Electronics
+  , Employment
+  , Furniture
+  , Miscellaneous
+  , Services
+  , Wanted
+  , Free
+  ]
 
 -- Update
+-- Union type of actions for the category bar:
+-- ToggleCategory that the action that occurs when a category is clicked. 
+-- Depending on context, ToggleCategory either turns on or off a category.
+-- MouseEneter/MouseLeave are actions for mouse entering or leaving a category
+-- for the hover record in the model.
+-- Reset will reset the categories to the inital state with no category triggered.
+-- If the mouse is hovering over a cateogry when reset is triggered, the hover
+-- highlight will not be turned off. 
+-- Show, Hide, Animate are Actions for the the slideout sidebar animation. 
 type Action =
     ToggleCategory Category
       | MouseEnter Category
@@ -84,6 +114,7 @@ update action model =
     Animate action ->
       onMenu model action
 
+-- Helper function for animation.
 onMenu =
   UI.forwardTo
     Animate
@@ -91,12 +122,23 @@ onMenu =
     (\w style -> {w | style = style })
 
 --view
+-- Set of addresses to trigger actions from the view. 
+-- There are 3 types of UI effects:
+-- categoryInput is the Signal when the mouse hovers over a category
+-- cateogryEnter is the Signal for when a category is clicked. 
+--               This also changes the rendered listings. 
+-- Animation is the Signal for triggering the animation sidebar which is only
+-- activated when the width of the browser viewport is small. 
 type alias Context =
   { categoryInput : Signal.Address Action
   , categoryEnter : Signal.Address Category
   , animation : Signal.Address Action
   }
 
+-- view generates the HTML for the category bar.
+-- If viewport width is small, it will render a hidden vertical category bar
+-- that slides out.
+-- else a regular horizontal category bar is rendered. 
 view : Int -> Context -> Model -> Html
 view col_limit context model =
   let debug = Debug.log "Col Limit in CategoryBar View" col_limit in
@@ -104,6 +146,7 @@ view col_limit context model =
   else horizontalView context model
 
 
+-- Set of views to render the horizontal category bar
 horizontalView : Context -> Model -> Html
 horizontalView context model =
   div [ style border_bar_css ]
@@ -123,6 +166,7 @@ horizontalCategory context model category =
         , onMouseLeave context.categoryInput (MouseLeave category) ]
         [text <| toString category]
 
+-- Set of views to render vertical category bar. 
 verticalTrigger : Context -> Model -> Html
 verticalTrigger context model =
   let

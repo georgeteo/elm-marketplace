@@ -1,5 +1,7 @@
 module Listing where
 
+-- Module for a single listing. 
+
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
@@ -14,6 +16,7 @@ import HttpGetter
 import String
 
 -- Model
+-- Listing Model is a translation of a JSON blob as a record type. 
 type alias UUID = String
 type alias Category = String
 type alias Categories = List Category
@@ -22,17 +25,18 @@ type View =
   Thumbnail
     | Fullpage
     | Hidden
-type alias Model = { key : UUID
-                   , title : String
-                   , body : String
+type alias Model = { key : UUID  -- unique identifier for this listing
+                   , title : String 
+                   , body : String 
                    , price : Price
-                   , categories : Categories
-                   , approved : Bool
+                   , categories : Categories -- List Category 
+                   , approved : Bool -- Whether a listing is approved for posting.
                    , sold : Bool
-                   , lastUpdated : String
-                   , photos : Photos
-                   , view : View
-                   , query : List String }
+                   , lastUpdated : String -- time of last edit of listing
+                   , photos : Photos -- List Photos
+                   , view : View -- View type
+                   , query : List String } -- List of keywords for query
+                                           -- is a combination of body and title words.
 
 init : Photos -> HttpGetter.Listing -> Model
 init p listing =
@@ -49,6 +53,8 @@ init p listing =
   , query = (String.words listing.body) ++ (String.words listing.title)}
 
 -- Update
+-- And individual listing has only one update type: when the ImaveViewr is updated.
+-- i.e., when the left or right clickers of the ImageViewer is clicked. 
 type Action =
   ImageActions ImageViewer.Action
 
@@ -58,13 +64,20 @@ update action listing =
     ImageActions image_action -> { listing | photos = ImageViewer.update image_action listing.photos }
 
 -- View
+(=>) = (,)
+
 type alias Context =
   { actions : Address Action
   , thumbnail : Address ()
   , fullpage : Address () 
   }
-(=>) = (,)
 
+-- view renderes the HTML for an individual listing.
+-- Depending on the listing.view type, a Thumbnail or Fullpage or Hidden listing
+-- will be rendered.
+-- Thumbnail view is the standard thumbnail view.
+-- Fullpage view is a fullpage view of a single listing.
+-- All other listings will be tagged as a hidden. Hidden listings are not rendered.
 view : Int -> Context -> Model -> Html
 view col_percent context listing =
   let 

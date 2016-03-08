@@ -1,5 +1,7 @@
 module Images where
 
+-- Test images for the demo because the backend currently does not send images. 
+
 import ImageViewer exposing (Photos)
 
 testImages : List Photos
