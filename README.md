@@ -4,10 +4,8 @@ This is a FRP rewrite of UChicago Marketplace in Elm.
 
 ## Make
 
-Once Elm is installed, we can run the dev server by running `elm-reactor` 
-and the entry point of the application is `main.elm`. 
-
-To build for production, run `elm-make main.elm`. 
+Run `./make.sh` to run the build process. 
+This will make compile a JS file `main.js`. 
 
 ## Required Packages
 
@@ -22,33 +20,41 @@ evancz/start-app
 evancz/virtual-dom
 ```
 
+## Project structure
+
+Elm-Marketplace follows the standard Elm MVC architecture in nested components
+components. 
+Each component has an internal state called `Model` and a union type of 
+`Action` that operates on the model.
+Each component also has a view that takes a `Context`, which is a record type
+of addresses that are passed to the view so that UI Signals can be sent to the
+appropriate mailboxes, and a `Model` that tells the view the current state.
+
+Consider the following example:
+
+The model in `Index.elm` has 4 nested components: Listings, Header, CategoryBar,
+and Meta. 
+The `Action` union type in `Index.elm` contains many actions. Let's consider
+`ListingsAction`. If a `ListingsAction` Signal is triggered, then the `update`
+function in `Index.elm` will enter the `ListingsAction` branch in the case statement.
+In the `ListingsAction` branch, we know that this particular Signal corresponds to
+an update internal to the Listings type, so it updates the the listings entry
+of the Index model by calling `Listing.update`. 
+
+Similarly in the view, when rendering the Listings view, we pass the
+`Listings.Context`, which is a record type of forwarding address for each
+action that will be triggered in that component. For example, in the Listings
+component there are two types of actions that will be triggered: ThumbanilAction,
+which are actions to reset to the ThumbnailView triggered by the "Back" button
+in a listing and ListingsAction, which are actions that update state internal to
+the Listings component (e.g., ImageViewer or Fullpage buttons), which are 
+wrapped in a generic ListingsAction type, because `Index.elm` won't need to
+unwrap the Action when triggered.
+
 ## Todo
 
-#### Critical
-
-1. Index page wonky when search happens -- DONE
-2. Category bar highlight will return to thumbnail view -- DONE
-3. Add icons for left and right images if necessary -- DONE
-4. Search empty returns to homepage -- DONE
-5. Click logo returns to homepage -- DONE
-6. Mouse pointer icon from I to < on logo -- DONE
-7. Unify filtering of category and search -- DONE
-8. Load more from server in category view. -- DONE 
-9. Vertical Category Bar clean up CSS -- DONE
-10. Vertical category bar collapse from horizontal -- DONE
-
-#### Non-critical
-
-1. Search -- DONE
-2. Category -- DONE
-4. Clean up CSS for fullpage -- DONE
-4. Add scroll loading animation
-5. Http + infinite scroll -- DONE
-6. "Back" from fullpage to thumbnail remembers place on the screen
-
-#### Stretch Goals
-
-3. Masonary 
-6. Add pictures to go api
-6. POST forms
-7. Login and Auth
+1. Add scroll loading animation
+2. "Back" from fullpage to thumbnail remembers place on the screen
+4. Add pictures to go api
+5. POST forms
+6. Login and Auth
