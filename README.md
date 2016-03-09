@@ -38,18 +38,18 @@ The `Action` union type in `Index.elm` contains many actions. Let's consider
 `ListingsAction`. If a `ListingsAction` Signal is triggered, then the `update`
 function in `Index.elm` will enter the `ListingsAction` branch in the case statement.
 In the `ListingsAction` branch, we know that this particular Signal corresponds to
-an update internal to the Listings type, so it updates the the listings entry
-of the Index model by calling `Listing.update`. 
+an update internal to the `Listings` type, so it updates the the listings entry
+of the `Index` model by calling `Listing.update`. 
 
-Similarly in the view, when rendering the Listings view, we pass the
+Similarly in the view, when rendering the `Listings.view`, we pass the
 `Listings.Context`, which is a record type of forwarding address for each
-action that will be triggered in that component. For example, in the Listings
-component there are two types of actions that will be triggered: ThumbanilAction,
-which are actions to reset to the ThumbnailView triggered by the "Back" button
-in a listing and ListingsAction, which are actions that update state internal to
-the Listings component (e.g., ImageViewer or Fullpage buttons), which are 
-wrapped in a generic ListingsAction type, because `Index.elm` won't need to
-unwrap the Action when triggered.
+action that will be triggered in that component. For example, in the `Listings`
+component there are two types of actions that will be triggered: `ThumbanilAction`,
+which are actions to reset to the `ThumbnailView` triggered by the "Back" button
+in a listing and `ListingsAction`, which are actions that update state internal to
+the `Listings` component (e.g., `ImageViewer` or `Fullpage` buttons), which are 
+wrapped in a generic `ListingsAction` type, because `Index.elm` won't need to
+unwrap the `Action` when triggered.
 
 ## Todo
 
